@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La SectASIR — Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <div class="nav-brand"><span class="dot"></span>la_sectasir</div>
+    <div class="nav-links">
+      <a href="#sobre-mi">sobre-mi</a>
+      <a href="#practicas">practicas</a>
+      <a href="#contacto">contacto</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="hero-eyebrow">cd ~/la_sectasir</div>
+    <h1 class="hero-title">La <span class="accent">SectASIR</span></h1>
+    <p class="hero-sub">El portfolio de prácticas de un futuro administrador de Sistemas y Redes. Servicios, Implantación de Aplicaciones Web, Infraestructura Virtual, Base de Datos y Redes — todo lo que hemos aprendido (y roto, y vuelto a arreglar) por el camino.</p>
+
+    <div class="terminal-window">
+      <div class="terminal-titlebar">
+        <span class="tb-dot r"></span><span class="tb-dot y"></span><span class="tb-dot g"></span>
+        <span>bash — 80×24</span>
+      </div>
+      <div class="terminal-body">
+        <div class="line"><span class="prompt">tu-nombre@asir</span>:<span class="path">~</span>$ whoami</div>
+        <div class="line out-val">Técnico en Administración de Sistemas Informáticos en Red</div>
+        <div class="line">&nbsp;</div>
+        <div class="line"><span class="prompt">tu-nombre@asir</span>:<span class="path">~</span>$ cat sobre-mi.txt</div>
+        <div class="line"><span class="out-key">curso</span> <span class="out-val">2024/2025</span></div>
+        <div class="line"><span class="out-key">practicas</span> <span class="out-val">15+</span></div>
+        <div class="line"><span class="out-key">estado</span> <span class="out-val" style="color:var(--accent)">buscando-oportunidad ●</span></div>
+        <div class="line">&nbsp;</div>
+        <div class="line"><span class="prompt">tu-nombre@asir</span>:<span class="path">~</span>$ <span class="cursor"></span></div>
+      </div>
+    </div>
+    <div class="hero-meta">
+      <a href="#contacto">→ contacto</a>
+      <a href="#" target="_blank">→ linkedin</a>
+      <a href="#" target="_blank">→ github</a>
+    </div>
+  </div>
+</header>
+
+<section class="section" id="sobre-mi">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-tag">whoami</div>
+      <h2 class="section-title">Sobre mí</h2>
+    </div>
+    <div class="about-grid">
+      <div class="about-text">
+        <p>Soy estudiante de <strong>Administración de Sistemas Informáticos en Red (ASIR)</strong> y futuro <strong>administrador de Sistemas y Redes</strong>. Durante el curso he trabajado en prácticas de las asignaturas de Servicios, Implantación de Aplicaciones Web, Infraestructura Virtual, Base de Datos y Redes.</p>
+        <p>Esta web reúne esas prácticas para mostrar cómo aplico la teoría a problemas reales: desde levantar una infraestructura virtualizada hasta desplegar servicios, bases de datos y aplicaciones web paso a paso.</p>
+        <p>Busco una oportunidad para seguir aprendiendo en un entorno real, aportando lo que ya sé y con muchas ganas de seguir creciendo como técnico de sistemas.</p>
+      </div>
+      <div class="stack-card">
+        <div class="stack-card-head">stack --list</div>
+        <div class="stack-tags">
+          <span class="stack-tag">Linux</span>
+          <span class="stack-tag">Windows Server</span>
+          <span class="stack-tag">Active Directory</span>
+          <span class="stack-tag">Cisco IOS</span>
+          <span class="stack-tag">VirtualBox</span>
+          <span class="stack-tag">Docker</span>
+          <span class="stack-tag">Bash</span>
+          <span class="stack-tag">SQL</span>
+          <span class="stack-tag">Apache</span>
+          <span class="stack-tag">DNS / DHCP</span>
+          <span class="stack-tag">Firewall (iptables)</span>
+          <span class="stack-tag">Samba</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="practicas">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-tag">ls -la ./practicas</div>
+      <h2 class="section-title">Prácticas</h2>
+    </div>
+
+    <div class="filters">
+      <button class="filter-btn active" data-filter="todas">--all</button>
+      <button class="filter-btn" data-filter="redes">--redes</button>
+      <button class="filter-btn" data-filter="servicios">--servicios</button>
+      <button class="filter-btn" data-filter="iaw">--iaw</button>
+      <button class="filter-btn" data-filter="infraestructura">--infraestructura</button>
+      <button class="filter-btn" data-filter="bbdd">--bbdd</button>
+    </div>
+
+    <!-- Las tarjetas se generan automáticamente desde js/practicas-data.js -->
+    <div class="practice-grid" id="practice-grid">
+      <div class="loading-state">cargando prácticas...</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="contacto">
+  <div class="wrap">
+    <div class="contact-box">
+      <h2 class="section-title">¿Hablamos?</h2>
+      <p>Estoy buscando mis primeras prácticas o un puesto junior en sistemas. Si tienes algo que encaje, escríbeme.</p>
+      <div class="contact-links">
+        <a href="mailto:tu-email@ejemplo.com" class="contact-btn primary">enviar email →</a>
+        <a href="#" class="contact-btn">linkedin</a>
+        <a href="#" class="contact-btn">github</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  $ echo "La SectASIR — gracias por pasarte" — última actualización: junio 2026
+</footer>
+
+<script src="js/practicas-data.js"></script>
+<script src="js/render.js"></script>
+
+</body>
+</html>
