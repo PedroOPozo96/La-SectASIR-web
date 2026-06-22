@@ -481,10 +481,13 @@
   }
   .detail-body h2{
     font-family: var(--sans);
-    font-size: 21px;
-    font-weight: 700;
+    font-size: 24px;
+    font-weight: 800;
     color: var(--text-bright);
-    margin: 36px 0 14px;
+    letter-spacing: -0.01em;
+    margin: 48px 0 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
     display:flex;
     align-items:center;
     gap: 10px;
@@ -493,9 +496,26 @@
     content: '##';
     color: var(--accent);
     font-family: var(--mono);
-    font-size: 16px;
+    font-size: 17px;
   }
   .detail-body h2:first-child{ margin-top: 0; }
+  .detail-body h3{
+    font-family: var(--sans);
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text-bright);
+    margin: 28px 0 10px;
+    display:flex;
+    align-items:center;
+    gap: 8px;
+  }
+  .detail-body h3::before{
+    content: '###';
+    color: var(--celeste);
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+  .detail-body h3:first-child{ margin-top: 0; }
   .detail-body p{
     color: var(--text);
     margin-bottom: 16px;
