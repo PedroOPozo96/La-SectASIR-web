@@ -80,7 +80,7 @@ function renderSidebarIndex() {
   });
 
   sidebarNav.innerHTML = html;
-}
+} 
 
 /* ---------- DETALLE: página individual de práctica ---------- */
 function renderPracticaDetail() {
@@ -146,20 +146,19 @@ document.addEventListener('DOMContentLoaded', () => {
   renderHomeGrid();        
   renderPracticaDetail();  
 
-  /* Lógica para desplegar/ocultar el menú lateral en pantallas pequeñas */
+  /* Lógica para desplegar/ocultar el menú lateral interactivo */
   const toggleBtn = document.getElementById('sidebar-toggle');
   const sidebar = document.querySelector('.site-sidebar');
 
   if (toggleBtn && sidebar) {
-    toggleBtn.addEventListener('click', () => {
+    toggleBtn.addEventListener('click', (event) => {
+      event.stopPropagation(); // Evita que el clic se propague al documento
       sidebar.classList.toggle('open');
     });
 
-    // Cerrar si se hace clic fuera del menú
+    // Cerrar si se hace clic en cualquier lugar fuera del menú
     document.addEventListener('click', (event) => {
-      if (sidebar.classList.contains('open') && 
-          !sidebar.contains(event.target) && 
-          !toggleBtn.contains(event.target)) {
+      if (sidebar.classList.contains('open') && !sidebar.contains(event.target)) {
         sidebar.classList.remove('open');
       }
     });

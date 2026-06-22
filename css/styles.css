@@ -310,12 +310,11 @@ nav .wrap{
 /* ---------- SITE SIDEBAR (INTERACTIVO Y DESPLEGABLE) ---------- */
 .site-sidebar {
   position: fixed;
-  top: 96px;
+  top: 140px; /* Para que quede alineado justo debajo del botón */
   right: 24px;
   left: auto;
   width: 260px;
   z-index: 40;
-  /* Lo escondemos a la derecha por defecto en todas las pantallas */
   transform: translateX(120%);
   opacity: 0;
   pointer-events: none;
@@ -393,10 +392,10 @@ nav .wrap{
   color: var(--accent);
 }
 
-/* ESTILO PARA EL BOTÓN DE TOGGLE (Siempre visible) */
+/* ESTILO PARA EL BOTÓN DE TOGGLE (Arriba a la derecha) */
 .sidebar-toggle {
   position: fixed;
-  bottom: 24px;
+  top: 80px; /* Se ajusta debajo de la barra de navegación */
   right: 24px;
   width: 48px;
   height: 48px;
