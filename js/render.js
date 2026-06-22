@@ -36,7 +36,6 @@ function renderHomeGrid() {
 
   setupFilters();
 
-  // si llegamos aquí con un filtro en la URL (?filtro=xxx), aplicarlo
   const params = new URLSearchParams(window.location.search);
   const filtroInicial = params.get('filtro');
   if (filtroInicial) {
@@ -45,46 +44,157 @@ function renderHomeGrid() {
   }
 }
 
-/* ---------- ÍNDICE LATERAL: visible en todas las páginas ---------- */
+/* ---------- ÍNDICE LATERAL INTERACTIVO (árbol de terminal) ---------- */
 function renderSidebarIndex() {
   const sidebarNav = document.getElementById('sidebar-nav');
   if (!sidebarNav) return;
 
-  const total = PRACTICAS.length;
-  const conteos = {};
-  PRACTICAS.forEach(p => { conteos[p.categoria] = (conteos[p.categoria] || 0) + 1; });
-
-  const categoriasOrdenadas = Object.keys(CATEGORIAS_LABEL);
-  const hayGridLocal = !!document.getElementById('practice-grid');
-
-  // en la home (con grid) usamos <button data-filter>; en otras páginas
-  // usamos enlaces <a> que llevan a la home con el filtro en la URL.
-  // la ruta hacia index.html depende de la profundidad de la página actual,
-  // indicada en el atributo data-root del propio <aside>.
   const aside = document.querySelector('.site-sidebar');
   const root = (aside && aside.dataset.root) || '';
+  const hayGridLocal = !!document.getElementById('practice-grid');
 
-  function enlace(filtro, contenidoInterno) {
-    if (hayGridLocal) {
-      return `<button class="sidebar-link${filtro === 'todas' ? ' active' : ''}" data-filter="${filtro}">${contenidoInterno}</button>`;
-    }
-    const destino = filtro === 'todas' ? `${root}index.html#practicas` : `${root}index.html?filtro=${encodeURIComponent(filtro)}#practicas`;
-    return `<a class="sidebar-link" href="${destino}">${contenidoInterno}</a>`;
-  }
-
-  let html = enlace('todas', `<span>--all</span><span class="count">${total}</span>`);
-
-  categoriasOrdenadas.forEach(cat => {
-    const n = conteos[cat] || 0;
-    html += enlace(cat, `<span>${escapeHTML(CATEGORIAS_LABEL[cat])}</span><span class="count">${n}</span>`);
+  // Agrupar prácticas por categoría
+  const porCategoria = {};
+  PRACTICAS.forEach(p => {
+    if (!porCategoria[p.categoria]) porCategoria[p.categoria] = [];
+    porCategoria[p.categoria].push(p);
   });
 
+  const totalPracticas = PRACTICAS.length;
+  const categoriasOrdenadas = Object.keys(CATEGORIAS_LABEL);
+
+  let html = '';
+
+  // Cabecera: comando ls simulado
+  html += `
+    <div class="tree-cmd">
+      <span class="tree-prompt">$</span> ls practicas/
+    </div>
+  `;
+
+  // Ítem "todas" — enlace/botón global
+  const allDest = hayGridLocal
+    ? ''
+    : `${root}index.html#practicas`;
+  html += `
+    <div class="tree-item tree-all${hayGridLocal ? '' : ''}">
+      ${hayGridLocal
+        ? `<button class="tree-all-btn sidebar-link active" data-filter="todas"><span class="tree-icon">❯</span><span class="tree-all-label">--all</span><span class="count">${totalPracticas}</span></button>`
+        : `<a class="tree-all-btn sidebar-link" href="${allDest}"><span class="tree-icon">❯</span><span class="tree-all-label">--all</span><span class="count">${totalPracticas}</span></a>`
+      }
+    </div>
+  `;
+
+  // Separador
+  html += `<div class="tree-sep"></div>`;
+
+  // Árbol de categorías
+  categoriasOrdenadas.forEach((cat, catIdx) => {
+    const practicasCat = porCategoria[cat] || [];
+    const count = practicasCat.length;
+    const isLast = catIdx === categoriasOrdenadas.length - 1;
+    const catLabel = CATEGORIAS_LABEL[cat];
+
+    // Estado inicial: expandir si hay prácticas
+    const hasItems = count > 0;
+    const catId = `tree-cat-${cat}`;
+
+    if (hayGridLocal) {
+      html += `
+        <div class="tree-category-row" data-cat="${escapeHTML(cat)}">
+          <button
+            class="tree-cat-toggle sidebar-link"
+            data-filter="${escapeHTML(cat)}"
+            data-cat-id="${catId}"
+            aria-expanded="${hasItems ? 'true' : 'false'}"
+          >
+            <span class="tree-connector">${isLast ? '└─' : '├─'}</span>
+            <span class="tree-folder-icon" aria-hidden="true">${hasItems ? '📂' : '📁'}</span>
+            <span class="tree-cat-name">${escapeHTML(catLabel)}</span>
+            <span class="count">${count}</span>
+          </button>
+          ${hasItems ? `
+          <ul class="tree-children" id="${catId}">
+            ${practicasCat.map((p, pIdx) => {
+              const pIsLast = pIdx === practicasCat.length - 1;
+              const href = `practicas/practica.html?id=${encodeURIComponent(p.id)}`;
+              return `
+                <li class="tree-leaf">
+                  <span class="tree-leaf-connector">${pIsLast ? '   └─' : '   ├─'}</span>
+                  <a class="tree-leaf-link" href="${href}" title="${escapeHTML(p.titulo)}">
+                    <span class="tree-file-icon">📄</span>
+                    <span class="tree-leaf-name">${escapeHTML(p.filename)}</span>
+                  </a>
+                </li>
+              `;
+            }).join('')}
+          </ul>` : ''}
+        </div>
+      `;
+    } else {
+      // En páginas de detalle, los enlaces van a la home con filtro
+      const destino = `${root}index.html?filtro=${encodeURIComponent(cat)}#practicas`;
+      html += `
+        <div class="tree-category-row" data-cat="${escapeHTML(cat)}">
+          <button
+            class="tree-cat-toggle sidebar-link"
+            data-cat-id="${catId}"
+            aria-expanded="${hasItems ? 'true' : 'false'}"
+          >
+            <span class="tree-connector">${isLast ? '└─' : '├─'}</span>
+            <span class="tree-folder-icon" aria-hidden="true">${hasItems ? '📂' : '📁'}</span>
+            <span class="tree-cat-name">${escapeHTML(catLabel)}</span>
+            <span class="count">${count}</span>
+          </button>
+          ${hasItems ? `
+          <ul class="tree-children" id="${catId}">
+            ${practicasCat.map((p, pIdx) => {
+              const pIsLast = pIdx === practicasCat.length - 1;
+              const href = `${root}practicas/practica.html?id=${encodeURIComponent(p.id)}`;
+              return `
+                <li class="tree-leaf">
+                  <span class="tree-leaf-connector">${pIsLast ? '   └─' : '   ├─'}</span>
+                  <a class="tree-leaf-link" href="${href}" title="${escapeHTML(p.titulo)}">
+                    <span class="tree-file-icon">📄</span>
+                    <span class="tree-leaf-name">${escapeHTML(p.filename)}</span>
+                  </a>
+                </li>
+              `;
+            }).join('')}
+          </ul>` : ''}
+        </div>
+      `;
+    }
+  });
+
+  // Pie: prompt vacío animado
+  html += `
+    <div class="tree-footer">
+      <span class="tree-prompt">$</span><span class="tree-cursor"></span>
+    </div>
+  `;
+
   sidebarNav.innerHTML = html;
+
+  // Comportamiento acordeón: toggle expand/collapse
+  sidebarNav.querySelectorAll('.tree-cat-toggle').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const catId = btn.dataset.catId;
+      const children = catId ? document.getElementById(catId) : null;
+      const isExpanded = btn.getAttribute('aria-expanded') === 'true';
+
+      if (children) {
+        btn.setAttribute('aria-expanded', isExpanded ? 'false' : 'true');
+        children.classList.toggle('tree-collapsed', isExpanded);
+        // cambiar icono de carpeta
+        const folderIcon = btn.querySelector('.tree-folder-icon');
+        if (folderIcon) folderIcon.textContent = isExpanded ? '📁' : '📂';
+      }
+    });
+  });
 }
 
 function setupFilters() {
-  // botones de filtro (arriba del grid) + enlaces del índice lateral
-  // comparten el mismo atributo data-filter y se mantienen sincronizados
   const filterEls = document.querySelectorAll('.filter-btn, .sidebar-link[data-filter]');
   const cards = document.querySelectorAll('.practice-card');
 
@@ -124,7 +234,6 @@ function renderPracticaDetail() {
 
   document.title = `${practica.titulo} — La SectASIR`;
 
-  // navegación entre práctica anterior / siguiente
   const idx = PRACTICAS.findIndex(p => p.id === practica.id);
   const prev = PRACTICAS[idx - 1];
   const next = PRACTICAS[idx + 1];
@@ -160,11 +269,26 @@ function renderPracticaDetail() {
       </div>
     </div>
   `;
+
+  // Resaltar la práctica activa en el sidebar
+  const sidebarLinks = document.querySelectorAll('.tree-leaf-link');
+  sidebarLinks.forEach(link => {
+    const url = new URL(link.href);
+    if (url.searchParams.get('id') === id) {
+      link.classList.add('active');
+      // expandir la categoría padre si está colapsada
+      const children = link.closest('.tree-children');
+      const toggle = children && document.querySelector(`[data-cat-id="${children.id}"]`);
+      if (toggle && toggle.getAttribute('aria-expanded') === 'false') {
+        toggle.click();
+      }
+    }
+  });
 }
 
 /* ---------- auto-ejecución según la página ---------- */
 document.addEventListener('DOMContentLoaded', () => {
-  renderSidebarIndex();    // se ejecuta en cualquier página que tenga #sidebar-nav
-  renderHomeGrid();        // no hace nada si no existe #practice-grid
-  renderPracticaDetail();  // no hace nada si no existe #practica-root
+  renderSidebarIndex();
+  renderHomeGrid();
+  renderPracticaDetail();
 });
