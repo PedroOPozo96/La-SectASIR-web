@@ -13,7 +13,7 @@ function escapeHTML(str) {
   return div.innerHTML;
 }
 
-/* ---------- HOME: tarjetas + filtros + índice lateral ---------- */
+/* ---------- HOME: tarjetas + filtros ---------- */
 function renderHomeGrid() {
   const grid = document.getElementById('practice-grid');
   if (!grid) return;
@@ -34,10 +34,18 @@ function renderHomeGrid() {
     </article>
   `).join('');
 
-  renderSidebarIndex();
   setupFilters();
+
+  // si llegamos aquí con un filtro en la URL (?filtro=xxx), aplicarlo
+  const params = new URLSearchParams(window.location.search);
+  const filtroInicial = params.get('filtro');
+  if (filtroInicial) {
+    const target = document.querySelector(`[data-filter="${filtroInicial}"]`);
+    if (target) target.click();
+  }
 }
 
+/* ---------- ÍNDICE LATERAL: visible en todas las páginas ---------- */
 function renderSidebarIndex() {
   const sidebarNav = document.getElementById('sidebar-nav');
   if (!sidebarNav) return;
@@ -47,18 +55,28 @@ function renderSidebarIndex() {
   PRACTICAS.forEach(p => { conteos[p.categoria] = (conteos[p.categoria] || 0) + 1; });
 
   const categoriasOrdenadas = Object.keys(CATEGORIAS_LABEL);
+  const hayGridLocal = !!document.getElementById('practice-grid');
 
-  let html = `
-    <button class="sidebar-link active" data-filter="todas">
-      <span>--all</span><span class="count">${total}</span>
-    </button>`;
+  // en la home (con grid) usamos <button data-filter>; en otras páginas
+  // usamos enlaces <a> que llevan a la home con el filtro en la URL.
+  // la ruta hacia index.html depende de la profundidad de la página actual,
+  // indicada en el atributo data-root del propio <aside>.
+  const aside = document.querySelector('.site-sidebar');
+  const root = (aside && aside.dataset.root) || '';
+
+  function enlace(filtro, contenidoInterno) {
+    if (hayGridLocal) {
+      return `<button class="sidebar-link${filtro === 'todas' ? ' active' : ''}" data-filter="${filtro}">${contenidoInterno}</button>`;
+    }
+    const destino = filtro === 'todas' ? `${root}index.html#practicas` : `${root}index.html?filtro=${encodeURIComponent(filtro)}#practicas`;
+    return `<a class="sidebar-link" href="${destino}">${contenidoInterno}</a>`;
+  }
+
+  let html = enlace('todas', `<span>--all</span><span class="count">${total}</span>`);
 
   categoriasOrdenadas.forEach(cat => {
     const n = conteos[cat] || 0;
-    html += `
-      <button class="sidebar-link" data-filter="${cat}">
-        <span>${escapeHTML(CATEGORIAS_LABEL[cat])}</span><span class="count">${n}</span>
-      </button>`;
+    html += enlace(cat, `<span>${escapeHTML(CATEGORIAS_LABEL[cat])}</span><span class="count">${n}</span>`);
   });
 
   sidebarNav.innerHTML = html;
@@ -67,7 +85,7 @@ function renderSidebarIndex() {
 function setupFilters() {
   // botones de filtro (arriba del grid) + enlaces del índice lateral
   // comparten el mismo atributo data-filter y se mantienen sincronizados
-  const filterEls = document.querySelectorAll('.filter-btn, .sidebar-link');
+  const filterEls = document.querySelectorAll('.filter-btn, .sidebar-link[data-filter]');
   const cards = document.querySelectorAll('.practice-card');
 
   function applyFilter(filter) {
@@ -146,6 +164,7 @@ function renderPracticaDetail() {
 
 /* ---------- auto-ejecución según la página ---------- */
 document.addEventListener('DOMContentLoaded', () => {
+  renderSidebarIndex();    // se ejecuta en cualquier página que tenga #sidebar-nav
   renderHomeGrid();        // no hace nada si no existe #practice-grid
   renderPracticaDetail();  // no hace nada si no existe #practica-root
 });

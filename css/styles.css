@@ -208,6 +208,7 @@
   .hero-meta{
     margin-top: 28px;
     display:flex;
+    align-items:center;
     gap: 24px;
     font-family: var(--mono);
     font-size: 13px;
@@ -215,6 +216,37 @@
   }
   .hero-meta a{ display:flex; align-items:center; gap:6px; transition: color 0.15s; }
   .hero-meta a:hover{ color: var(--accent); }
+
+  .social-link{
+    display:flex;
+    align-items:center;
+    gap: 8px;
+    font-family: var(--sans);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-bright);
+    transition: color 0.15s, transform 0.15s;
+  }
+  .social-link svg{
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    transition: transform 0.15s;
+  }
+  .social-link:hover{
+    color: var(--accent);
+    transform: translateY(-1px);
+  }
+  .social-link:hover svg{ transform: scale(1.08); }
+
+  /* contact-btn ya tiene su propio padding/borde; al combinarse con
+     social-link solo ajustamos tamaño de icono y alineación interna */
+  .contact-btn.social-link{
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .contact-btn.social-link svg{ width: 16px; height: 16px; }
+  .contact-btn.social-link:hover{ transform: none; }
 
   /* ---------- SECTION HEADERS ---------- */
   .section{ padding: 64px 0; }
@@ -277,16 +309,13 @@
   }
   .stack-tag:hover{ border-color: var(--accent); color: var(--accent); }
 
-  /* ---------- PRACTICAS LAYOUT (sidebar + grid) ---------- */
-  .practicas-layout{
-    display: grid;
-    grid-template-columns: 220px 1fr;
-    gap: 32px;
-    align-items: start;
-  }
-  .practicas-sidebar{
-    position: sticky;
-    top: 88px;
+  /* ---------- SITE SIDEBAR (índice fijo en toda la web) ---------- */
+  .site-sidebar{
+    position: fixed;
+    top: 96px;
+    left: max(24px, calc((100vw - 1080px) / 2 - 240px));
+    width: 210px;
+    z-index: 40;
   }
   .sidebar-card{
     background: var(--bg-card);
@@ -323,6 +352,7 @@
     border: none;
     width: 100%;
     text-align: left;
+    text-decoration: none;
   }
   .sidebar-link:hover{
     background: var(--bg-elev);
@@ -345,7 +375,6 @@
     color: var(--accent);
     border-color: var(--accent);
   }
-  .practicas-main{ min-width: 0; }
 
   /* ---------- FILTERS ---------- */
   .filters{
@@ -682,19 +711,12 @@
   .error-state{ color: var(--red); }
 
   /* ---------- RESPONSIVE ---------- */
+  @media (max-width: 1320px){
+    .site-sidebar{ display: none; }
+  }
   @media (max-width: 860px){
     .about-grid{ grid-template-columns: 1fr; gap: 32px; }
     .practice-grid{ grid-template-columns: repeat(2, 1fr); }
-    .practicas-layout{ grid-template-columns: 1fr; }
-    .practicas-sidebar{
-      position: static;
-    }
-    .sidebar-nav{
-      flex-direction: row;
-      flex-wrap: wrap;
-      gap: 4px;
-    }
-    .sidebar-link{ width: auto; }
   }
   @media (max-width: 600px){
     .nav-links{ display:none; }
