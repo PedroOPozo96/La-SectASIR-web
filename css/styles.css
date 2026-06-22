@@ -267,50 +267,10 @@ nav .wrap{
   letter-spacing: -0.01em;
 }
 
-/* ---------- ABOUT / STACK ---------- */
-.about-grid{
-  display:grid;
-  grid-template-columns: 1.1fr 1fr;
-  gap: 48px;
-  align-items: start;
-}
-.about-text p{ margin-bottom: 14px; color: var(--text); }
-.about-text strong{ color: var(--text-bright); }
-.stack-card{
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 20px;
-}
-.stack-card-head{
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--text-dim);
-  margin-bottom: 14px;
-  border-bottom: 1px solid var(--border);
-  padding-bottom: 10px;
-}
-.stack-tags{
-  display:flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-.stack-tag{
-  font-family: var(--mono);
-  font-size: 12px;
-  padding: 5px 10px;
-  border-radius: 4px;
-  background: var(--bg-elev);
-  border: 1px solid var(--border);
-  color: var(--text);
-  transition: border-color 0.15s, color 0.15s;
-}
-.stack-tag:hover{ border-color: var(--accent); color: var(--accent); }
-
 /* ---------- SITE SIDEBAR (INTERACTIVO Y DESPLEGABLE) ---------- */
 .site-sidebar {
   position: fixed;
-  top: 140px; /* Para que quede alineado justo debajo del botón */
+  top: 140px; /* Debajo del botón */
   right: 24px;
   left: auto;
   width: 260px;
@@ -353,7 +313,6 @@ nav .wrap{
   overflow-y: auto;
 }
 
-/* Estilos para las categorías y los enlaces a los artículos */
 .sidebar-cat-title {
   font-family: var(--mono);
   font-size: 11px;
@@ -395,7 +354,7 @@ nav .wrap{
 /* ESTILO PARA EL BOTÓN DE TOGGLE (Arriba a la derecha) */
 .sidebar-toggle {
   position: fixed;
-  top: 80px; /* Se ajusta debajo de la barra de navegación */
+  top: 80px; 
   right: 24px;
   width: 48px;
   height: 48px;
@@ -417,6 +376,7 @@ nav .wrap{
 }
 
 .sidebar-toggle svg { width: 24px; height: 24px; }
+
 
 /* ---------- FILTERS ---------- */
 .filters{
@@ -663,68 +623,12 @@ footer{
   margin-bottom: 20px;
 }
 .detail-body pre code{ background: none; border: none; padding: 0; color: var(--text); font-size: 13.5px; line-height: 1.6; }
-.detail-img{ width: 100%; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 10px; display: block; }
-.detail-img-caption{ font-family: var(--mono); font-size: 12px; color: var(--text-dim); margin-bottom: 24px; text-align: center; }
-.detail-callout{
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-left: 3px solid var(--accent);
-  border-radius: 6px;
-  padding: 16px 18px;
-  margin-bottom: 20px;
-  font-size: 14.5px;
-  color: var(--text);
-}
-.detail-callout strong{ color: var(--accent); }
-
-.detail-nav{
-  display:flex;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 40px 0 60px;
-  margin-top: 20px;
-  border-top: 1px solid var(--border);
-}
-.detail-nav a{
-  font-family: var(--mono);
-  font-size: 13px;
-  color: var(--text-dim);
-  padding: 10px 16px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  transition: all 0.15s;
-  max-width: 45%;
-}
-.detail-nav a:hover{ border-color: var(--accent); color: var(--accent); }
-.detail-nav .to-index{ margin: 0 auto; }
 
 .loading-state, .error-state{ font-family: var(--mono); font-size: 14px; color: var(--text-dim); padding: 60px 0; text-align: center; }
 .error-state{ color: var(--red); }
 
-/* ---------- RESPONSIVE ACTUALIZADO ---------- */
-@media (max-width: 1320px){
-  /* Mostramos el botón */
-  .sidebar-toggle { display: flex; }
-  
-  /* Ocultamos el panel por defecto, pero lo preparamos para animación */
-  .site-sidebar{ 
-    right: 24px;
-    top: auto;
-    bottom: 80px;
-    transform: translateY(20px);
-    opacity: 0;
-    pointer-events: none;
-  }
-  
-  /* Clase dinámica que añade JS */
-  .site-sidebar.open {
-    transform: translateY(0);
-    opacity: 1;
-    pointer-events: auto;
-  }
-}
+/* ---------- RESPONSIVE LIMPIO ---------- */
 @media (max-width: 860px){
-  .about-grid{ grid-template-columns: 1fr; gap: 32px; }
   .practice-grid{ grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 600px){
@@ -736,7 +640,4 @@ footer{
   .contact-box{ padding: 28px 20px; }
   .detail-nav{ flex-direction: column; }
   .detail-nav a{ max-width: 100%; text-align:center; }
-}
-@media (prefers-reduced-motion: reduce){
-  *{ animation: none !important; transition: none !important; }
 }

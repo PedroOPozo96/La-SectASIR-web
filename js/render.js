@@ -2,8 +2,7 @@
  * ============================================================
  * RENDER — La SectASIR
  * Pinta las prácticas (desde practicas-data.js) en index.html
- * y en practica.html. No necesitas tocar este archivo para
- * añadir prácticas nuevas: eso se hace en practicas-data.js
+ * y en practica.html. 
  * ============================================================
  */
 
@@ -44,12 +43,11 @@ function renderHomeGrid() {
   }
 }
 
-/* ---------- ÍNDICE LATERAL: visible en todas las páginas ---------- */
+/* ---------- ÍNDICE LATERAL (INTERACTIVO) ---------- */
 function renderSidebarIndex() {
   const sidebarNav = document.getElementById('sidebar-nav');
   if (!sidebarNav) return;
 
-  // Agrupamos las prácticas por categoría
   const grouped = {};
   PRACTICAS.forEach(p => {
     if (!grouped[p.categoria]) grouped[p.categoria] = [];
@@ -63,24 +61,40 @@ function renderSidebarIndex() {
 
   categoriasOrdenadas.forEach(cat => {
     const practicasEnCat = grouped[cat];
-    // Solo dibujamos la categoría si tiene artículos dentro
     if (practicasEnCat && practicasEnCat.length > 0) {
       html += `<div class="sidebar-cat-title">${escapeHTML(CATEGORIAS_LABEL[cat])}</div>`;
       
       practicasEnCat.forEach(p => {
-        // En index.html la ruta es practicas/..., si ya estamos dentro es directa
         const destino = hayGridLocal 
           ? `practicas/practica.html?id=${encodeURIComponent(p.id)}` 
           : `practica.html?id=${encodeURIComponent(p.id)}`;
           
-        // Mostramos el p.filename (ej: ghost-blog-docker) en el enlace
         html += `<a class="sidebar-item-link" href="${destino}" title="${escapeHTML(p.titulo)}">${escapeHTML(p.filename)}</a>`;
       });
     }
   });
 
   sidebarNav.innerHTML = html;
-} 
+}
+
+function setupFilters() {
+  const filterEls = document.querySelectorAll('.filter-btn');
+  const cards = document.querySelectorAll('.practice-card');
+
+  function applyFilter(filter) {
+    filterEls.forEach(el => {
+      el.classList.toggle('active', el.dataset.filter === filter);
+    });
+    cards.forEach(card => {
+      const show = filter === 'todas' || card.dataset.category === filter;
+      card.style.display = show ? '' : 'none';
+    });
+  }
+
+  filterEls.forEach(el => {
+    el.addEventListener('click', () => applyFilter(el.dataset.filter));
+  });
+}
 
 /* ---------- DETALLE: página individual de práctica ---------- */
 function renderPracticaDetail() {
@@ -94,10 +108,10 @@ function renderPracticaDetail() {
   if (!practica) {
     root.innerHTML = `
       <div class="error-state">
-        practica.html: error — no se encontró ninguna práctica con id "${escapeHTML(id || '')}"<br><br>
+        Error — no se encontró ninguna práctica con id "${escapeHTML(id || '')}"<br><br>
         <a href="../index.html" style="color:var(--accent)">← volver al índice</a>
       </div>`;
-    document.title = "Práctica no encontrada — La SectASIR";
+    document.title = "Práctica no encontrada";
     return;
   }
 
@@ -140,23 +154,21 @@ function renderPracticaDetail() {
   `;
 }
 
-/* ---------- auto-ejecución según la página y lógica de toggle ---------- */
+/* ---------- auto-ejecución y lógica del toggle ---------- */
 document.addEventListener('DOMContentLoaded', () => {
   renderSidebarIndex();    
   renderHomeGrid();        
   renderPracticaDetail();  
 
-  /* Lógica para desplegar/ocultar el menú lateral interactivo */
   const toggleBtn = document.getElementById('sidebar-toggle');
   const sidebar = document.querySelector('.site-sidebar');
 
   if (toggleBtn && sidebar) {
     toggleBtn.addEventListener('click', (event) => {
-      event.stopPropagation(); // Evita que el clic se propague al documento
+      event.stopPropagation();
       sidebar.classList.toggle('open');
     });
 
-    // Cerrar si se hace clic en cualquier lugar fuera del menú
     document.addEventListener('click', (event) => {
       if (sidebar.classList.contains('open') && !sidebar.contains(event.target)) {
         sidebar.classList.remove('open');
