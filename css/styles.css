@@ -125,10 +125,6 @@ nav .wrap{
 }
 .nav-links a:hover{ color: var(--accent); }
 .nav-links a.active{ color: var(--accent); }
-.nav-links a::before{
-  content: '';
-  opacity: 0;
-}
 
 /* ---------- HERO ---------- */
 .hero{
@@ -270,10 +266,10 @@ nav .wrap{
 /* ---------- SITE SIDEBAR (INTERACTIVO Y DESPLEGABLE) ---------- */
 .site-sidebar {
   position: fixed;
-  top: 140px; /* Debajo del botón */
+  top: 140px; 
   right: 24px;
   left: auto;
-  width: 260px;
+  width: 280px; /* Un pelín más ancho para que quepa bien el "cd" y "cat" */
   z-index: 40;
   transform: translateX(120%);
   opacity: 0;
@@ -290,27 +286,46 @@ nav .wrap{
 .sidebar-nav {
   display: flex;
   flex-direction: column;
-  padding: 12px 0 20px 0;
+  padding: 0 0 20px 0;
   max-height: 70vh;
   overflow-y: auto;
 }
 
-/* Simulamos la ruta de un directorio para la categoría */
+/* BOTÓN DE INICIO EN EL MENÚ LATERAL */
+.sidebar-home-link {
+  display: block;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--text-bright);
+  padding: 12px 16px;
+  border-bottom: 1px dashed var(--border);
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+}
+.sidebar-home-link .prompt {
+  color: var(--accent);
+}
+.sidebar-home-link:hover {
+  background: var(--bg-elev);
+  color: var(--celeste);
+}
+
+/* EL "cd" PARA LA CATEGORÍA */
 .sidebar-cat-title {
   font-family: var(--mono);
   font-size: 12px;
   color: var(--celeste); 
   padding: 16px 16px 4px;
   font-weight: 600;
-  text-transform: lowercase;
+  text-transform: lowercase; /* Mantiene la estética de comando */
 }
 
 .sidebar-cat-title::before {
-  content: '~/'; 
-  color: var(--text-dim);
+  content: 'cd '; 
+  color: var(--accent);
 }
 
-/* Simulamos los archivos mostrados con un comando tree */
+/* EL "cat" PARA LOS ARTÍCULOS */
 .sidebar-item-link {
   display: block;
   font-family: var(--mono);
@@ -325,7 +340,7 @@ nav .wrap{
 }
 
 .sidebar-item-link:before {
-  content: '└─ '; 
+  content: '└─ cat '; 
   color: var(--text-dim);
   margin-right: 6px;
   font-weight: normal;
@@ -335,7 +350,6 @@ nav .wrap{
   color: var(--accent);
   background: var(--bg-elev);
 }
-
 .sidebar-item-link:hover:before {
   color: var(--accent);
 }
@@ -363,7 +377,6 @@ nav .wrap{
 .sidebar-toggle:hover {
   border-color: var(--accent);
 }
-
 .sidebar-toggle svg { width: 24px; height: 24px; }
 
 

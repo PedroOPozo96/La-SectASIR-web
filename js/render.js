@@ -56,8 +56,12 @@ function renderSidebarIndex() {
 
   const categoriasOrdenadas = Object.keys(CATEGORIAS_LABEL);
   const hayGridLocal = !!document.getElementById('practice-grid');
+  
+  // Determinamos la ruta base para que el enlace vuelva siempre al inicio correcto
+  const rootPath = hayGridLocal ? '' : '../';
 
-  let html = '';
+  // Añadimos el botón de inicio con estilo de comando
+  let html = `<a class="sidebar-home-link" href="${rootPath}index.html"><span class="prompt">$</span> cd ~/inicio</a>`;
 
   categoriasOrdenadas.forEach(cat => {
     const practicasEnCat = grouped[cat];
