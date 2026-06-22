@@ -49,51 +49,37 @@ function renderSidebarIndex() {
   const sidebarNav = document.getElementById('sidebar-nav');
   if (!sidebarNav) return;
 
-  const total = PRACTICAS.length;
-  const conteos = {};
-  PRACTICAS.forEach(p => { conteos[p.categoria] = (conteos[p.categoria] || 0) + 1; });
+  // Agrupamos las prácticas por categoría
+  const grouped = {};
+  PRACTICAS.forEach(p => {
+    if (!grouped[p.categoria]) grouped[p.categoria] = [];
+    grouped[p.categoria].push(p);
+  });
 
   const categoriasOrdenadas = Object.keys(CATEGORIAS_LABEL);
   const hayGridLocal = !!document.getElementById('practice-grid');
 
-  const aside = document.querySelector('.site-sidebar');
-  const root = (aside && aside.dataset.root) || '';
-
-  function enlace(filtro, contenidoInterno) {
-    if (hayGridLocal) {
-      return `<button class="sidebar-link${filtro === 'todas' ? ' active' : ''}" data-filter="${filtro}">${contenidoInterno}</button>`;
-    }
-    const destino = filtro === 'todas' ? `${root}index.html#practicas` : `${root}index.html?filtro=${encodeURIComponent(filtro)}#practicas`;
-    return `<a class="sidebar-link" href="${destino}">${contenidoInterno}</a>`;
-  }
-
-  let html = enlace('todas', `<span>--all</span><span class="count">${total}</span>`);
+  let html = '';
 
   categoriasOrdenadas.forEach(cat => {
-    const n = conteos[cat] || 0;
-    html += enlace(cat, `<span>${escapeHTML(CATEGORIAS_LABEL[cat])}</span><span class="count">${n}</span>`);
+    const practicasEnCat = grouped[cat];
+    // Solo dibujamos la categoría si tiene artículos dentro
+    if (practicasEnCat && practicasEnCat.length > 0) {
+      html += `<div class="sidebar-cat-title">${escapeHTML(CATEGORIAS_LABEL[cat])}</div>`;
+      
+      practicasEnCat.forEach(p => {
+        // En index.html la ruta es practicas/..., si ya estamos dentro es directa
+        const destino = hayGridLocal 
+          ? `practicas/practica.html?id=${encodeURIComponent(p.id)}` 
+          : `practica.html?id=${encodeURIComponent(p.id)}`;
+          
+        // Mostramos el p.filename (ej: ghost-blog-docker) en el enlace
+        html += `<a class="sidebar-item-link" href="${destino}" title="${escapeHTML(p.titulo)}">${escapeHTML(p.filename)}</a>`;
+      });
+    }
   });
 
   sidebarNav.innerHTML = html;
-}
-
-function setupFilters() {
-  const filterEls = document.querySelectorAll('.filter-btn, .sidebar-link[data-filter]');
-  const cards = document.querySelectorAll('.practice-card');
-
-  function applyFilter(filter) {
-    filterEls.forEach(el => {
-      el.classList.toggle('active', el.dataset.filter === filter);
-    });
-    cards.forEach(card => {
-      const show = filter === 'todas' || card.dataset.category === filter;
-      card.style.display = show ? '' : 'none';
-    });
-  }
-
-  filterEls.forEach(el => {
-    el.addEventListener('click', () => applyFilter(el.dataset.filter));
-  });
 }
 
 /* ---------- DETALLE: página individual de práctica ---------- */
