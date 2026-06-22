@@ -13,7 +13,7 @@ function escapeHTML(str) {
   return div.innerHTML;
 }
 
-/* ---------- HOME: tarjetas + filtros ---------- */
+/* ---------- HOME: tarjetas + filtros + índice lateral ---------- */
 function renderHomeGrid() {
   const grid = document.getElementById('practice-grid');
   if (!grid) return;
@@ -34,24 +34,54 @@ function renderHomeGrid() {
     </article>
   `).join('');
 
+  renderSidebarIndex();
   setupFilters();
 }
 
+function renderSidebarIndex() {
+  const sidebarNav = document.getElementById('sidebar-nav');
+  if (!sidebarNav) return;
+
+  const total = PRACTICAS.length;
+  const conteos = {};
+  PRACTICAS.forEach(p => { conteos[p.categoria] = (conteos[p.categoria] || 0) + 1; });
+
+  const categoriasOrdenadas = Object.keys(CATEGORIAS_LABEL);
+
+  let html = `
+    <button class="sidebar-link active" data-filter="todas">
+      <span>--all</span><span class="count">${total}</span>
+    </button>`;
+
+  categoriasOrdenadas.forEach(cat => {
+    const n = conteos[cat] || 0;
+    html += `
+      <button class="sidebar-link" data-filter="${cat}">
+        <span>${escapeHTML(CATEGORIAS_LABEL[cat])}</span><span class="count">${n}</span>
+      </button>`;
+  });
+
+  sidebarNav.innerHTML = html;
+}
+
 function setupFilters() {
-  const buttons = document.querySelectorAll('.filter-btn');
+  // botones de filtro (arriba del grid) + enlaces del índice lateral
+  // comparten el mismo atributo data-filter y se mantienen sincronizados
+  const filterEls = document.querySelectorAll('.filter-btn, .sidebar-link');
   const cards = document.querySelectorAll('.practice-card');
 
-  buttons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      buttons.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const filter = btn.dataset.filter;
-
-      cards.forEach(card => {
-        const show = filter === 'todas' || card.dataset.category === filter;
-        card.style.display = show ? '' : 'none';
-      });
+  function applyFilter(filter) {
+    filterEls.forEach(el => {
+      el.classList.toggle('active', el.dataset.filter === filter);
     });
+    cards.forEach(card => {
+      const show = filter === 'todas' || card.dataset.category === filter;
+      card.style.display = show ? '' : 'none';
+    });
+  }
+
+  filterEls.forEach(el => {
+    el.addEventListener('click', () => applyFilter(el.dataset.filter));
   });
 }
 

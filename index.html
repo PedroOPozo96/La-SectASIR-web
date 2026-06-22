@@ -14,7 +14,7 @@
   <div class="wrap">
     <a href="#" class="nav-brand"><span class="dot"></span>La <span class="brand-accent">SectASIR</span></a>
     <div class="nav-links">
-      <a href="#sobre-mi">sobre-mi</a>
+      <a href="sobre-mi.html">sobre-mi</a>
       <a href="#practicas">practicas</a>
       <a href="#contacto">contacto</a>
     </div>
@@ -46,44 +46,11 @@
     </div>
     <div class="hero-meta">
       <a href="#contacto">→ contacto</a>
-      <a href="#" target="_blank">→ linkedin</a>
-      <a href="#" target="_blank">→ github</a>
+      <a href="https://www.linkedin.com/in/pedro-oliver-pozo-18a953210/" target="_blank" rel="noopener">→ linkedin</a>
+      <a href="https://github.com/PedroOPozo96" target="_blank" rel="noopener">→ github</a>
     </div>
   </div>
 </header>
-
-<section class="section" id="sobre-mi">
-  <div class="wrap">
-    <div class="section-head">
-      <div class="section-tag">whoami</div>
-      <h2 class="section-title">Sobre mí</h2>
-    </div>
-    <div class="about-grid">
-      <div class="about-text">
-        <p>Soy estudiante de <strong>Administración de Sistemas Informáticos en Red (ASIR)</strong> y futuro <strong>administrador de Sistemas y Redes</strong>. Durante el curso he trabajado en prácticas de las asignaturas de Servicios, Implantación de Aplicaciones Web, Infraestructura Virtual, Base de Datos y Redes.</p>
-        <p>Esta web reúne esas prácticas para mostrar cómo aplico la teoría a problemas reales: desde levantar una infraestructura virtualizada hasta desplegar servicios, bases de datos y aplicaciones web paso a paso.</p>
-        <p>Busco una oportunidad para seguir aprendiendo en un entorno real, aportando lo que ya sé y con muchas ganas de seguir creciendo como técnico de sistemas.</p>
-      </div>
-      <div class="stack-card">
-        <div class="stack-card-head">stack --list</div>
-        <div class="stack-tags">
-          <span class="stack-tag">Linux</span>
-          <span class="stack-tag">Windows Server</span>
-          <span class="stack-tag">Active Directory</span>
-          <span class="stack-tag">Cisco IOS</span>
-          <span class="stack-tag">VirtualBox</span>
-          <span class="stack-tag">Docker</span>
-          <span class="stack-tag">Bash</span>
-          <span class="stack-tag">SQL</span>
-          <span class="stack-tag">Apache</span>
-          <span class="stack-tag">DNS / DHCP</span>
-          <span class="stack-tag">Firewall (iptables)</span>
-          <span class="stack-tag">Samba</span>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
 
 <section class="section" id="practicas">
   <div class="wrap">
@@ -92,18 +59,33 @@
       <h2 class="section-title">Prácticas</h2>
     </div>
 
-    <div class="filters">
-      <button class="filter-btn active" data-filter="todas">--all</button>
-      <button class="filter-btn" data-filter="redes">--redes</button>
-      <button class="filter-btn" data-filter="servicios">--servicios</button>
-      <button class="filter-btn" data-filter="iaw">--iaw</button>
-      <button class="filter-btn" data-filter="infraestructura">--infraestructura</button>
-      <button class="filter-btn" data-filter="bbdd">--bbdd</button>
-    </div>
+    <div class="practicas-layout">
 
-    <!-- Las tarjetas se generan automáticamente desde js/practicas-data.js -->
-    <div class="practice-grid" id="practice-grid">
-      <div class="loading-state">cargando prácticas...</div>
+      <aside class="practicas-sidebar">
+        <div class="sidebar-card">
+          <div class="sidebar-head">índice</div>
+          <nav class="sidebar-nav" id="sidebar-nav">
+            <!-- generado dinámicamente desde js/practicas-data.js -->
+          </nav>
+        </div>
+      </aside>
+
+      <div class="practicas-main">
+        <div class="filters">
+          <button class="filter-btn active" data-filter="todas">--all</button>
+          <button class="filter-btn" data-filter="redes">--redes</button>
+          <button class="filter-btn" data-filter="servicios">--servicios</button>
+          <button class="filter-btn" data-filter="iaw">--iaw</button>
+          <button class="filter-btn" data-filter="infraestructura">--infraestructura</button>
+          <button class="filter-btn" data-filter="bbdd">--bbdd</button>
+        </div>
+
+        <!-- Las tarjetas se generan automáticamente desde js/practicas-data.js -->
+        <div class="practice-grid" id="practice-grid">
+          <div class="loading-state">cargando prácticas...</div>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
@@ -115,8 +97,8 @@
       <p>Estoy buscando mis primeras prácticas o un puesto junior en sistemas. Si tienes algo que encaje, escríbeme.</p>
       <div class="contact-links">
         <a href="mailto:tu-email@ejemplo.com" class="contact-btn primary">enviar email →</a>
-        <a href="#" class="contact-btn">linkedin</a>
-        <a href="#" class="contact-btn">github</a>
+        <a href="https://www.linkedin.com/in/pedro-oliver-pozo-18a953210/" target="_blank" rel="noopener" class="contact-btn">linkedin</a>
+        <a href="https://github.com/PedroOPozo96" target="_blank" rel="noopener" class="contact-btn">github</a>
       </div>
     </div>
   </div>
