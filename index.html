@@ -21,12 +21,15 @@
   </div>
 </nav>
 
+<button class="sidebar-toggle" id="sidebar-toggle">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
+</button>
+
 <aside class="site-sidebar">
   <div class="sidebar-card">
-    <div class="sidebar-head">índice</div>
+    <div class="sidebar-head"><span class="sidebar-head-title">índice</span></div>
     <nav class="sidebar-nav" id="sidebar-nav">
-      <!-- generado dinámicamente desde js/practicas-data.js -->
-    </nav>
+      </nav>
   </div>
 </aside>
 
@@ -42,15 +45,15 @@
         <span>bash — 80×24</span>
       </div>
       <div class="terminal-body">
-        <div class="line"><span class="prompt">pedrooliver@asir</span>:<span class="path">~</span>$ whoami</div>
+        <div class="line"><span class="prompt" style="color: #4ade80;">pedrooliver@asir</span>:<span class="path" style="color: #60a5fa;">~/la_sectasir</span><span style="color: #c084fc;"> (main)</span>$ whoami</div>
         <div class="line out-val">Técnico en Administración de Sistemas Informáticos en Red</div>
         <div class="line">&nbsp;</div>
-        <div class="line"><span class="prompt">pedrooliver@asir</span>:<span class="path">~</span>$ cat sobre-mi.txt</div>
-        <div class="line"><span class="out-key">curso</span> <span class="out-val">2024/2025</span></div>
+        <div class="line"><span class="prompt" style="color: #4ade80;">pedrooliver@asir</span>:<span class="path" style="color: #60a5fa;">~/la_sectasir</span><span style="color: #c084fc;"> (main)</span>$ cat sobre-mi.txt</div>
+        <div class="line"><span class="out-key">curso</span> <span class="out-val">2024/2026</span></div>
         <div class="line"><span class="out-key">practicas</span> <span class="out-val">15+</span></div>
         <div class="line"><span class="out-key">estado</span> <span class="out-val" style="color:var(--accent)">buscando-oportunidad ●</span></div>
         <div class="line">&nbsp;</div>
-        <div class="line"><span class="prompt">pedrooliver@asir</span>:<span class="path">~</span>$ <span class="cursor"></span></div>
+        <div class="line"><span class="prompt" style="color: #4ade80;">pedrooliver@asir</span>:<span class="path" style="color: #60a5fa;">~/la_sectasir</span><span style="color: #c084fc;"> (main)</span>$ <span class="cursor"></span></div>
       </div>
     </div>
     <div class="hero-meta">
@@ -83,7 +86,6 @@
       <button class="filter-btn" data-filter="bbdd">--bbdd</button>
     </div>
 
-    <!-- Las tarjetas se generan automáticamente desde js/practicas-data.js -->
     <div class="practice-grid" id="practice-grid">
       <div class="loading-state">cargando prácticas...</div>
     </div>
@@ -96,7 +98,7 @@
       <h2 class="section-title">¿Hablamos?</h2>
       <p>Estoy buscando mis primeras prácticas o un puesto junior en sistemas. Si tienes algo que encaje, escríbeme.</p>
       <div class="contact-links">
-        <a href="mailto:tu-email@ejemplo.com" class="contact-btn primary">enviar email →</a>
+        <a href="mailto:pedro.oliver@email.com?subject=Contacto%20desde%20el%20Portfolio" class="contact-btn primary">enviar email →</a>
         <a href="https://www.linkedin.com/in/pedro-oliver-pozo-18a953210/" target="_blank" rel="noopener" class="contact-btn social-link">
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.03-1.85-3.03-1.85 0-2.14 1.45-2.14 2.94v5.66H9.36V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45z"/></svg>
           <span>linkedin</span>

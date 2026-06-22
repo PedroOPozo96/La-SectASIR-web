@@ -1,9 +1,9 @@
 /**
  * ============================================================
- *  RENDER — La SectASIR
- *  Pinta las prácticas (desde practicas-data.js) en index.html
- *  y en practica.html. No necesitas tocar este archivo para
- *  añadir prácticas nuevas: eso se hace en practicas-data.js
+ * RENDER — La SectASIR
+ * Pinta las prácticas (desde practicas-data.js) en index.html
+ * y en practica.html. No necesitas tocar este archivo para
+ * añadir prácticas nuevas: eso se hace en practicas-data.js
  * ============================================================
  */
 
@@ -36,7 +36,6 @@ function renderHomeGrid() {
 
   setupFilters();
 
-  // si llegamos aquí con un filtro en la URL (?filtro=xxx), aplicarlo
   const params = new URLSearchParams(window.location.search);
   const filtroInicial = params.get('filtro');
   if (filtroInicial) {
@@ -57,10 +56,6 @@ function renderSidebarIndex() {
   const categoriasOrdenadas = Object.keys(CATEGORIAS_LABEL);
   const hayGridLocal = !!document.getElementById('practice-grid');
 
-  // en la home (con grid) usamos <button data-filter>; en otras páginas
-  // usamos enlaces <a> que llevan a la home con el filtro en la URL.
-  // la ruta hacia index.html depende de la profundidad de la página actual,
-  // indicada en el atributo data-root del propio <aside>.
   const aside = document.querySelector('.site-sidebar');
   const root = (aside && aside.dataset.root) || '';
 
@@ -83,8 +78,6 @@ function renderSidebarIndex() {
 }
 
 function setupFilters() {
-  // botones de filtro (arriba del grid) + enlaces del índice lateral
-  // comparten el mismo atributo data-filter y se mantienen sincronizados
   const filterEls = document.querySelectorAll('.filter-btn, .sidebar-link[data-filter]');
   const cards = document.querySelectorAll('.practice-card');
 
@@ -124,7 +117,6 @@ function renderPracticaDetail() {
 
   document.title = `${practica.titulo} — La SectASIR`;
 
-  // navegación entre práctica anterior / siguiente
   const idx = PRACTICAS.findIndex(p => p.id === practica.id);
   const prev = PRACTICAS[idx - 1];
   const next = PRACTICAS[idx + 1];
@@ -162,9 +154,28 @@ function renderPracticaDetail() {
   `;
 }
 
-/* ---------- auto-ejecución según la página ---------- */
+/* ---------- auto-ejecución según la página y lógica de toggle ---------- */
 document.addEventListener('DOMContentLoaded', () => {
-  renderSidebarIndex();    // se ejecuta en cualquier página que tenga #sidebar-nav
-  renderHomeGrid();        // no hace nada si no existe #practice-grid
-  renderPracticaDetail();  // no hace nada si no existe #practica-root
+  renderSidebarIndex();    
+  renderHomeGrid();        
+  renderPracticaDetail();  
+
+  /* Lógica para desplegar/ocultar el menú lateral en pantallas pequeñas */
+  const toggleBtn = document.getElementById('sidebar-toggle');
+  const sidebar = document.querySelector('.site-sidebar');
+
+  if (toggleBtn && sidebar) {
+    toggleBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+    });
+
+    // Cerrar si se hace clic fuera del menú
+    document.addEventListener('click', (event) => {
+      if (sidebar.classList.contains('open') && 
+          !sidebar.contains(event.target) && 
+          !toggleBtn.contains(event.target)) {
+        sidebar.classList.remove('open');
+      }
+    });
+  }
 });

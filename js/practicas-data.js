@@ -1,38 +1,6 @@
 /**
  * ============================================================
- *  DATOS DE LAS PRÁCTICAS — La SectASIR
- * ============================================================
- *
- *  Para añadir una práctica nueva, copia uno de los bloques de
- *  abajo y pégalo dentro del array PRACTICAS, cambiando los
- *  valores. No hace falta tocar ningún otro archivo: tanto la
- *  página principal (index.html) como la página de detalle
- *  (practica.html) leen este archivo automáticamente.
- *
- *  CAMPOS:
- *  - id            -> identificador único, sin espacios ni acentos.
- *                     Se usa en la URL: practica.html?id=ESTE_VALOR
- *  - titulo        -> título de la práctica
- *  - categoria     -> una de: redes | servicios | iaw | infraestructura | bbdd
- *                     (corresponden a las asignaturas: Redes, Servicios,
- *                     Implantación de Aplicaciones Web, Infraestructura Virtual,
- *                     Base de Datos)
- *  - filename      -> nombre "de archivo" que aparece en la barra de la tarjeta
- *                     (estético, ej: "vlan-config.sh")
- *  - resumen       -> 1-2 frases para la tarjeta de la home
- *  - tags          -> array de tecnologías/herramientas usadas (chips)
- *  - fecha         -> texto libre, ej: "Octubre 2024" (opcional, para mostrar)
- *  - contenidoHTML -> el cuerpo de la página de detalle.
- *                     Puedes usar las clases ya preparadas:
- *                       <h2>Título de sección</h2>
- *                       <p>Texto normal</p>
- *                       <ul><li>...</li></ul>
- *                       <code>comando inline</code>
- *                       <pre><code>bloque de código\nmultilinea</code></pre>
- *                       <div class="detail-callout"><strong>Nota:</strong> texto</div>
- *                       <img class="detail-img" src="img/xxx.png">
- *                       <div class="detail-img-caption">Pie de foto</div>
- *
+ * DATOS DE LAS PRÁCTICAS — La SectASIR
  * ============================================================
  */
 
@@ -42,7 +10,7 @@ const PRACTICAS = [
     id: "ghost-blog-docker",
     titulo: "Despliegue de Ghost Blog con Docker Compose y migración a VPS",
     categoria: "infraestructura",
-    filename: "docker-compose.yaml",
+    filename: "ghost-blog-docker", 
     resumen: "Instalación de Ghost Blog con MySQL 8.0 en Docker Compose, persistencia con bind mounts, y migración a un VPS con Nginx como proxy inverso y HTTPS mediante Let's Encrypt.",
     tags: ["Docker Compose", "Ghost", "MySQL", "Nginx", "Let's Encrypt"],
     fecha: "2025",
@@ -116,9 +84,9 @@ networks:
  ✔ Container ghost-blog  Started
 
 docker compose ps
-NAME          IMAGE          STATUS         PORTS
-ghost-blog    ghost:latest   Up             0.0.0.0:3001->2368/tcp
-ghost-mysql   mysql:8.0      Up (healthy)   3306/tcp</code></pre>
+NAME          IMAGE          STATUS          PORTS
+ghost-blog    ghost:latest   Up              0.0.0.0:3001->2368/tcp
+ghost-mysql   mysql:8.0      Up (healthy)    3306/tcp</code></pre>
 
       <p>Desde el navegador se completa el asistente inicial de Ghost en <code>http://localhost:3001/ghost</code> (título del blog, usuario administrador y contraseña), y se publica un primer post de prueba para verificar que todo funciona en <code>http://localhost:3001</code>.</p>
 
@@ -224,10 +192,6 @@ docker compose restart</code></pre>
 
 ];
 
-/**
- * No tocar nada de aquí abajo — son utilidades que usan
- * index.html y practica.html para leer el array de arriba.
- */
 const CATEGORIAS_LABEL = {
   redes: "Redes",
   servicios: "Servicios",
