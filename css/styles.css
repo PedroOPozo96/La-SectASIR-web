@@ -309,20 +309,55 @@
   }
   .stack-tag:hover{ border-color: var(--accent); color: var(--accent); }
 
-  /* ---------- SITE SIDEBAR — Terminal Debian tree ---------- */
+  /* ---------- SITE SIDEBAR — Terminal tree (colores web) ---------- */
+
+  /* Botón flotante para abrir/cerrar el índice en pantallas medianas */
+  .sidebar-toggle-btn{
+    display: none;
+    position: fixed;
+    top: 80px;
+    left: 12px;
+    z-index: 60;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 7px 10px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    cursor: pointer;
+    gap: 6px;
+    align-items: center;
+    transition: border-color 0.15s, background 0.15s;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+  }
+  .sidebar-toggle-btn:hover{
+    border-color: var(--accent);
+    background: var(--accent-glow);
+  }
+  .sidebar-toggle-btn .toggle-label{ letter-spacing: 0.03em; }
+
   .site-sidebar{
     position: fixed;
     top: 96px;
     left: max(16px, calc((100vw - 1080px) / 2 - 250px));
     width: 228px;
     z-index: 40;
+    transition: transform 0.25s ease, opacity 0.25s ease;
   }
+  /* Estado colapsado en pantallas medianas */
+  .site-sidebar.sidebar-hidden{
+    transform: translateX(-260px);
+    opacity: 0;
+    pointer-events: none;
+  }
+
   .sidebar-card{
-    background: #0d1117;
-    border: 1px solid #21ce52;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
     border-radius: 6px;
     overflow: hidden;
-    box-shadow: 0 0 18px rgba(33,206,82,0.08), 0 8px 32px rgba(0,0,0,0.5);
+    box-shadow: 0 0 20px rgba(63,169,245,0.06), 0 8px 32px rgba(0,0,0,0.5);
   }
 
   /* Titlebar estilo terminal */
@@ -332,21 +367,21 @@
     gap: 8px;
     font-family: var(--mono);
     font-size: 11px;
-    color: #6a9955;
+    color: var(--text-dim);
     padding: 9px 12px;
-    border-bottom: 1px solid #1a2e1a;
-    background: #0a0f0a;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-elev);
     user-select: none;
   }
   .sidebar-head::before{
     content: '●';
-    color: #21ce52;
+    color: var(--accent);
     font-size: 8px;
     line-height: 1;
-    text-shadow: 0 0 6px #21ce52;
+    text-shadow: 0 0 6px var(--accent);
   }
   .sidebar-head-title{
-    color: #4ade80;
+    color: var(--text-bright);
     font-weight: 600;
   }
 
@@ -355,34 +390,34 @@
     display: flex;
     flex-direction: column;
     padding: 8px 6px 6px;
-    background: #0d1117;
+    background: var(--bg-card);
     max-height: calc(100vh - 160px);
     overflow-y: auto;
     scrollbar-width: thin;
-    scrollbar-color: #1a2e1a transparent;
+    scrollbar-color: var(--border) transparent;
   }
   .sidebar-nav::-webkit-scrollbar{ width: 4px; }
-  .sidebar-nav::-webkit-scrollbar-thumb{ background: #1a3a1a; border-radius: 2px; }
+  .sidebar-nav::-webkit-scrollbar-thumb{ background: var(--border); border-radius: 2px; }
 
   /* Comando simulado arriba */
   .tree-cmd{
     font-family: var(--mono);
     font-size: 11px;
-    color: #4ade80;
+    color: var(--text-dim);
     padding: 2px 6px 8px;
-    border-bottom: 1px solid #1a2e1a;
+    border-bottom: 1px solid var(--border);
     margin-bottom: 6px;
   }
   .tree-prompt{
-    color: #21ce52;
+    color: var(--accent);
     margin-right: 5px;
-    text-shadow: 0 0 4px rgba(33,206,82,0.5);
+    text-shadow: 0 0 4px var(--accent-glow);
   }
 
   /* Separador */
   .tree-sep{
     height: 1px;
-    background: #1a2e1a;
+    background: var(--border);
     margin: 4px 4px 6px;
   }
 
@@ -399,14 +434,14 @@
     cursor: pointer;
     font-family: var(--mono);
     font-size: 12px;
-    color: #6a9955;
+    color: var(--text-dim);
     text-align: left;
     text-decoration: none;
     transition: background 0.15s, color 0.15s;
   }
-  .tree-all-btn:hover{ background: #0f1f0f; color: #4ade80; }
-  .tree-all-btn.active{ color: #21ce52; background: rgba(33,206,82,0.08); }
-  .tree-icon{ font-size: 9px; color: #21ce52; }
+  .tree-all-btn:hover{ background: var(--bg-elev); color: var(--text); }
+  .tree-all-btn.active{ color: var(--accent); background: var(--accent-glow); }
+  .tree-icon{ font-size: 9px; color: var(--accent); }
   .tree-all-label{ flex: 1; color: inherit; }
 
   /* Fila de categoría */
@@ -423,17 +458,17 @@
     cursor: pointer;
     font-family: var(--mono);
     font-size: 11.5px;
-    color: #4a7a4a;
+    color: var(--text-dim);
     text-align: left;
     text-decoration: none;
     transition: background 0.15s, color 0.15s;
   }
-  .tree-cat-toggle:hover{ background: #0f1f0f; color: #4ade80; }
-  .tree-cat-toggle.active{ color: #21ce52; background: rgba(33,206,82,0.07); }
+  .tree-cat-toggle:hover{ background: var(--bg-elev); color: var(--text); }
+  .tree-cat-toggle.active{ color: var(--accent); background: var(--accent-glow); }
   .tree-connector{
     font-family: var(--mono);
     font-size: 11px;
-    color: #2d4d2d;
+    color: var(--border-hover);
     flex-shrink: 0;
     letter-spacing: -1px;
   }
@@ -444,9 +479,9 @@
   .count{
     font-size: 10px;
     font-family: var(--mono);
-    color: #2d5a2d;
-    background: #0a1a0a;
-    border: 1px solid #1a3a1a;
+    color: var(--text-dim);
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
     border-radius: 8px;
     padding: 1px 6px;
     flex-shrink: 0;
@@ -456,8 +491,8 @@
   .tree-cat-toggle.active .count,
   .tree-all-btn:hover .count,
   .tree-all-btn.active .count{
-    color: #21ce52;
-    border-color: #21ce52;
+    color: var(--accent);
+    border-color: var(--accent);
   }
 
   /* Lista de prácticas dentro de una categoría */
@@ -482,7 +517,7 @@
   .tree-leaf-connector{
     font-family: var(--mono);
     font-size: 11px;
-    color: #1e3a1e;
+    color: var(--border);
     flex-shrink: 0;
     white-space: pre;
     letter-spacing: -1px;
@@ -497,19 +532,19 @@
     border-radius: 3px;
     font-family: var(--mono);
     font-size: 11px;
-    color: #3d6b3d;
+    color: var(--text-dim);
     text-decoration: none;
     transition: background 0.12s, color 0.12s;
     min-width: 0;
   }
   .tree-leaf-link:hover{
-    background: #0f2010;
-    color: #86efac;
+    background: var(--bg-elev);
+    color: var(--celeste);
   }
   .tree-leaf-link.active{
-    background: rgba(33,206,82,0.1);
-    color: #21ce52;
-    border-left: 2px solid #21ce52;
+    background: var(--accent-glow);
+    color: var(--accent);
+    border-left: 2px solid var(--accent);
     padding-left: 0;
   }
   .tree-leaf-name{
@@ -522,20 +557,21 @@
   .tree-footer{
     font-family: var(--mono);
     font-size: 11px;
-    color: #21ce52;
+    color: var(--accent);
     padding: 8px 6px 4px;
-    border-top: 1px solid #1a2e1a;
+    border-top: 1px solid var(--border);
     margin-top: 4px;
   }
   .tree-cursor{
     display: inline-block;
     width: 7px;
     height: 13px;
-    background: #21ce52;
+    background: var(--accent);
     vertical-align: middle;
     margin-left: 2px;
     animation: blink 1.1s step-end infinite;
     border-radius: 1px;
+    box-shadow: 0 0 6px var(--accent);
   }
   @keyframes blink{
     0%,100%{ opacity: 1; }
@@ -883,8 +919,20 @@
   .error-state{ color: var(--red); }
 
   /* ---------- RESPONSIVE ---------- */
+  /* En pantallas medianas: el sidebar se oculta por defecto y hay un botón para abrirlo */
   @media (max-width: 1320px){
-    .site-sidebar{ display: none; }
+    .sidebar-toggle-btn{ display: flex; }
+    .site-sidebar{
+      top: 128px;
+      left: 12px;
+    }
+    /* empieza oculto en pantallas medianas, JS lo muestra al hacer clic */
+    .site-sidebar.sidebar-hidden{
+      transform: translateX(-260px);
+      opacity: 0;
+      pointer-events: none;
+    }
+  }
   }
   @media (max-width: 860px){
     .about-grid{ grid-template-columns: 1fr; gap: 32px; }

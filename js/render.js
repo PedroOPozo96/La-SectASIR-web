@@ -291,4 +291,32 @@ document.addEventListener('DOMContentLoaded', () => {
   renderSidebarIndex();
   renderHomeGrid();
   renderPracticaDetail();
+  setupSidebarToggle();
 });
+
+/* ---------- Botón toggle del sidebar en pantallas medianas ---------- */
+function setupSidebarToggle() {
+  const btn     = document.getElementById('sidebar-toggle');
+  const sidebar = document.getElementById('site-sidebar');
+  if (!btn || !sidebar) return;
+
+  function applyBreakpoint() {
+    if (window.innerWidth > 1320) {
+      sidebar.classList.remove('sidebar-hidden');
+      btn.style.display = 'none';
+    } else {
+      btn.style.display = 'flex';
+    }
+  }
+
+  applyBreakpoint();
+
+  btn.addEventListener('click', () => {
+    sidebar.classList.toggle('sidebar-hidden');
+    const isHidden = sidebar.classList.contains('sidebar-hidden');
+    btn.setAttribute('aria-expanded', String(!isHidden));
+    btn.querySelector('.toggle-label').textContent = isHidden ? 'índice' : 'cerrar';
+  });
+
+  window.addEventListener('resize', applyBreakpoint);
+}
