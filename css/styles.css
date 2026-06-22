@@ -96,22 +96,18 @@ nav .wrap{
 .nav-brand:hover .brand-accent{
   color: var(--celeste);
 }
-.nav-brand .dot{
-  width: 8px; height: 8px;
-  background: var(--accent);
-  border-radius: 50%;
-  box-shadow: 0 0 8px var(--accent);
-  animation: pulse 2s ease-in-out infinite;
-  transition: background 0.2s, box-shadow 0.2s;
+
+/* ESTILO DEL NUEVO LOGO SVG */
+.nav-logo {
+  width: 24px;
+  height: 24px;
+  transition: transform 0.2s ease-in-out, filter 0.2s ease-in-out;
 }
-.nav-brand:hover .dot{
-  background: var(--celeste);
-  box-shadow: 0 0 10px var(--celeste);
+.nav-brand:hover .nav-logo {
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 6px var(--celeste));
 }
-@keyframes pulse{
-  0%,100%{ opacity:1; }
-  50%{ opacity:0.4; }
-}
+
 .nav-links{
   display:flex;
   gap: 28px;
@@ -269,7 +265,7 @@ nav .wrap{
   top: 140px; 
   right: 24px;
   left: auto;
-  width: 280px; /* Un pelín más ancho para que quepa bien el "cd" y "cat" */
+  width: 280px; 
   z-index: 40;
   transform: translateX(120%);
   opacity: 0;
@@ -317,7 +313,7 @@ nav .wrap{
   color: var(--celeste); 
   padding: 16px 16px 4px;
   font-weight: 600;
-  text-transform: lowercase; /* Mantiene la estética de comando */
+  text-transform: lowercase; 
 }
 
 .sidebar-cat-title::before {
