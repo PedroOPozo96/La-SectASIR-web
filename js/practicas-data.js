@@ -286,6 +286,95 @@ sudo systemctl enable mariadb</code></pre>
   
 ]; // <--- AQUÍ SE CIERRA EL ARRAY PRACTICAS
 
+
+
+{
+    id: "postgresql-debian13",
+    titulo: "Instalación, configuración y uso de PostgreSQL en Debian 13",
+    categoria: "bbdd",
+    filename: "install-postgresql", 
+    resumen: "Guía de instalación de PostgreSQL, creación de roles y bases de datos, y resolución del error de autenticación Peer configurando el fichero pg_hba.conf.",
+    tags: ["PostgreSQL", "Debian 13", "SQL", "pg_hba.conf", "Seguridad"],
+    fecha: "2025",
+    contenidoHTML: `
+      <h2>1. Instalación de PostgreSQL</h2>
+      <p>Vamos a abrir el terminal y ejecutar los siguientes comandos para actualizar el sistema e instalar el servidor junto con sus contribuciones adicionales:</p>
+      
+      <pre><code>sudo apt update
+sudo apt upgrade
+sudo apt install postgresql postgresql-contrib</code></pre>
+
+      <p>Antes de comenzar la instalación nos sale el paquete que se va a instalar y más abajo todas las librerías o dependencias necesarias. Pulsamos "S" y damos a enter para continuar.</p>
+      
+      <img src="../img/postgresql/postgres-1-install.png" alt="Instalación de dependencias de PostgreSQL" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+
+      <p>Una vez que termine la instalación, podemos ver si el servicio está activo ejecutando:</p>
+      <pre><code>sudo systemctl status postgresql</code></pre>
+
+      <img src="../img/postgresql/postgres-2-status.png" alt="Estado del servicio PostgreSQL" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+
+      <h2>2. Creación de usuarios, base de datos y configuración</h2>
+      <p>A diferencia de MariaDB, en PostgreSQL el usuario administrador por defecto se llama <code>postgres</code> y utiliza autenticación del sistema (Peer). Accedemos a la consola de PostgreSQL así:</p>
+      
+      <pre><code>sudo -u postgres psql</code></pre>
+
+      <h3>2.1. Creación del Usuario y la Base de Datos</h3>
+      <p>A continuación vamos a crear el usuario <strong>scott</strong> (le ponemos de contraseña <em>tigger</em>) y la base de datos <strong>empresa</strong>, asignándole directamente la propiedad de la misma a este nuevo usuario.</p>
+      
+      <pre><code>CREATE USER scott WITH PASSWORD 'tigger';
+CREATE DATABASE empresa OWNER scott;
+GRANT ALL PRIVILEGES ON DATABASE empresa TO scott;</code></pre>
+
+      <img src="../img/postgresql/postgres-3-create.png" alt="Creación de rol y base de datos" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+
+      <div class="detail-callout"><strong>Nota:</strong> Una cosa buena que tiene PostgreSQL es que cuando vamos añadiendo comandos, si le damos al tabulador nos autocompleta lo que queremos escribir. Además, es recomendable crear los usuarios siempre en minúsculas para evitar problemas de conexión posteriores.</div>
+
+      <h3>2.4. Error de Autenticación (Peer)</h3>
+      <p>Ya podemos salir del usuario administrador (<code>\\q</code>) e intentar entrar al usuario y la base de datos que hemos creado. Sin embargo, nos encontraremos con un problema:</p>
+      
+      <pre><code>psql -U scott -d empresa</code></pre>
+      
+      <img src="../img/postgresql/postgres-4-error.png" alt="Error de autenticación Peer" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+
+      <p>Nos devuelve el error: <em>"FATAL: la autentificación Peer falló para el usuario scott"</em>. Esto ocurre porque PostgreSQL intenta buscar el usuario "scott" como un usuario real que exista en nuestro sistema operativo Linux (Debian), lo cual no es nuestro caso.</p>
+
+      <h2>3. Solución: Modificar pg_hba.conf</h2>
+      <p>Una solución sería crear el usuario "scott" en Debian, pero no es eficiente crear usuarios en el SO por cada usuario de base de datos. El método correcto es cambiar el tipo de autenticación en el fichero de configuración <strong>pg_hba.conf</strong>.</p>
+      
+      <pre><code>sudo nano /etc/postgresql/17/main/pg_hba.conf</code></pre>
+
+      <img src="../img/postgresql/postgres-5-pghba.png" alt="Abriendo el archivo pg_hba.conf" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+
+      <h3>Método 1: Cambiar el método global</h3>
+      <p>Bajamos hasta abajo del todo y buscamos la línea de conexiones locales por sockets de dominio Unix. Sustituimos el usuario <code>postgresql</code> por <code>all</code> y el método <code>peer</code> por <code>md5</code> (o <code>scram-sha-256</code> en versiones modernas). Con esto decimos que todos los usuarios locales se autenticarán por contraseña.</p>
+
+      <img src="../img/postgresql/postgres-6-edit.png" alt="Cambiando peer por md5" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+
+      <h3>Método 2: Regla específica (Recomendado)</h3>
+      <p>Alternativamente, podemos dejar la regla <code>peer</code> intacta para el usuario postgres y añadir una regla específica solo para nuestro usuario "scott" y la base de datos "empresa":</p>
+      
+      <pre><code># TYPE  DATABASE   USER    ADDRESS   METHOD
+local   empresa    scott             md5</code></pre>
+
+      <img src="../img/postgresql/postgres-7-alt.png" alt="Añadiendo regla específica en pg_hba" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+
+      <h2>4. Aplicar cambios y comprobar acceso</h2>
+      <p>Guardamos los cambios en nano (<code>CTRL + O</code>, Enter, <code>CTRL + X</code>) y reiniciamos el servicio para que lea la nueva configuración:</p>
+      
+      <pre><code>sudo systemctl restart postgresql</code></pre>
+
+      <p>Ahora sí, volvemos a ejecutar el comando de conexión. Nos pedirá la contraseña (<em>tigger</em>) y entraremos directamente a nuestra base de datos.</p>
+
+      <pre><code>psql -U scott -d empresa</code></pre>
+
+      <img src="../img/postgresql/postgres-8-success.png" alt="Login exitoso en PostgreSQL" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+      
+      <p>Y hasta aquí estaría todo instalado y configurado correctamente.</p>
+    `
+  }
+
+
+
 /**
  * ============================================================
  * LÓGICA Y ETIQUETAS
