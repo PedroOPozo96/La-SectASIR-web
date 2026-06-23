@@ -195,12 +195,7 @@ docker compose restart</code></pre>
     `
   }, // <--- ¡AQUÍ ESTÁ LA COMA CLAVE PARA SEPARAR ARTÍCULOS!
 
-/**
- * ============================================================
- * Práctica Instalación de MariaDB 
- * ============================================================
- */
-  {
+{
     id: "mariadb-debian13",
     titulo: "Instalación, configuración y uso de MariaDB en Debian 13",
     categoria: "bbdd",
@@ -252,10 +247,12 @@ sudo systemctl enable mariadb</code></pre>
       <h3>4. Eliminar la base de datos de prueba</h3>
       <p>MariaDB trae por defecto una base de datos de pruebas (<code>test</code>) accesible para cualquiera. El script la elimina y también borra sus permisos. Esto evita que se use con fines indebidos.</p>
 
+      <img src="../img/mariadb-5-test.png" alt="Eliminar test db" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+
       <h3>5. Recargar privilegios</h3>
       <p>Refresca las tablas de permisos para aplicar de inmediato todos los cambios anteriores.</p>
 
-      <img src="../img/mariadb-5-test.png" alt="Eliminar test db y recargar privilegios" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+      <img src="../img/mariadb-6-reload.png" alt="Recargar privilegios" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
 
       <h2>2. Creación de usuarios, base de datos y permisos.</h2>
       <p>En primer lugar vamos a entrar a MariaDB en el modo root para entrar como administradores, podemos hacerlo de dos formas:</p>
@@ -271,21 +268,22 @@ sudo systemctl enable mariadb</code></pre>
       <p>A continuación vamos a crear una base de datos que asignaremos al usuario SCOTT la cual vamos a llamarle <strong>empresa</strong>.</p>
       <pre><code>CREATE DATABASE empresa;</code></pre>
 
-      <img src="../img/mariadb-6-createdb.png" alt="Creación de base de datos empresa" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+      <img src="../img/mariadb-7-createdb.png" alt="Creación de base de datos empresa" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
 
       <h3>2.3. Dar permisos al usuario y la base de datos.</h3>
       <pre><code>GRANT ALL PRIVILEGES ON empresa.* TO 'SCOTT'@'localhost';</code></pre>
 
-      <img src="../img/mariadb-7-grant.png" alt="Otorgar privilegios a SCOTT" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+      <img src="../img/mariadb-8-grant.png" alt="Otorgar privilegios a SCOTT" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
 
       <h3>2.4. Acceso al usuario nuevo y la Base de datos.</h3>
       <p>Una vez hemos hecho todo lo anterior ya podemos salir del usuario root y vamos a entrar con SCOTT aquí si es importante poner <code>-p</code> porque no es un usuario administrador y nos pedirá la contraseña obligatoriamente.</p>
       <pre><code>mysql -u SCOTT -p</code></pre>
 
-      <img src="../img/mariadb-8-login.png" alt="Login con el usuario SCOTT" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+      <img src="../img/mariadb-9-login.png" alt="Login con el usuario SCOTT" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
     `
   }
-
+  
+  
 ]; // <--- AQUÍ SE CIERRA EL ARRAY PRACTICAS
 
 /**
@@ -304,4 +302,4 @@ const CATEGORIAS_LABEL = {
 
 function getPracticaById(id) {
   return PRACTICAS.find(p => p.id === id);
-}
+}   
