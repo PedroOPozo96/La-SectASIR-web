@@ -325,56 +325,70 @@ sudo apt install postgresql postgresql-contrib</code></pre>
       
       <pre><code>sudo -u postgres psql</code></pre>
 
-      <h3>2.1. Creación del Usuario y la Base de Datos</h3>
-      <p>A continuación vamos a crear el usuario <strong>scott</strong> (le ponemos de contraseña <em>tigger</em>) y la base de datos <strong>empresa</strong>, asignándole directamente la propiedad de la misma a este nuevo usuario.</p>
+      <img src="../img/postgresql/postgres-3-login-root.png" alt="Login con el usuario postgres" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+
+      <h3>2.1. Creación del Usuario</h3>
+      <p>A continuación vamos a crear el usuario <strong>scott</strong> y de contraseña le ponemos <em>tigger</em>, igual que hicimos en MariaDB.</p>
       
-      <pre><code>CREATE USER scott WITH PASSWORD 'tigger';
-CREATE DATABASE empresa OWNER scott;
-GRANT ALL PRIVILEGES ON DATABASE empresa TO scott;</code></pre>
+      <pre><code>CREATE USER scott WITH PASSWORD 'tigger';</code></pre>
 
-      <img src="../img/postgresql/postgres-3-create.png" alt="Creación de rol y base de datos" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+      <img src="../img/postgresql/postgres-4-create-user.png" alt="Creación de rol scott" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
 
-      <div class="detail-callout"><strong>Nota:</strong> Una cosa buena que tiene PostgreSQL es que cuando vamos añadiendo comandos, si le damos al tabulador nos autocompleta lo que queremos escribir. Además, es recomendable crear los usuarios siempre en minúsculas para evitar problemas de conexión posteriores.</div>
+      <div class="detail-callout"><strong>Nota:</strong> Una cosa buena que tiene PostgreSQL es que cuando vamos añadiendo comandos, si le damos al tabulador nos autocompleta lo que queremos escribir. Además, es recomendable crear los usuarios siempre en minúsculas para evitar problemas de conexión.</div>
 
-      <h3>2.4. Error de Autenticación (Peer)</h3>
-      <p>Ya podemos salir del usuario administrador (<code>\\q</code>) e intentar entrar al usuario y la base de datos que hemos creado. Sin embargo, nos encontraremos con un problema:</p>
+      <h3>2.2. Creación de la Base de Datos</h3>
+      <p>Crearemos la base de datos asignándola al usuario que acabamos de crear de la siguiente forma:</p>
+      
+      <pre><code>CREATE DATABASE empresa OWNER scott;</code></pre>
+
+      <img src="../img/postgresql/postgres-5-create-db.png" alt="Creación de la base de datos empresa" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+
+      <h3>2.3. Asignación de permisos</h3>
+      <p>Por último le vamos a añadir los permisos a la base de datos empresa sobre el usuario scott:</p>
+
+      <pre><code>GRANT ALL PRIVILEGES ON DATABASE empresa TO scott;</code></pre>
+
+      <img src="../img/postgresql/postgres-6-grant.png" alt="Asignación de privilegios" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+
+      <h3>2.4. Error de Autenticación</h3>
+      <p>Ya podemos salir del usuario administrador e intentar entrar al usuario y la base de datos que hemos creado, pero nos encontraremos con un problema:</p>
       
       <pre><code>psql -U scott -d empresa</code></pre>
       
-      <img src="../img/postgresql/postgres-4-error.png" alt="Error de autenticación Peer" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+      <img src="../img/postgresql/postgres-7-error-peer.png" alt="Error de autenticación Peer" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
 
-      <p>Nos devuelve el error: <em>"FATAL: la autentificación Peer falló para el usuario scott"</em>. Esto ocurre porque PostgreSQL intenta buscar el usuario "scott" como un usuario real que exista en nuestro sistema operativo Linux (Debian), lo cual no es nuestro caso.</p>
+      <p>Este error ocurre porque tiene una autenticación <strong>peer</strong>, lo que significa que intenta buscar el usuario scott como un usuario que exista en nuestro sistema operativo Debian, lo cual no es nuestro caso.</p>
 
-      <h2>3. Solución: Modificar pg_hba.conf</h2>
-      <p>Una solución sería crear el usuario "scott" en Debian, pero no es eficiente crear usuarios en el SO por cada usuario de base de datos. El método correcto es cambiar el tipo de autenticación en el fichero de configuración <strong>pg_hba.conf</strong>.</p>
+      <h2>3. Solución: Fichero de configuración pg_hba.conf</h2>
+      <p>Una de las soluciones sería crear en nuestro Debian un usuario scott, pero cargaríamos el Sistema Operativo con usuarios que solo vamos a usar para la BD. Existe otro método: entrar en el fichero de configuración <code>pg_hba.conf</code> y cambiar el tipo de autenticación.</p>
       
       <pre><code>sudo nano /etc/postgresql/17/main/pg_hba.conf</code></pre>
 
-      <img src="../img/postgresql/postgres-5-pghba.png" alt="Abriendo el archivo pg_hba.conf" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+      <img src="../img/postgresql/postgres-8-nano-open.png" alt="Abriendo el archivo pg_hba.conf" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
 
-      <h3>Método 1: Cambiar el método global</h3>
-      <p>Bajamos hasta abajo del todo y buscamos la línea de conexiones locales por sockets de dominio Unix. Sustituimos el usuario <code>postgresql</code> por <code>all</code> y el método <code>peer</code> por <code>md5</code> (o <code>scram-sha-256</code> en versiones modernas). Con esto decimos que todos los usuarios locales se autenticarán por contraseña.</p>
+      <h3>Método 1: Autenticación MD5 global</h3>
+      <p>Bajaremos hasta abajo del todo. Sustituimos <code>postgresql</code> por <code>all</code> y <code>peer</code> por <code>md5</code>. Con esto estamos diciendo que todos los usuarios entrarán con todas sus bases de datos con autenticación md5.</p>
 
-      <img src="../img/postgresql/postgres-6-edit.png" alt="Cambiando peer por md5" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+      <img src="../img/postgresql/postgres-9-nano-md5.png" alt="Cambiando peer por md5 globalmente" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
 
-      <h3>Método 2: Regla específica (Recomendado)</h3>
-      <p>Alternativamente, podemos dejar la regla <code>peer</code> intacta para el usuario postgres y añadir una regla específica solo para nuestro usuario "scott" y la base de datos "empresa":</p>
+      <h3>Método 2: Otro método arreglándolo con una regla específica</h3>
+      <p>Existe otro método que sería dejar la línea que hemos tocado tal y como está y añadir nosotros debajo nuestra database "empresa" y usuario "scott" con autenticación md5:</p>
       
       <pre><code># TYPE  DATABASE   USER    ADDRESS   METHOD
 local   empresa    scott             md5</code></pre>
 
-      <img src="../img/postgresql/postgres-7-alt.png" alt="Añadiendo regla específica en pg_hba" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+      <img src="../img/postgresql/postgres-10-nano-specific.png" alt="Añadiendo regla específica en pg_hba" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
 
       <h2>4. Aplicar cambios y comprobar acceso</h2>
-      <p>Guardamos los cambios en nano (<code>CTRL + O</code>, Enter, <code>CTRL + X</code>) y reiniciamos el servicio para que lea la nueva configuración:</p>
+      <p>Le damos a <code>CTRL + X</code>, luego <code>Y</code> y <code>Enter</code> para guardar los cambios. Después reiniciamos el servicio:</p>
       
       <pre><code>sudo systemctl restart postgresql</code></pre>
 
-      <p>Ahora sí, volvemos a ejecutar el comando de conexión. Nos pedirá la contraseña (<em>tigger</em>) y entraremos directamente a nuestra base de datos.</p>
+      <p>Ahora sí, volvemos a ejecutar el comando con el que entramos al usuario scott con la base de datos empresa. Nos pedirá la contraseña y entraremos directamente.</p>
 
       <pre><code>psql -U scott -d empresa</code></pre>
 
-      <img src="../img/postgresql/postgres-8-success.png" alt="Login exitoso en PostgreSQL" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+      <img src="../img/postgresql/postgres-11-success.png" alt="Login exitoso en PostgreSQL" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
       
       <p>Y hasta aquí estaría todo instalado y configurado correctamente.</p>
     `
@@ -395,7 +409,7 @@ const CATEGORIAS_LABEL = {
   servicios: "Servicios",
   iaw: "Implantación de Aplicaciones Web",
   infraestructura: "Infraestructura Virtual",
-  bbdd: "Base de Datos"
+  gbdd: "Gestión de Bases de Datos"
 };
 
 function getPracticaById(id) {
