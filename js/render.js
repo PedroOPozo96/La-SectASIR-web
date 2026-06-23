@@ -1,15 +1,30 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // Al entrar, solo activamos la navegación de las carpetas, NO mostramos los archivos.
-  setupNavigation();
+  // 1. ENRUTADOR: Detectamos en qué página estamos leyendo los parámetros de la URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const idPractica = urlParams.get('id');
+
+  if (idPractica) {
+    // Si hay una ID en la URL, estamos en practicas/practica.html
+    renderSinglePractica(idPractica);
+  } else {
+    // Si no hay ID, estamos en la portada (index.html)
+    setupNavigation();
+  }
 });
+
+/* ==========================================================================
+   LÓGICA DE LA PORTADA (CARPETAS Y FICHEROS)
+   ========================================================================== */
 
 function setupNavigation() {
   const folders = document.querySelectorAll('.folder-btn');
   const btnBack = document.getElementById('btn-back');
 
+  // Si no existen los botones de carpeta (porque no estamos en el index), salimos
+  if (folders.length === 0) return;
+
   folders.forEach(btn => {
     btn.addEventListener('click', (e) => {
-      // Nos aseguramos de capturar el clic en el botón, aunque se pulse en el icono SVG
       const botonClicado = e.target.closest('.folder-btn');
       if (!botonClicado) return;
       
@@ -19,30 +34,24 @@ function setupNavigation() {
   });
 
   if (btnBack) {
-    // Al darle al botón "cd .." volvemos a la vista principal
     btnBack.addEventListener('click', closeDirectory);
   }
 }
 
 function openDirectory(categoria) {
-  // Ocultamos la vista de carpetas y mostramos la vista de ficheros
   document.getElementById('gui-folders').style.display = 'none';
   document.getElementById('files-view').style.display = 'block';
 
-  // Actualizamos el prompt de la terminal para que parezca que hemos navegado a la ruta
   const dirName = categoria === 'todas' ? '' : `/${categoria}`;
   document.getElementById('path-prompt').innerText = `pedrooliver@asir:~/la_sectasir/practicas${dirName}$ ls -la`;
 
-  // Renderizamos los archivos que tocan
   renderGrid(categoria);
 }
 
 function closeDirectory() {
-  // Ocultamos ficheros y volvemos a mostrar carpetas
   document.getElementById('gui-folders').style.display = 'flex';
   document.getElementById('files-view').style.display = 'none';
   
-  // Restauramos el prompt a la carpeta base
   document.getElementById('path-prompt').innerText = `pedrooliver@asir:~/la_sectasir/practicas$ ls -la`;
 }
 
@@ -85,4 +94,39 @@ function renderGrid(filtro) {
   });
 
   grid.innerHTML = html;
+}
+
+/* ==========================================================================
+   LÓGICA DE LA PRÁCTICA INDIVIDUAL (PRACTICA.HTML)
+   ========================================================================== */
+
+function renderSinglePractica(id) {
+  if (typeof PRACTICAS === 'undefined') return;
+  
+  // Buscamos la práctica en el array de practicas-data.js
+  const practica = PRACTICAS.find(p => p.id === id);
+  
+  if (!practica) {
+    // Si meten una URL con una ID que no existe
+    const container = document.querySelector('main') || document.body;
+    container.innerHTML = '<div style="text-align:center; padding: 100px 20px;"><h1 style="color:#ef4444;">Error 404</h1><p>El fichero solicitado no existe en el sistema.</p><a href="../index.html" style="color:#60a5fa; text-decoration:none;">cd .. (volver al inicio)</a></div>';
+    return;
+  }
+
+  // Actualizamos el título de la pestaña del navegador
+  document.title = practica.titulo + " — La SectASIR";
+
+  // Inyectamos los datos en los contenedores de practica.html
+  const tituloEl = document.getElementById('practica-titulo');
+  const contenidoEl = document.getElementById('practica-contenido');
+  const fechaEl = document.getElementById('practica-fecha');
+  const tagsEl = document.getElementById('practica-tags');
+
+  if (tituloEl) tituloEl.innerHTML = practica.titulo;
+  if (contenidoEl) contenidoEl.innerHTML = practica.contenidoHTML;
+  if (fechaEl && practica.fecha) fechaEl.innerHTML = practica.fecha;
+  
+  if (tagsEl && practica.tags) {
+    tagsEl.innerHTML = practica.tags.map(t => `<span class="stack-tag">${t}</span>`).join('');
+  }
 }
