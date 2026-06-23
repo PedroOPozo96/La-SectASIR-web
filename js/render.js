@@ -97,7 +97,7 @@ function renderGrid(filtro = 'todas') {
           <h3 class="card-title">${p.titulo}</h3>
           <p class="card-desc">${p.resumen}</p>
           <div class="card-tags">${tagsHtml}</div>
-          <div class="card-link">cat README.md <span class="arrow">→</span></div>
+          <div class="card-link">cat ${nombreArchivo}.md <span class="arrow">→</span></div>
         </div>
       </a>
     `;
