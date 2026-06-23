@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // 1. Lógica del menú lateral interactivo
+  // 1. Lógica del menú lateral interactivo (Sidebar)
   const sidebarToggle = document.getElementById('sidebar-toggle');
   const sidebar = document.querySelector('.site-sidebar');
   
@@ -9,24 +9,23 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 2. Determinar en qué página estamos
+  // 2. Determinar en qué página del sistema nos encontramos
   const practiceGrid = document.getElementById('practice-grid');
   const practicaRoot = document.getElementById('practica-root');
   
-  // Variable para ajustar las rutas según si estamos en la raíz o en /practicas
   const isDetailPage = !!practicaRoot;
   const basePath = isDetailPage ? '../' : '';
 
-  // 3. Renderizar el menú lateral
+  // 3. Renderizar el índice del menú lateral
   renderSidebar(basePath);
 
-  // 4. Renderizar el contenido principal
+  // 4. Renderizar el bloque de contenido principal según la vista
   if (practiceGrid) {
-    // Estamos en el index.html
+    // Estamos en la raíz (index.html)
     renderGrid();
     setupFilters();
   } else if (practicaRoot) {
-    // Estamos en practicas/practica.html
+    // Estamos dentro de un artículo (practicas/practica.html)
     renderDetail();
   }
 });
@@ -37,20 +36,25 @@ function renderSidebar(basePath) {
   const sidebarNav = document.getElementById('sidebar-nav');
   if (!sidebarNav) return;
 
-  // Comprobamos que el archivo de datos haya cargado
-  if (typeof practicasData === 'undefined') {
-    sidebarNav.innerHTML = '<div style="padding: 15px; color: red;">Error: No se encontraron datos.</div>';
+  // Verificación de seguridad del array global del usuario
+  if (typeof PRACTICAS === 'undefined') {
+    sidebarNav.innerHTML = '<div style="padding: 15px; color: var(--red); font-family: var(--mono);">[ERROR]: Estructura PRACTICAS no detectada.</div>';
     return;
   }
 
   let html = `<a href="${basePath}index.html" class="sidebar-home-link"><span class="prompt">~</span>/home</a>`;
 
-  // Agrupamos por categorías
-  const categories = [...new Set(practicasData.map(p => p.category))];
+  // Extraemos las categorías únicas presentes en tus datos
+  const categoriasUnicas = [...new Set(PRACTICAS.map(p => p.categoria))];
 
-  categories.forEach(cat => {
-    html += `<div class="sidebar-cat-title">${cat}</div>`;
-    const items = practicasData.filter(p => p.category === cat);
+  categoriasUnicas.forEach(cat => {
+    // Buscamos el nombre amigable en tu objeto CATEGORIAS_LABEL
+    const labelAmigable = (typeof CATEGORIAS_LABEL !== 'undefined' && CATEGORIAS_LABEL[cat]) ? CATEGORIAS_LABEL[cat] : cat;
+    
+    html += `<div class="sidebar-cat-title">${labelAmigable}</div>`;
+    
+    // Filtramos los artículos que pertenecen a este módulo educativo
+    const items = PRACTICAS.filter(p => p.categoria === cat);
     items.forEach(item => {
       html += `<a href="${basePath}practicas/practica.html?id=${item.id}" class="sidebar-item-link">${item.id}.md</a>`;
     });
@@ -59,36 +63,39 @@ function renderSidebar(basePath) {
   sidebarNav.innerHTML = html;
 }
 
-function renderGrid(filter = 'todas') {
+function renderGrid(filtro = 'todas') {
   const grid = document.getElementById('practice-grid');
-  if (!grid || typeof practicasData === 'undefined') return;
+  if (!grid || typeof PRACTICAS === 'undefined') return;
 
-  grid.innerHTML = ''; // Limpiar el "cargando..."
+  grid.innerHTML = ''; // Limpiamos el texto estático de "cargando..."
 
-  // Filtrar los datos
-  const filteredData = filter === 'todas' 
-    ? practicasData 
-    : practicasData.filter(p => p.categoryId === filter);
+  // Aplicamos el filtro de la barra de comandos de la web
+  const datosFiltrados = filtro === 'todas' 
+    ? PRACTICAS 
+    : PRACTICAS.filter(p => p.categoria === filtro);
 
-  if (filteredData.length === 0) {
-    grid.innerHTML = '<div class="loading-state">No hay prácticas en esta categoría...</div>';
+  if (datosFiltrados.length === 0) {
+    grid.innerHTML = '<div class="loading-state">No se encontraron prácticas en este directorio...</div>';
     return;
   }
 
-  // Generar tarjetas
+  // Mapeado y construcción de las tarjetas del portfolio
   let html = '';
-  filteredData.forEach(p => {
+  datosFiltrados.forEach(p => {
     const tagsHtml = p.tags.map(t => `<span>${t}</span>`).join('');
+    const labelAmigable = (typeof CATEGORIAS_LABEL !== 'undefined' && CATEGORIAS_LABEL[p.categoria]) ? CATEGORIAS_LABEL[p.categoria] : p.categoria;
+    const nombreArchivo = p.filename || p.id;
+
     html += `
       <a href="practicas/practica.html?id=${p.id}" class="practice-card">
         <div class="card-bar">
           <span class="tb-dot r"></span><span class="tb-dot y"></span><span class="tb-dot g"></span>
-          <span class="card-filename">${p.id}.sh</span>
+          <span class="card-filename">${nombreArchivo}.sh</span>
         </div>
         <div class="card-body">
-          <div class="card-category">${p.category}</div>
-          <h3 class="card-title">${p.title}</h3>
-          <p class="card-desc">${p.shortDesc}</p>
+          <div class="card-category">${labelAmigable}</div>
+          <h3 class="card-title">${p.titulo}</h3>
+          <p class="card-desc">${p.resumen}</p>
           <div class="card-tags">${tagsHtml}</div>
           <div class="card-link">cat README.md <span class="arrow">→</span></div>
         </div>
@@ -100,38 +107,42 @@ function renderGrid(filter = 'todas') {
 }
 
 function setupFilters() {
-  const buttons = document.querySelectorAll('.filter-btn');
-  buttons.forEach(btn => {
+  const botones = document.querySelectorAll('.filter-btn');
+  botones.forEach(btn => {
     btn.addEventListener('click', (e) => {
-      // Quitar clase active a todos
-      buttons.forEach(b => b.classList.remove('active'));
-      // Ponerla al clicado
+      botones.forEach(b => b.classList.remove('active'));
       e.target.classList.add('active');
-      // Renderizar grid con el filtro
-      const filter = e.target.getAttribute('data-filter');
-      renderGrid(filter);
+      
+      const filtro = e.target.getAttribute('data-filter');
+      renderGrid(filtro);
     });
   });
 }
 
 function renderDetail() {
   const root = document.getElementById('practica-root');
-  if (!root || typeof practicasData === 'undefined') return;
+  if (!root || typeof PRACTICAS === 'undefined') return;
 
-  // Sacar la ID de la URL (?id=lo-que-sea)
+  // Capturamos el parámetro ID de la barra de direcciones (?id=...)
   const urlParams = new URLSearchParams(window.location.search);
   const id = urlParams.get('id');
 
-  const practica = practicasData.find(p => p.id === id);
+  const practica = PRACTICAS.find(p => p.id === id);
 
   if (!practica) {
-    root.innerHTML = `<div class="wrap"><div class="error-state">Error 404: Práctica no encontrada en el sistema.</div></div>`;
+    root.innerHTML = `
+      <div class="wrap">
+        <div class="error-state" style="font-family: var(--mono); padding: 40px 0;">
+          [ERROR 404]: El recurso solicitado '${id}' no existe en el volumen del sistema.
+        </div>
+      </div>`;
     return;
   }
 
   const tagsHtml = practica.tags.map(t => `<span>${t}</span>`).join('');
+  const labelAmigable = (typeof CATEGORIAS_LABEL !== 'undefined' && CATEGORIAS_LABEL[practica.categoria]) ? CATEGORIAS_LABEL[practica.categoria] : practica.categoria;
 
-  // Generar HTML del artículo
+  // Inyección del diseño del artículo detallado
   const html = `
     <div class="wrap detail-header">
       <div class="breadcrumb">
@@ -141,53 +152,53 @@ function renderDetail() {
         <span class="sep">/</span>
         <span class="current">${practica.id}</span>
       </div>
-      <div class="detail-category">${practica.category}</div>
-      <h1 class="detail-title">${practica.title}</h1>
+      <div class="detail-category">${labelAmigable}</div>
+      <h1 class="detail-title">${practica.titulo}</h1>
       <div class="detail-meta">
         ${tagsHtml}
       </div>
       <hr class="detail-divider">
     </div>
     <div class="wrap detail-body">
-      ${practica.content}
+      ${practica.contenidoHTML}
     </div>
   `;
 
   root.innerHTML = html;
 
-  // INICIALIZAMOS LOS BOTONES DE COPIAR UNA VEZ EL HTML ESTÁ PINTADO
+  // ACTIVAMOS LOS BOTONES DE COPIAR AUTOMÁTICAMENTE TRAS INYECTAR EL CONTENIDO
   initCopyButtons();
 }
 
-// --- LÓGICA DEL BOTÓN DE COPIAR ---
+// --- LÓGICA DEL BOTÓN DE COPIAR (CLIPBOARD API) ---
 
 function initCopyButtons() {
-  const codeBlocks = document.querySelectorAll('.detail-body pre');
+  const bloquesCodigo = document.querySelectorAll('.detail-body pre');
 
-  codeBlocks.forEach((pre) => {
+  bloquesCodigo.forEach((pre) => {
     if (pre.querySelector('.copy-btn')) return;
 
-    const button = document.createElement('button');
+    const boton = document.createElement('button');
     button.className = 'copy-btn';
     button.innerText = 'Copiar';
 
-    button.addEventListener('click', () => {
-      const code = pre.querySelector('code');
-      const textToCopy = code ? code.innerText : pre.innerText;
+    boton.addEventListener('click', () => {
+      const etiquetaCode = pre.querySelector('code');
+      const textoACopiar = etiquetaCode ? etiquetaCode.innerText : pre.innerText;
 
-      navigator.clipboard.writeText(textToCopy).then(() => {
-        button.innerText = '¡Copiado!';
-        button.classList.add('copied');
+      navigator.clipboard.writeText(textoACopiar).then(() => {
+        boton.innerText = '¡Copiado!';
+        boton.classList.add('copied');
 
         setTimeout(() => {
-          button.innerText = 'Copiar';
-          button.classList.remove('copied');
+          boton.innerText = 'Copiar';
+          boton.classList.remove('copied');
         }, 2000);
       }).catch(err => {
-        console.error('Error al copiar: ', err);
+        console.error('Error al acceder al portapapeles: ', err);
       });
     });
 
-    pre.appendChild(button);
+    pre.appendChild(boton);
   });
 }
