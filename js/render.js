@@ -176,29 +176,33 @@ function initCopyButtons() {
   const bloquesCodigo = document.querySelectorAll('.detail-body pre');
 
   bloquesCodigo.forEach((pre) => {
+    // Evitar duplicados
     if (pre.querySelector('.copy-btn')) return;
 
-    const boton = document.createElement('button');
-    button.className = 'copy-btn';
-    button.innerText = 'Copiar';
+    // Crear el botón
+    const btn = document.createElement('button');
+    btn.className = 'copy-btn';
+    btn.innerText = 'Copiar';
 
-    boton.addEventListener('click', () => {
+    // Funcionalidad al hacer clic
+    btn.addEventListener('click', () => {
       const etiquetaCode = pre.querySelector('code');
       const textoACopiar = etiquetaCode ? etiquetaCode.innerText : pre.innerText;
 
       navigator.clipboard.writeText(textoACopiar).then(() => {
-        boton.innerText = '¡Copiado!';
-        boton.classList.add('copied');
+        btn.innerText = '¡Copiado!';
+        btn.classList.add('copied');
 
         setTimeout(() => {
-          boton.innerText = 'Copiar';
-          boton.classList.remove('copied');
+          btn.innerText = 'Copiar';
+          btn.classList.remove('copied');
         }, 2000);
       }).catch(err => {
         console.error('Error al acceder al portapapeles: ', err);
       });
     });
 
-    pre.appendChild(boton);
+    // Añadirlo al DOM
+    pre.appendChild(btn);
   });
 }
