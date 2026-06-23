@@ -8,6 +8,18 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../css/styles.css">
+<style>
+  /* Estilos específicos para el contenido inyectado */
+  .markdown-content h2 { color: #60a5fa; margin-top: 30px; margin-bottom: 15px; }
+  .markdown-content h3 { color: #93c5fd; margin-top: 25px; margin-bottom: 10px; }
+  .markdown-content p { margin-bottom: 16px; line-height: 1.7; }
+  .markdown-content ul { margin-bottom: 16px; padding-left: 20px; }
+  .markdown-content li { margin-bottom: 8px; }
+  .markdown-content pre { background: #1e293b; padding: 16px; border-radius: 8px; overflow-x: auto; margin-bottom: 20px; border: 1px solid #334155; }
+  .markdown-content code { font-family: var(--mono); color: #a78bfa; }
+  .markdown-content pre code { color: #e2e8f0; }
+  .detail-callout { background: rgba(96, 165, 250, 0.1); border-left: 4px solid #60a5fa; padding: 16px; margin: 20px 0; border-radius: 0 8px 8px 0; }
+</style>
 </head>
 <body>
 
@@ -20,33 +32,48 @@
     <div class="nav-links">
       <a href="../sobre-mi.html">sobre-mi</a>
       <a href="../index.html#practicas">practicas</a>
-      <a href="../index.html#contacto">contacto</a>
+      <a href="../contacto.html">contacto</a>
     </div>
   </div>
 </nav>
 
-<button class="sidebar-toggle" id="sidebar-toggle">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
-</button>
+<main class="wrap" style="padding: 40px 0; min-height: 75vh; max-width: 900px; margin: 0 auto;">
+  
+  <a href="../index.html#practicas" style="display: inline-flex; align-items: center; gap: 8px; background: transparent; border: 1px solid #334155; color: #94a3b8; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-family: var(--mono); margin-bottom: 24px; text-decoration: none; transition: all 0.2s;" onmouseover="this.style.color='#f8fafc'; this.style.backgroundColor='rgba(255,255,255,0.05)';" onmouseout="this.style.color='#94a3b8'; this.style.backgroundColor='transparent';">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+    cd .. (volver a inicio)
+  </a>
 
-<aside class="site-sidebar">
   <div class="terminal-window" style="box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
     <div class="terminal-titlebar">
       <span class="tb-dot r"></span><span class="tb-dot y"></span><span class="tb-dot g"></span>
-      <span>La SectASIR — Índice</span>
+      <span>cat practica.md</span>
     </div>
-    <nav class="sidebar-nav" id="sidebar-nav">
-      <!-- generado dinámicamente desde js/render.js -->
-    </nav>
-  </div>
-</aside>
+    
+    <div class="terminal-body" style="padding: 32px; background: #0f172a;">
+      
+      <!-- CONTENEDORES DONDE JS INYECTA LOS DATOS -->
+      <h1 id="practica-titulo" style="margin-top: 0; color: #f8fafc; font-size: 2rem; margin-bottom: 16px;">Cargando...</h1>
+      
+      <div style="margin-bottom: 32px; display: flex; gap: 16px; flex-wrap: wrap; align-items: center; padding-bottom: 16px; border-bottom: 1px solid #1e293b;">
+        <span style="color: #94a3b8; font-family: var(--mono); font-size: 0.9rem;">Fecha: <span id="practica-fecha" style="color: #60a5fa;">...</span></span>
+        <span style="color: #334155;">|</span>
+        <div id="practica-tags" style="display: flex; gap: 8px; flex-wrap: wrap;"></div>
+      </div>
 
-<div id="practica-root"></div>
+      <div id="practica-contenido" class="markdown-content" style="color: #cbd5e1; font-size: 1.05rem;">
+        <!-- El contenido HTML del archivo data.js aparecerá aquí -->
+      </div>
+
+    </div>
+  </div>
+</main>
 
 <footer>
   <span style="color: #4ade80;">pedrooliver@asir</span>:<span style="color: #60a5fa;">~/la_sectasir</span> <span style="color: #c084fc;">(admin)</span>$ echo "La SectASIR — gracias por pasarte" — última actualización: junio 2026
 </footer>
 
+<!-- Scripts con rutas subiendo un nivel -->
 <script src="../js/practicas-data.js"></script>
 <script src="../js/render.js"></script>
 
