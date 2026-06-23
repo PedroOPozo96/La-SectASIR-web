@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sobre mí — La SectASIR</title>
+<link rel="icon" type="image/svg+xml" href="img/favicon.svg?v=3">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/styles.css">
@@ -12,20 +13,30 @@
 
 <nav>
   <div class="wrap">
-    <a href="index.html" class="nav-brand"><span class="dot"></span>La <span class="brand-accent">SectASIR</span></a>
+    <a href="index.html" class="nav-brand">
+      La <span class="brand-accent">SectASIR</span>
+      <img src="img/favicon.svg" alt="Logo SectASIR" width="28" height="28" class="nav-logo">
+    </a>
     <div class="nav-links">
       <a href="sobre-mi.html" class="active">sobre-mi</a>
       <a href="index.html#practicas">practicas</a>
-      <a href="index.html#contacto">contacto</a>
+      <a href="contacto.html">contacto</a>
     </div>
   </div>
 </nav>
 
+<button class="sidebar-toggle" id="sidebar-toggle">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
+</button>
+
 <aside class="site-sidebar">
-  <div class="sidebar-card">
-    <div class="sidebar-head">índice</div>
+  <div class="terminal-window" style="box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+    <div class="terminal-titlebar">
+      <span class="tb-dot r"></span><span class="tb-dot y"></span><span class="tb-dot g"></span>
+      <span>La SectASIR — Índice</span>
+    </div>
     <nav class="sidebar-nav" id="sidebar-nav">
-      <!-- generado dinámicamente desde js/practicas-data.js -->
+      <!-- generado dinámicamente desde js/render.js -->
     </nav>
   </div>
 </aside>
@@ -40,46 +51,62 @@
 <section class="section" style="padding-top: 0;">
   <div class="wrap">
     <div class="about-grid">
-      <div class="about-text">
-        <p>Soy estudiante de <strong>Administración de Sistemas Informáticos en Red (ASIR)</strong> y futuro <strong>administrador de Sistemas y Redes</strong>. Durante el curso he trabajado en prácticas de las asignaturas de Servicios, Implantación de Aplicaciones Web, Infraestructura Virtual, Base de Datos y Redes.</p>
-        <p>Esta web reúne esas prácticas para mostrar cómo aplico la teoría a problemas reales: desde levantar una infraestructura virtualizada hasta desplegar servicios, bases de datos y aplicaciones web paso a paso.</p>
-        <p>Busco una oportunidad para seguir aprendiendo en un entorno real, aportando lo que ya sé y con muchas ganas de seguir creciendo como técnico de sistemas.</p>
+      
+      <!-- Ventana de Terminal: Descripción Personal -->
+      <div class="terminal-window" style="box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+        <div class="terminal-titlebar">
+          <span class="tb-dot r"></span><span class="tb-dot y"></span><span class="tb-dot g"></span>
+          <span>nano sobre-mi.txt</span>
+        </div>
+        <div class="terminal-body" style="padding: 24px; line-height: 1.6;">
+          <p>Soy Pedro Oliver Pozo, estudiante del IES Gonzalo Nazareno y Futuro Administrador de Sistemas y Redes. Durante el curso he trabajado en prácticas de las asignaturas de Servicios, Implantación de Aplicaciones Web, Infraestructura Virtual, Base de Datos y Redes.</p>
+          <p style="margin-top: 16px;">Esta web reúne esas prácticas para mostrar cómo aplico la teoría a problemas reales: desde levantar una infraestructura virtualizada hasta desplegar servicios, bases de datos y aplicaciones web paso a paso.</p>
+          <p style="margin-top: 16px;">Busco una oportunidad para seguir aprendiendo en un entorno real, aportando lo que ya sé y con muchas ganas de seguir creciendo como técnico de sistemas.</p>
 
-        <div class="hero-meta" style="margin-top: 28px;">
-          <a href="index.html#contacto">→ contacto</a>
-          <a href="https://www.linkedin.com/in/pedro-oliver-pozo-18a953210/" target="_blank" rel="noopener" class="social-link">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.03-1.85-3.03-1.85 0-2.14 1.45-2.14 2.94v5.66H9.36V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45z"/></svg>
-            <span>linkedin</span>
-          </a>
-          <a href="https://github.com/PedroOPozo96" target="_blank" rel="noopener" class="social-link">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.58 2 12.21c0 4.51 2.87 8.33 6.84 9.68.5.1.68-.22.68-.49 0-.24-.01-1.05-.01-1.9-2.79.51-3.51-.7-3.74-1.34-.13-.34-.67-1.39-1.14-1.67-.39-.21-.95-.74-.01-.75.88-.01 1.51.83 1.72 1.18 1.01 1.7 2.62 1.22 3.27.93.1-.74.39-1.22.71-1.5-2.49-.29-5.1-1.27-5.1-5.65 0-1.25.43-2.27 1.14-3.07-.11-.29-.49-1.46.11-3.04 0 0 .94-.31 3.07 1.17a10.4 10.4 0 0 1 5.6 0c2.13-1.49 3.07-1.17 3.07-1.17.6 1.58.22 2.75.11 3.04.71.8 1.14 1.81 1.14 3.07 0 4.39-2.62 5.36-5.11 5.65.4.36.75 1.06.75 2.13 0 1.54-.01 2.78-.01 3.16 0 .27.18.6.68.49C19.13 20.53 22 16.71 22 12.21 22 6.58 17.52 2 12 2z"/></svg>
-            <span>github</span>
-          </a>
+          <div class="hero-meta" style="margin-top: 32px; display: flex; gap: 16px;">
+            <a href="contacto.html" class="social-link">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+              <span>email</span>
+            </a>
+            <a href="https://www.linkedin.com/in/pedro-oliver-pozo-18a953210/" target="_blank" rel="noopener" class="social-link">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.03-1.85-3.03-1.85 0-2.14 1.45-2.14 2.94v5.66H9.36V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45z"/></svg>
+              <span>linkedin</span>
+            </a>
+            <a href="https://github.com/PedroOPozo96" target="_blank" rel="noopener" class="social-link">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.58 2 12.21c0 4.51 2.87 8.33 6.84 9.68.5.1.68-.22.68-.49 0-.24-.01-1.05-.01-1.9-2.79.51-3.51-.7-3.74-1.34-.13-.34-.67-1.39-1.14-1.67-.39-.21-.95-.74-.01-.75.88-.01 1.51.83 1.72 1.18 1.01 1.7 2.62 1.22 3.27.93.1-.74.39-1.22.71-1.5-2.49-.29-5.1-1.27-5.1-5.65 0-1.25.43-2.27 1.14-3.07-.11-.29-.49-1.46.11-3.04 0 0 .94-.31 3.07 1.17a10.4 10.4 0 0 1 5.6 0c2.13-1.49 3.07-1.17 3.07-1.17.6 1.58.22 2.75.11 3.04.71.8 1.14 1.81 1.14 3.07 0 4.39-2.62 5.36-5.11 5.65.4.36.75 1.06.75 2.13 0 1.54-.01 2.78-.01 3.16 0 .27.18.6.68.49C19.13 20.53 22 16.71 22 12.21 22 6.58 17.52 2 12 2z"/></svg>
+              <span>github</span>
+            </a>
+          </div>
         </div>
       </div>
-      <div class="stack-card">
-        <div class="stack-card-head">stack --list</div>
-        <div class="stack-tags">
-          <span class="stack-tag">Linux</span>
-          <span class="stack-tag">Windows Server</span>
-          <span class="stack-tag">Active Directory</span>
-          <span class="stack-tag">Cisco IOS</span>
-          <span class="stack-tag">VirtualBox</span>
-          <span class="stack-tag">Docker</span>
-          <span class="stack-tag">Bash</span>
-          <span class="stack-tag">SQL</span>
-          <span class="stack-tag">Apache</span>
-          <span class="stack-tag">DNS / DHCP</span>
-          <span class="stack-tag">Firewall (iptables)</span>
-          <span class="stack-tag">Samba</span>
+
+      <!-- Ventana de Terminal: Stack Tecnológico -->
+      <div class="terminal-window" style="box-shadow: 0 10px 30px rgba(0,0,0,0.5); height: fit-content;">
+        <div class="terminal-titlebar">
+          <span class="tb-dot r"></span><span class="tb-dot y"></span><span class="tb-dot g"></span>
+          <span>stack --list</span>
+        </div>
+        <div class="terminal-body" style="padding: 24px;">
+          <div class="stack-tags" style="display: flex; flex-wrap: wrap; gap: 10px;">
+            <span class="stack-tag" style="background: rgba(255,255,255,0.05); padding: 6px 12px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1);">Debian 13</span>
+            <span class="stack-tag" style="background: rgba(255,255,255,0.05); padding: 6px 12px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1);">Docker Compose</span>
+            <span class="stack-tag" style="background: rgba(255,255,255,0.05); padding: 6px 12px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1);">Apache</span>
+            <span class="stack-tag" style="background: rgba(255,255,255,0.05); padding: 6px 12px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1);">MariaDB</span>
+            <span class="stack-tag" style="background: rgba(255,255,255,0.05); padding: 6px 12px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1);">PostgreSQL</span>
+            <span class="stack-tag" style="background: rgba(255,255,255,0.05); padding: 6px 12px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1);">MySQL</span>
+            <span class="stack-tag" style="background: rgba(255,255,255,0.05); padding: 6px 12px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1);">SQL</span>
+            <span class="stack-tag" style="background: rgba(255,255,255,0.05); padding: 6px 12px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1);">Let's Encrypt</span>
+            <span class="stack-tag" style="background: rgba(255,255,255,0.05); padding: 6px 12px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1);">Ghost</span>
+          </div>
         </div>
       </div>
+      
     </div>
   </div>
 </section>
 
 <footer>
-  $ echo "La SectASIR — gracias por pasarte" — última actualización: junio 2026
+  <span style="color: #4ade80;">pedrooliver@asir</span>:<span style="color: #60a5fa;">~/la_sectasir</span> <span style="color: #c084fc;">(admin)</span>$ echo "La SectASIR — gracias por pasarte" — última actualización: junio 2026
 </footer>
 
 <script src="js/practicas-data.js"></script>
