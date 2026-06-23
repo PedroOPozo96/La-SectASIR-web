@@ -1,222 +1,193 @@
-/**
- * ============================================================
- * RENDER — La SectASIR
- * Pinta las prácticas (desde practicas-data.js) en index.html
- * y en practica.html. 
- * ============================================================
- */
-
-function escapeHTML(str) {
-  const div = document.createElement('div');
-  div.textContent = str;
-  return div.innerHTML;
-}
-
-/* ---------- HOME: tarjetas + filtros ---------- */
-function renderHomeGrid() {
-  const grid = document.getElementById('practice-grid');
-  if (!grid) return;
-
-  grid.innerHTML = PRACTICAS.map(p => `
-    <article class="practice-card" data-category="${p.categoria}">
-      <div class="card-bar">
-        <span class="tb-dot r"></span><span class="tb-dot y"></span><span class="tb-dot g"></span>
-        <span class="card-filename">${escapeHTML(p.filename)}</span>
-      </div>
-      <div class="card-body">
-        <div class="card-category">${escapeHTML(p.categoria)}</div>
-        <h3 class="card-title">${escapeHTML(p.titulo)}</h3>
-        <p class="card-desc">${escapeHTML(p.resumen)}</p>
-        <div class="card-tags">${p.tags.map(t => `<span>${escapeHTML(t)}</span>`).join('')}</div>
-        <a href="practicas/practica.html?id=${encodeURIComponent(p.id)}" class="card-link">ver práctica <span class="arrow">→</span></a>
-      </div>
-    </article>
-  `).join('');
-
-  setupFilters();
-
-  const params = new URLSearchParams(window.location.search);
-  const filtroInicial = params.get('filtro');
-  if (filtroInicial) {
-    const target = document.querySelector(`[data-filter="${filtroInicial}"]`);
-    if (target) target.click();
+document.addEventListener('DOMContentLoaded', () => {
+  // 1. Lógica del menú lateral interactivo
+  const sidebarToggle = document.getElementById('sidebar-toggle');
+  const sidebar = document.querySelector('.site-sidebar');
+  
+  if (sidebarToggle && sidebar) {
+    sidebarToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+    });
   }
-}
 
-/* ---------- ÍNDICE LATERAL (INTERACTIVO) ---------- */
-function renderSidebarIndex() {
+  // 2. Determinar en qué página estamos
+  const practiceGrid = document.getElementById('practice-grid');
+  const practicaRoot = document.getElementById('practica-root');
+  
+  // Variable para ajustar las rutas según si estamos en la raíz o en /practicas
+  const isDetailPage = !!practicaRoot;
+  const basePath = isDetailPage ? '../' : '';
+
+  // 3. Renderizar el menú lateral
+  renderSidebar(basePath);
+
+  // 4. Renderizar el contenido principal
+  if (practiceGrid) {
+    // Estamos en el index.html
+    renderGrid();
+    setupFilters();
+  } else if (practicaRoot) {
+    // Estamos en practicas/practica.html
+    renderDetail();
+  }
+});
+
+// --- FUNCIONES DE RENDERIZADO ---
+
+function renderSidebar(basePath) {
   const sidebarNav = document.getElementById('sidebar-nav');
   if (!sidebarNav) return;
 
-  const grouped = {};
-  PRACTICAS.forEach(p => {
-    if (!grouped[p.categoria]) grouped[p.categoria] = [];
-    grouped[p.categoria].push(p);
-  });
+  // Comprobamos que el archivo de datos haya cargado
+  if (typeof practicasData === 'undefined') {
+    sidebarNav.innerHTML = '<div style="padding: 15px; color: red;">Error: No se encontraron datos.</div>';
+    return;
+  }
 
-  const categoriasOrdenadas = Object.keys(CATEGORIAS_LABEL);
-  const hayGridLocal = !!document.getElementById('practice-grid');
-  
-  // Determinamos la ruta base para que el enlace vuelva siempre al inicio correcto
-  const rootPath = hayGridLocal ? '' : '../';
+  let html = `<a href="${basePath}index.html" class="sidebar-home-link"><span class="prompt">~</span>/home</a>`;
 
-  // Añadimos el botón de inicio con estilo de comando
-  let html = `<a class="sidebar-home-link" href="${rootPath}index.html"><span class="prompt">$</span> cd ~/inicio</a>`;
+  // Agrupamos por categorías
+  const categories = [...new Set(practicasData.map(p => p.category))];
 
-  categoriasOrdenadas.forEach(cat => {
-    const practicasEnCat = grouped[cat];
-    if (practicasEnCat && practicasEnCat.length > 0) {
-      html += `<div class="sidebar-cat-title">${escapeHTML(CATEGORIAS_LABEL[cat])}</div>`;
-      
-      practicasEnCat.forEach(p => {
-        const destino = hayGridLocal 
-          ? `practicas/practica.html?id=${encodeURIComponent(p.id)}` 
-          : `practica.html?id=${encodeURIComponent(p.id)}`;
-          
-        html += `<a class="sidebar-item-link" href="${destino}" title="${escapeHTML(p.titulo)}">${escapeHTML(p.filename)}</a>`;
-      });
-    }
+  categories.forEach(cat => {
+    html += `<div class="sidebar-cat-title">${cat}</div>`;
+    const items = practicasData.filter(p => p.category === cat);
+    items.forEach(item => {
+      html += `<a href="${basePath}practicas/practica.html?id=${item.id}" class="sidebar-item-link">${item.id}.md</a>`;
+    });
   });
 
   sidebarNav.innerHTML = html;
 }
 
-function setupFilters() {
-  const filterEls = document.querySelectorAll('.filter-btn');
-  const cards = document.querySelectorAll('.practice-card');
+function renderGrid(filter = 'todas') {
+  const grid = document.getElementById('practice-grid');
+  if (!grid || typeof practicasData === 'undefined') return;
 
-  function applyFilter(filter) {
-    filterEls.forEach(el => {
-      el.classList.toggle('active', el.dataset.filter === filter);
-    });
-    cards.forEach(card => {
-      const show = filter === 'todas' || card.dataset.category === filter;
-      card.style.display = show ? '' : 'none';
-    });
-  }
+  grid.innerHTML = ''; // Limpiar el "cargando..."
 
-  filterEls.forEach(el => {
-    el.addEventListener('click', () => applyFilter(el.dataset.filter));
-  });
-}
+  // Filtrar los datos
+  const filteredData = filter === 'todas' 
+    ? practicasData 
+    : practicasData.filter(p => p.categoryId === filter);
 
-/* ---------- DETALLE: página individual de práctica ---------- */
-function renderPracticaDetail() {
-  const root = document.getElementById('practica-root');
-  if (!root) return;
-
-  const params = new URLSearchParams(window.location.search);
-  const id = params.get('id');
-  const practica = getPracticaById(id);
-
-  if (!practica) {
-    root.innerHTML = `
-      <div class="error-state">
-        Error — no se encontró ninguna práctica con id "${escapeHTML(id || '')}"<br><br>
-        <a href="../index.html" style="color:var(--accent)">← volver al índice</a>
-      </div>`;
-    document.title = "Práctica no encontrada";
+  if (filteredData.length === 0) {
+    grid.innerHTML = '<div class="loading-state">No hay prácticas en esta categoría...</div>';
     return;
   }
 
-  document.title = `${practica.titulo} — La SectASIR`;
+  // Generar tarjetas
+  let html = '';
+  filteredData.forEach(p => {
+    const tagsHtml = p.tags.map(t => `<span>${t}</span>`).join('');
+    html += `
+      <a href="practicas/practica.html?id=${p.id}" class="practice-card">
+        <div class="card-bar">
+          <span class="tb-dot r"></span><span class="tb-dot y"></span><span class="tb-dot g"></span>
+          <span class="card-filename">${p.id}.sh</span>
+        </div>
+        <div class="card-body">
+          <div class="card-category">${p.category}</div>
+          <h3 class="card-title">${p.title}</h3>
+          <p class="card-desc">${p.shortDesc}</p>
+          <div class="card-tags">${tagsHtml}</div>
+          <div class="card-link">cat README.md <span class="arrow">→</span></div>
+        </div>
+      </a>
+    `;
+  });
 
-  const idx = PRACTICAS.findIndex(p => p.id === practica.id);
-  const prev = PRACTICAS[idx - 1];
-  const next = PRACTICAS[idx + 1];
+  grid.innerHTML = html;
+}
 
-  root.innerHTML = `
-    <div class="detail-header wrap">
+function setupFilters() {
+  const buttons = document.querySelectorAll('.filter-btn');
+  buttons.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      // Quitar clase active a todos
+      buttons.forEach(b => b.classList.remove('active'));
+      // Ponerla al clicado
+      e.target.classList.add('active');
+      // Renderizar grid con el filtro
+      const filter = e.target.getAttribute('data-filter');
+      renderGrid(filter);
+    });
+  });
+}
+
+function renderDetail() {
+  const root = document.getElementById('practica-root');
+  if (!root || typeof practicasData === 'undefined') return;
+
+  // Sacar la ID de la URL (?id=lo-que-sea)
+  const urlParams = new URLSearchParams(window.location.search);
+  const id = urlParams.get('id');
+
+  const practica = practicasData.find(p => p.id === id);
+
+  if (!practica) {
+    root.innerHTML = `<div class="wrap"><div class="error-state">Error 404: Práctica no encontrada en el sistema.</div></div>`;
+    return;
+  }
+
+  const tagsHtml = practica.tags.map(t => `<span>${t}</span>`).join('');
+
+  // Generar HTML del artículo
+  const html = `
+    <div class="wrap detail-header">
       <div class="breadcrumb">
         <a href="../index.html">~</a>
         <span class="sep">/</span>
         <a href="../index.html#practicas">practicas</a>
         <span class="sep">/</span>
-        <span class="current">${escapeHTML(practica.id)}</span>
+        <span class="current">${practica.id}</span>
       </div>
-
-      <div class="detail-category">${escapeHTML(CATEGORIAS_LABEL[practica.categoria] || practica.categoria)}</div>
-      <h1 class="detail-title">${escapeHTML(practica.titulo)}</h1>
+      <div class="detail-category">${practica.category}</div>
+      <h1 class="detail-title">${practica.title}</h1>
       <div class="detail-meta">
-        ${practica.fecha ? `<span>${escapeHTML(practica.fecha)}</span>` : ''}
-        ${practica.tags.map(t => `<span>${escapeHTML(t)}</span>`).join('')}
+        ${tagsHtml}
       </div>
       <hr class="detail-divider">
     </div>
-
-    <div class="wrap">
-      <div class="detail-body">
-        ${practica.contenidoHTML}
-      </div>
-
-      <div class="detail-nav">
-        ${prev ? `<a href="practica.html?id=${encodeURIComponent(prev.id)}">← ${escapeHTML(prev.titulo)}</a>` : `<span></span>`}
-        <a href="../index.html#practicas" class="to-index">índice</a>
-        ${next ? `<a href="practica.html?id=${encodeURIComponent(next.id)}">${escapeHTML(next.titulo)} →</a>` : `<span></span>`}
-      </div>
+    <div class="wrap detail-body">
+      ${practica.content}
     </div>
   `;
+
+  root.innerHTML = html;
+
+  // INICIALIZAMOS LOS BOTONES DE COPIAR UNA VEZ EL HTML ESTÁ PINTADO
+  initCopyButtons();
 }
 
-/* ---------- auto-ejecución y lógica del toggle ---------- */
-document.addEventListener('DOMContentLoaded', () => {
-  renderSidebarIndex();    
-  renderHomeGrid();        
-  renderPracticaDetail();  
+// --- LÓGICA DEL BOTÓN DE COPIAR ---
 
-  const toggleBtn = document.getElementById('sidebar-toggle');
-  const sidebar = document.querySelector('.site-sidebar');
-
-  if (toggleBtn && sidebar) {
-    toggleBtn.addEventListener('click', (event) => {
-      event.stopPropagation();
-      sidebar.classList.toggle('open');
-    });
-
-    document.addEventListener('click', (event) => {
-      if (sidebar.classList.contains('open') && !sidebar.contains(event.target)) {
-        sidebar.classList.remove('open');
-      }
-    });
-  }
-});
-
-
-// Función para añadir los botones de copiar al código
 function initCopyButtons() {
-  // Buscamos todas las cajas de código del artículo
   const codeBlocks = document.querySelectorAll('.detail-body pre');
 
   codeBlocks.forEach((pre) => {
-    // Si ya tiene botón (por si acaso se ejecuta dos veces), lo saltamos
     if (pre.querySelector('.copy-btn')) return;
 
-    // Creamos el botón
     const button = document.createElement('button');
     button.className = 'copy-btn';
     button.innerText = 'Copiar';
 
-    // Le damos la funcionalidad de copiar
     button.addEventListener('click', () => {
-      // Pillamos el texto puro, sin etiquetas HTML
       const code = pre.querySelector('code');
       const textToCopy = code ? code.innerText : pre.innerText;
 
-      // Usamos la API del portapapeles del navegador
       navigator.clipboard.writeText(textToCopy).then(() => {
-        // Feedback visual
         button.innerText = '¡Copiado!';
         button.classList.add('copied');
 
-        // Lo devolvemos a la normalidad a los 2 segundos
         setTimeout(() => {
           button.innerText = 'Copiar';
           button.classList.remove('copied');
         }, 2000);
+      }).catch(err => {
+        console.error('Error al copiar: ', err);
       });
     });
 
-    // Añadimos el botón dentro de la caja <pre>
     pre.appendChild(button);
   });
 }
