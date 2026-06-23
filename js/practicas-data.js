@@ -204,7 +204,7 @@ docker compose restart</code></pre>
   {
     id: "mariadb-debian13",
     titulo: "Instalación, configuración y uso de MariaDB en Debian 13",
-    categoria: "bbdd",
+    categoria: "gbdd",
     filename: "install-mariadb", 
     resumen: "Guía completa: desde la actualización del sistema y la instalación de MariaDB-server, hasta la fortificación con mysql_secure_installation y la gestión de usuarios.",
     tags: ["MariaDB", "Debian 13", "SQL", "Seguridad", "Usuarios"],
@@ -298,7 +298,7 @@ sudo systemctl enable mariadb</code></pre>
   {
     id: "postgresql-debian13",
     titulo: "Instalación, configuración y uso de PostgreSQL en Debian 13",
-    categoria: "bbdd",
+    categoria: "gbdd",
     filename: "install-postgresql", 
     resumen: "Guía de instalación de PostgreSQL, creación de roles y bases de datos, y resolución del error de autenticación Peer configurando el fichero pg_hba.conf.",
     tags: ["PostgreSQL", "Debian 13", "SQL", "pg_hba.conf", "Seguridad"],
