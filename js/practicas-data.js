@@ -6,11 +6,11 @@
 
 const PRACTICAS = [
 
-/**
- * ============================================================
- * Práctica Docker
- * ============================================================
- */
+  /**
+   * ============================================================
+   * 1. PRÁCTICA: GHOST BLOG CON DOCKER
+   * ============================================================
+   */
   {
     id: "ghost-blog-docker",
     titulo: "Despliegue de Ghost Blog con Docker Compose y migración a VPS",
@@ -193,9 +193,15 @@ docker compose restart</code></pre>
       <h2>Conclusiones</h2>
       <p>Esta práctica cubre un ciclo completo muy realista en infraestructura: levantar un servicio con contenedores, garantizar que los datos no dependan del ciclo de vida de esos contenedores (bind mounts), y llevar todo a producción de forma segura con proxy inverso y HTTPS. La parte que más me ayudó a entender el "por qué" de las cosas fue comprobar la persistencia borrando y recreando los contenedores: ver que el post seguía ahí hizo que el concepto de bind mount dejara de ser teoría y pasara a ser algo tangible.</p>
     `
-  }, // <--- ¡AQUÍ ESTÁ LA COMA CLAVE PARA SEPARAR ARTÍCULOS!
+  },
 
-{
+
+  /**
+   * ============================================================
+   * 2. PRÁCTICA: INSTALACIÓN MARIADB
+   * ============================================================
+   */
+  {
     id: "mariadb-debian13",
     titulo: "Instalación, configuración y uso de MariaDB en Debian 13",
     categoria: "bbdd",
@@ -281,14 +287,15 @@ sudo systemctl enable mariadb</code></pre>
 
       <img src="../img/mariadb/mariadb-9-login.png" alt="Login con el usuario SCOTT" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
     `
-  }
-  
-  
-]; // <--- AQUÍ SE CIERRA EL ARRAY PRACTICAS
+  },
 
 
-
-{
+  /**
+   * ============================================================
+   * 3. PRÁCTICA: INSTALACIÓN POSTGRESQL
+   * ============================================================
+   */
+  {
     id: "postgresql-debian13",
     titulo: "Instalación, configuración y uso de PostgreSQL en Debian 13",
     categoria: "bbdd",
@@ -374,6 +381,8 @@ local   empresa    scott             md5</code></pre>
   }
 
 
+]; // <--- ¡Y AQUÍ SE CIERRA EL ARRAY GENERAL! No añadas prácticas debajo de este corchete.
+
 
 /**
  * ============================================================
@@ -391,4 +400,4 @@ const CATEGORIAS_LABEL = {
 
 function getPracticaById(id) {
   return PRACTICAS.find(p => p.id === id);
-}   
+}
