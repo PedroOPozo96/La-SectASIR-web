@@ -222,7 +222,7 @@ sudo systemctl enable mariadb</code></pre>
 
       <p>Y utilizando <code>sudo systemctl status mariadb</code>, podemos comprobar si el servicio está funcionando correctamente:</p>
       
-      <img src="../img/mariadb-1-status.png" alt="Estado del servicio MariaDB" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+      <img src="../img/mariadb/mariadb-1-status.png" alt="Estado del servicio MariaDB" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
 
       <h2>Configuración inicial de seguridad</h2>
       <p>Paso 2: Una vez que hemos instalado e iniciado MariaDB vamos a realizar una configuración inicial ejecutando:</p>
@@ -232,27 +232,27 @@ sudo systemctl enable mariadb</code></pre>
       <h3>1. Configurar contraseña de root</h3>
       <p>Permite asignar o cambiar la contraseña del usuario administrador (root) de MariaDB. En Debian, normalmente root usa autenticación <code>unix_socket</code> (sin contraseña, solo accesible con sudo), pero aquí puedes forzar el uso de contraseña. En la contraseña ponemos lo que queramos pero yo siempre pongo <strong>root</strong> que es fácil de recordar.</p>
 
-      <img src="../img/mariadb-2-pass.png" alt="Configurar contraseña root" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+      <img src="../img/mariadb/mariadb-2-pass.png" alt="Configurar contraseña root" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
 
       <h3>2. Eliminar usuarios anónimos</h3>
       <p>Borra las cuentas de MariaDB sin nombre de usuario, que permiten entrar sin credenciales. Mejora la seguridad, ya que nadie podrá conectarse "de invitado".</p>
 
-      <img src="../img/mariadb-3-anon.png" alt="Eliminar usuarios anónimos" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+      <img src="../img/mariadb/mariadb-3-anon.png" alt="Eliminar usuarios anónimos" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
 
       <h3>3. Restringir acceso remoto al root</h3>
       <p>Evita que el usuario root se conecte desde otras máquinas por la red. Solo podrá conectarse desde localhost, es decir, desde el propio servidor. Reduce el riesgo de ataques externos.</p>
 
-      <img src="../img/mariadb-4-remote.png" alt="Deshabilitar login remoto root" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+      <img src="../img/mariadb/mariadb-4-remote.png" alt="Deshabilitar login remoto root" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
 
       <h3>4. Eliminar la base de datos de prueba</h3>
       <p>MariaDB trae por defecto una base de datos de pruebas (<code>test</code>) accesible para cualquiera. El script la elimina y también borra sus permisos. Esto evita que se use con fines indebidos.</p>
 
-      <img src="../img/mariadb-5-test.png" alt="Eliminar test db" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+      <img src="../img/mariadb/mariadb-5-test.png" alt="Eliminar test db" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
 
       <h3>5. Recargar privilegios</h3>
       <p>Refresca las tablas de permisos para aplicar de inmediato todos los cambios anteriores.</p>
 
-      <img src="../img/mariadb-6-reload.png" alt="Recargar privilegios" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+      <img src="../img/mariadb/mariadb-6-reload.png" alt="Recargar privilegios" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
 
       <h2>2. Creación de usuarios, base de datos y permisos.</h2>
       <p>En primer lugar vamos a entrar a MariaDB en el modo root para entrar como administradores, podemos hacerlo de dos formas:</p>
@@ -268,18 +268,18 @@ sudo systemctl enable mariadb</code></pre>
       <p>A continuación vamos a crear una base de datos que asignaremos al usuario SCOTT la cual vamos a llamarle <strong>empresa</strong>.</p>
       <pre><code>CREATE DATABASE empresa;</code></pre>
 
-      <img src="../img/mariadb-7-createdb.png" alt="Creación de base de datos empresa" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+      <img src="../img/mariadb/mariadb-7-createdb.png" alt="Creación de base de datos empresa" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
 
       <h3>2.3. Dar permisos al usuario y la base de datos.</h3>
       <pre><code>GRANT ALL PRIVILEGES ON empresa.* TO 'SCOTT'@'localhost';</code></pre>
 
-      <img src="../img/mariadb-8-grant.png" alt="Otorgar privilegios a SCOTT" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+      <img src="../img/mariadb/mariadb-8-grant.png" alt="Otorgar privilegios a SCOTT" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
 
       <h3>2.4. Acceso al usuario nuevo y la Base de datos.</h3>
       <p>Una vez hemos hecho todo lo anterior ya podemos salir del usuario root y vamos a entrar con SCOTT aquí si es importante poner <code>-p</code> porque no es un usuario administrador y nos pedirá la contraseña obligatoriamente.</p>
       <pre><code>mysql -u SCOTT -p</code></pre>
 
-      <img src="../img/mariadb-9-login.png" alt="Login con el usuario SCOTT" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+      <img src="../img/mariadb/mariadb-9-login.png" alt="Login con el usuario SCOTT" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
     `
   }
   
