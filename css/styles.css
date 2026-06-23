@@ -97,10 +97,7 @@ nav .wrap{
   color: var(--celeste);
 }
 
-/* ESTILO DEL NUEVO LOGO SVG */
 .nav-logo {
-  width: 24px;
-  height: 24px;
   transition: transform 0.2s ease-in-out, filter 0.2s ease-in-out;
 }
 .nav-brand:hover .nav-logo {
@@ -287,7 +284,6 @@ nav .wrap{
   overflow-y: auto;
 }
 
-/* BOTÓN DE INICIO EN EL MENÚ LATERAL */
 .sidebar-home-link {
   display: block;
   font-family: var(--mono);
@@ -306,7 +302,6 @@ nav .wrap{
   color: var(--celeste);
 }
 
-/* EL "cd" PARA LA CATEGORÍA */
 .sidebar-cat-title {
   font-family: var(--mono);
   font-size: 12px;
@@ -321,7 +316,6 @@ nav .wrap{
   color: var(--accent);
 }
 
-/* EL "cat" PARA LOS ARTÍCULOS */
 .sidebar-item-link {
   display: block;
   font-family: var(--mono);
@@ -350,7 +344,6 @@ nav .wrap{
   color: var(--accent);
 }
 
-/* ESTILO PARA EL BOTÓN DE TOGGLE (Arriba a la derecha) */
 .sidebar-toggle {
   position: fixed;
   top: 80px; 
@@ -638,4 +631,43 @@ footer{
   .contact-box{ padding: 28px 20px; }
   .detail-nav{ flex-direction: column; }
   .detail-nav a{ max-width: 100%; text-align:center; }
+}
+
+/* ---------- BOTÓN DE COPIAR CÓDIGO ---------- */
+.detail-body pre {
+  position: relative;
+}
+
+.copy-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-family: var(--mono);
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  opacity: 0;
+}
+
+/* Mostrar el botón al pasar el ratón por la caja negra */
+.detail-body pre:hover .copy-btn {
+  opacity: 1;
+}
+
+.copy-btn:hover {
+  background: var(--accent-glow);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+/* Clase dinámica que el JS añadirá cuando se haga clic */
+.copy-btn.copied {
+  background: #27C93F;
+  color: #121F35;
+  border-color: #27C93F;
 }
