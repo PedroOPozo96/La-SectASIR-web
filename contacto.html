@@ -25,28 +25,12 @@
   </div>
 </nav>
 
-<button class="sidebar-toggle" id="sidebar-toggle">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
-</button>
-
-<aside class="site-sidebar">
-  <div class="terminal-window" style="box-shadow: none !important; background: transparent !important; border: none !important;">
-    <div class="terminal-titlebar" style="background: transparent !important; border-bottom: 1px solid #1e293b !important; padding-bottom: 8px;">
-      <span class="tb-dot r"></span><span class="tb-dot y"></span><span class="tb-dot g"></span>
-      <span>La SectASIR — Índice</span>
-    </div>
-    <div class="terminal-body" style="padding: 20px 0; background: transparent !important;">
-      <nav class="sidebar-nav" id="sidebar-nav">
-      </nav>
-    </div>
-  </div>
-</aside>
-
 <section class="section" style="padding-top: 40px;">
   <div class="wrap">
     <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; max-width: 900px; margin: 0 auto;">
       
-      <div id="main-terminal" class="terminal-window" style="box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 100%;">
+      <!-- Formulario real conectado a Formspree -->
+      <form action="https://formspree.io/f/TU_ID_DE_FORMSPREE" method="POST" id="main-terminal" class="terminal-window" style="box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 100%; border: none;">
         <div class="terminal-titlebar">
           <span class="tb-dot r" id="close-terminal-btn" title="Cerrar y volver a inicio"></span><span class="tb-dot y"></span><span class="tb-dot g"></span>
           <span>bash - send_email.sh</span>
@@ -56,66 +40,60 @@
           <div class="nano-header">
             <span>GNU nano 7.2</span>
             <span>Nuevo Mensaje</span>
-            <span></span>
           </div>
 
           <div class="nano-body">
             <div class="nano-input-row">
               <span>Para:</span>
-              <span style="color: #94a3b8; font-weight: normal;">pedro.oliver [at] asir.com</span>
+              <span style="color: #94a3b8;">pedro.oliver [at] asir.com</span>
+            </div>
+            <div class="nano-input-row">
+              <span>De:</span>
+              <input type="email" name="email" class="nano-input" placeholder="Tu correo electrónico..." required>
             </div>
             <div class="nano-input-row" style="border-bottom: 1px solid #334155; padding-bottom: 8px;">
               <span>Asunto:</span>
-              <input type="text" id="email-subject" class="nano-input" placeholder="Escribe el asunto de tu mensaje...">
+              <input type="text" name="subject" id="email-subject" class="nano-input" placeholder="Asunto del mensaje..." required>
             </div>
             
-            <textarea id="email-body" class="nano-textarea" placeholder="Redacta tu mensaje aquí..."></textarea>
+            <textarea name="message" id="email-body" class="nano-textarea" placeholder="Redacta tu mensaje aquí..." required></textarea>
           </div>
 
           <div class="nano-shortcuts">
-            <div class="nano-shortcut" style="cursor: default;"><span>^G</span> Ayuda</div>
-            <div class="nano-shortcut" style="cursor: default;"><span>^O</span> Guardar</div>
+            <div class="nano-shortcut"><span>^G</span> Ayuda</div>
+            <div class="nano-shortcut"><span>^O</span> Guardar</div>
             <a href="index.html" id="nano-exit" class="nano-shortcut"><span>^X</span> Salir</a>
-            <a href="#" onclick="sendNanoEmail(); return false;" class="nano-shortcut"><span>^S</span> Enviar Email</a>
+            <!-- Botón de envío real -->
+            <button type="submit" class="nano-shortcut" style="background: none; border: none; font-family: inherit; font-size: inherit;"><span>^S</span> Enviar Email</button>
           </div>
         </div>
-      </div>
+      </form>
 
     </div>
   </div>
 </section>
 
 <footer>
-  <span style="color: #4ade80;">pedrooliver@asir</span>:<span style="color: #60a5fa;">~/la_sectasir</span> <span style="color: #c084fc;">(admin)</span>$ echo "La SectASIR — gracias por pasarte" — última actualización: junio 2026
+  <span style="color: #4ade80;">pedrooliver@asir</span>:<span style="color: #60a5fa;">~/la_sectasir</span> <span style="color: #c084fc;">(admin)</span>$ echo "La SectASIR — gracias por pasarte"
 </footer>
 
-<script src="js/practicas-data.js"></script>
 <script src="js/render.js"></script>
-
 <script>
-  function sendNanoEmail() {
-    const subject = document.getElementById('email-subject').value;
-    const body = document.getElementById('email-body').value;
-    const emailDestino = 'tu-correo@gmail.com'; 
-    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(emailDestino)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    window.open(gmailUrl, '_blank');
-  }
-
+  // Mantener los atajos de teclado para el botón de enviar
   document.addEventListener('keydown', function(event) {
     if (event.ctrlKey && event.key === 's') {
-      event.preventDefault(); 
-      sendNanoEmail();
+      event.preventDefault();
+      document.querySelector('form').submit();
     }
     if (event.ctrlKey && event.key === 'x') {
       event.preventDefault();
-      document.getElementById('close-terminal-btn').click(); 
+      document.getElementById('close-terminal-btn').click();
     }
   });
 
   document.getElementById('nano-exit').addEventListener('click', function(e) {
     e.preventDefault();
-    const closeBtn = document.getElementById('close-terminal-btn');
-    if(closeBtn) closeBtn.click();
+    document.getElementById('close-terminal-btn').click();
   });
 </script>
 
