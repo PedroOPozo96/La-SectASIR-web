@@ -8,6 +8,94 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/styles.css">
+<style>
+  /* Estilos específicos para el editor Nano */
+  .nano-editor {
+    background: #0f172a;
+    color: #cbd5e1;
+    font-family: var(--mono, 'JetBrains Mono', monospace);
+    display: flex;
+    flex-direction: column;
+    height: 60vh;
+    min-height: 400px;
+    margin: 0;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    overflow: hidden;
+  }
+  .nano-header {
+    background: #e2e8f0;
+    color: #0f172a;
+    padding: 4px 16px;
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    font-size: 0.95rem;
+  }
+  .nano-body {
+    padding: 16px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .nano-input-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .nano-input-row span {
+    color: #60a5fa;
+    font-weight: 600;
+  }
+  .nano-input {
+    background: transparent;
+    border: none;
+    color: #f8fafc;
+    font-family: inherit;
+    font-size: 1rem;
+    flex-grow: 1;
+    outline: none;
+  }
+  .nano-textarea {
+    background: transparent;
+    border: none;
+    color: #f8fafc;
+    font-family: inherit;
+    font-size: 1rem;
+    flex-grow: 1;
+    outline: none;
+    resize: none;
+    margin-top: 16px;
+  }
+  .nano-shortcuts {
+    background: #1e293b;
+    padding: 16px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    font-size: 0.9rem;
+  }
+  .nano-shortcut {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #cbd5e1;
+    cursor: pointer;
+    transition: color 0.2s;
+    text-decoration: none;
+  }
+  .nano-shortcut:hover {
+    color: #f8fafc;
+  }
+  .nano-shortcut span {
+    background: #f8fafc;
+    color: #0f172a;
+    padding: 0 4px;
+    border-radius: 2px;
+    font-weight: bold;
+  }
+</style>
 </head>
 <body>
 
@@ -25,43 +113,51 @@
   </div>
 </nav>
 
-<section class="section" style="padding-top: 40px; min-height: 80vh;">
+<section class="section" style="padding-top: 40px;">
   <div class="wrap">
-    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; max-width: 850px; margin: 0 auto;">
+    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; max-width: 900px; margin: 0 auto;">
       
+      <!-- Ventana principal con ID activado -->
       <div id="main-terminal" class="terminal-window" style="box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 100%;">
         <div class="terminal-titlebar">
           <span class="tb-dot r" id="close-terminal-btn" title="Cerrar y volver a inicio"></span><span class="tb-dot y"></span><span class="tb-dot g"></span>
-          <span>nano contacto.txt</span>
+          <span>bash - send_email.sh</span>
         </div>
         
-        <div class="terminal-body" style="padding: 40px 30px; line-height: 1.6;">
-          <div class="line" style="margin-bottom: 24px;">
-            <span class="prompt" style="color: #4ade80;">pedrooliver@asir</span>:<span class="path" style="color: #60a5fa;">~/la_sectasir</span><span style="color: #c084fc;"> (main)</span>$ cat ping_status.txt
-          </div>
+        <!-- Simulador de Nano -->
+        <div class="nano-editor">
           
-          <h2 style="color: #f8fafc; font-size: 2rem; margin-top: 0; margin-bottom: 16px;">¿Hablamos?</h2>
-          <p style="color: #cbd5e1; font-size: 1.1rem; margin-bottom: 32px;">
-            Estoy buscando mis primeras prácticas o un puesto junior en sistemas. Si tienes algo que encaje en tu infraestructura o simplemente quieres conectar, envíame un mensaje.
-          </p>
-
-          <div style="display: flex; flex-wrap: wrap; gap: 16px;">
-            
-            <a href="#" onclick="window.location.href=atob('bWFpbHRvOnR1LWVtYWlsQGVqZW1wbG8uY29t'); return false;" class="contact-btn primary" style="display: inline-flex; align-items: center; gap: 8px; background: #3b82f6; color: white; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: 600; font-family: var(--mono); transition: background 0.2s;">
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
-              ./send-email.sh →
-            </a>
-            
-            <a href="https://www.linkedin.com/in/pedro-oliver-pozo-18a953210/" target="_blank" rel="noopener" class="contact-btn social-link" style="display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.05); color: #cbd5e1; padding: 10px 20px; border-radius: 6px; text-decoration: none; border: 1px solid rgba(255,255,255,0.1); font-family: var(--mono); transition: all 0.2s;" onmouseover="this.style.backgroundColor='rgba(255,255,255,0.1)'; this.style.color='#f8fafc';" onmouseout="this.style.backgroundColor='rgba(255,255,255,0.05)'; this.style.color='#cbd5e1';">
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.03-1.85-3.03-1.85 0-2.14 1.45-2.14 2.94v5.66H9.36V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45z"/></svg>
-              <span>LinkedIn</span>
-            </a>
-            
-            <a href="https://github.com/PedroOPozo96" target="_blank" rel="noopener" class="contact-btn social-link" style="display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.05); color: #cbd5e1; padding: 10px 20px; border-radius: 6px; text-decoration: none; border: 1px solid rgba(255,255,255,0.1); font-family: var(--mono); transition: all 0.2s;" onmouseover="this.style.backgroundColor='rgba(255,255,255,0.1)'; this.style.color='#f8fafc';" onmouseout="this.style.backgroundColor='rgba(255,255,255,0.05)'; this.style.color='#cbd5e1';">
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 2C6.48 2 2 6.58 2 12.21c0 4.51 2.87 8.33 6.84 9.68.5.1.68-.22.68-.49 0-.24-.01-1.05-.01-1.9-2.79.51-3.51-.7-3.74-1.34-.13-.34-.67-1.39-1.14-1.67-.39-.21-.95-.74-.01-.75.88-.01 1.51.83 1.72 1.18 1.01 1.7 2.62 1.22 3.27.93.1-.74.39-1.22.71-1.5-2.49-.29-5.1-1.27-5.1-5.65 0-1.25.43-2.27 1.14-3.07-.11-.29-.49-1.46.11-3.04 0 0 .94-.31 3.07 1.17a10.4 10.4 0 0 1 5.6 0c2.13-1.49 3.07-1.17 3.07-1.17.6 1.58.22 2.75.11 3.04.71.8 1.14 1.81 1.14 3.07 0 4.39-2.62 5.36-5.11 5.65.4.36.75 1.06.75 2.13 0 1.54-.01 2.78-.01 3.16 0 .27.18.6.68.49C19.13 20.53 22 16.71 22 12.21 22 6.58 17.52 2 12 2z"/></svg>
-              <span>GitHub</span>
-            </a>
+          <div class="nano-header">
+            <span>GNU nano 7.2</span>
+            <span>Nuevo Mensaje</span>
+            <span></span>
           </div>
+
+          <div class="nano-body">
+            <div class="nano-input-row">
+              <span>Para:</span>
+              <span style="color: #94a3b8; font-weight: normal;">pedro.oliver [at] asir.com</span>
+            </div>
+            <div class="nano-input-row" style="border-bottom: 1px solid #334155; padding-bottom: 8px;">
+              <span>Asunto:</span>
+              <input type="text" id="email-subject" class="nano-input" placeholder="Escribe el asunto de tu mensaje...">
+            </div>
+            
+            <textarea id="email-body" class="nano-textarea" placeholder="Redacta tu mensaje aquí..."></textarea>
+          </div>
+
+          <!-- Botonera inferior de atajos -->
+          <div class="nano-shortcuts">
+            <div class="nano-shortcut" style="cursor: default;"><span>^G</span> Ayuda</div>
+            <div class="nano-shortcut" style="cursor: default;"><span>^O</span> Guardar</div>
+            
+            <!-- Botón Salir (Simula el botón rojo) -->
+            <a href="index.html" id="nano-exit" class="nano-shortcut"><span>^X</span> Salir</a>
+            
+            <!-- Botón Enviar (Lanza el script) -->
+            <a href="#" onclick="sendNanoEmail(); return false;" class="nano-shortcut"><span>^S</span> Enviar Email</a>
+          </div>
+
         </div>
       </div>
 
@@ -75,6 +171,42 @@
 
 <script src="js/practicas-data.js"></script>
 <script src="js/render.js"></script>
+
+<!-- Script para el editor Nano interactivo -->
+<script>
+  function sendNanoEmail() {
+    const subject = document.getElementById('email-subject').value;
+    const body = document.getElementById('email-body').value;
+    
+    // Hash de tu correo (actualmente: mailto:tu-email@ejemplo.com)
+    // Para poner el tuyo propio: abre la consola del navegador y teclea btoa('mailto:tu-correo@gmail.com') y pégalo aquí
+    const target = atob('bWFpbHRvOnR1LWVtYWlsQGVqZW1wbG8uY29t'); 
+    
+    const mailtoUrl = target + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+    window.location.href = mailtoUrl;
+  }
+
+  // Atajos de teclado reales para los más frikis
+  document.addEventListener('keydown', function(event) {
+    // Si pulsa Ctrl+S
+    if (event.ctrlKey && event.key === 's') {
+      event.preventDefault(); // Evita que el navegador intente guardar la página web
+      sendNanoEmail();
+    }
+    // Si pulsa Ctrl+X
+    if (event.ctrlKey && event.key === 'x') {
+      event.preventDefault();
+      document.getElementById('close-terminal-btn').click(); // Dispara la animación de salida
+    }
+  });
+
+  // Hacemos que el botón ^X de abajo use también la animación del botón rojo
+  document.getElementById('nano-exit').addEventListener('click', function(e) {
+    e.preventDefault();
+    const closeBtn = document.getElementById('close-terminal-btn');
+    if(closeBtn) closeBtn.click();
+  });
+</script>
 
 </body>
 </html>
