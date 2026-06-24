@@ -19,7 +19,7 @@ const PRACTICAS = [
     extension: ".pdf",
     resumen: "Instalación de Ghost Blog con MySQL 8.0 en Docker Compose, persistencia con bind mounts, y migración a un VPS con Nginx como proxy inverso y HTTPS mediante Let's Encrypt.",
     tags: ["Docker Compose", "Ghost", "MySQL", "Nginx", "Let's Encrypt"],
-    fecha: "2026",
+    fecha: "Junio 2026",
     contenidoHTML: `
       <h2>Objetivo</h2>
       <p>Instalar la plataforma de blogging <strong>Ghost</strong> junto con una base de datos <strong>MySQL 8.0</strong> usando Docker Compose, garantizando la persistencia de los datos mediante bind mounts. Después, migrar todo el proyecto a un VPS, exponerlo con <strong>Nginx</strong> como proxy inverso y asegurar el acceso con un certificado SSL de <strong>Let's Encrypt</strong>.</p>
@@ -209,7 +209,7 @@ docker compose restart</code></pre>
     extension: ".pdf",
     resumen: "Guía completa: desde la actualización del sistema y la instalación de MariaDB-server, hasta la fortificación con mysql_secure_installation y la gestión de usuarios.",
     tags: ["MariaDB", "Debian 13", "SQL", "Seguridad", "Usuarios"],
-    fecha: "2025",
+    fecha: "Junio 2026",
     contenidoHTML: `
       <h2>1. Instalación de MariaDB</h2>
       <p>Paso 1: Vamos a abrir el terminal y vamos a ejecutar los siguientes comandos:</p>
@@ -303,7 +303,7 @@ sudo systemctl enable mariadb</code></pre>
     extension: ".pdf",
     resumen: "Guía de instalación de PostgreSQL, creación de roles y bases de datos, y resolución del error de autenticación Peer configurando el fichero pg_hba.conf.",
     tags: ["PostgreSQL", "Debian 13", "SQL", "pg_hba.conf", "Seguridad"],
-    fecha: "2025",
+    fecha: "Junio 2026",
     contenidoHTML: `
       <h2>1. Instalación de PostgreSQL</h2>
       <p>Vamos a abrir el terminal y ejecutar los siguientes comandos para actualizar el sistema e instalar el servidor junto con sus contribuciones adicionales:</p>
