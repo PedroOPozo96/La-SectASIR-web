@@ -1,8 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // 1. ENRUTADOR: Detectamos en qué página estamos leyendo los parámetros de la URL
+  // 1. Cargamos el menú lateral (índice) en todas las páginas
+  setupSidebar();
+  renderSidebar();
+
+  // 2. ENRUTADOR: Detectamos en qué página estamos leyendo los parámetros de la URL
   const urlParams = new URLSearchParams(window.location.search);
   const idPractica = urlParams.get('id');
-  const catPractica = urlParams.get('cat'); // Añadido para recordar la carpeta
+  const catPractica = urlParams.get('cat'); 
 
   if (idPractica) {
     // Si hay una ID en la URL, estamos en practicas/practica.html
@@ -19,6 +23,47 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* ==========================================================================
+   LÓGICA DEL MENÚ LATERAL (ÍNDICE)
+   ========================================================================== */
+
+function setupSidebar() {
+  const toggleBtn = document.getElementById('sidebar-toggle');
+  const sidebar = document.querySelector('.site-sidebar');
+
+  if (toggleBtn && sidebar) {
+    toggleBtn.addEventListener('click', () => {
+      // Alternamos una clase para abrir/cerrar. Tu CSS original debería manejar esto
+      sidebar.classList.toggle('open');
+      sidebar.classList.toggle('active'); // Por si tu CSS usa 'active' en lugar de 'open'
+    });
+  }
+}
+
+function renderSidebar() {
+  const sidebarNav = document.getElementById('sidebar-nav');
+  if (!sidebarNav || typeof PRACTICAS === 'undefined') return;
+
+  // Comprobamos si estamos dentro de la carpeta 'practicas' para ajustar las rutas de los enlaces
+  const isInsidePracticas = window.location.pathname.includes('/practicas/');
+  const pathPrefix = isInsidePracticas ? '' : 'practicas/';
+
+  let html = '';
+  PRACTICAS.forEach(p => {
+    // Generamos un enlace por cada práctica
+    const nombreArchivo = p.filename || p.id;
+    html += `
+      <div class="line" style="margin-bottom: 8px;">
+        <a href="${pathPrefix}practica.html?id=${p.id}" style="color: #cbd5e1; text-decoration: none; font-family: var(--mono); font-size: 0.9rem;" onmouseover="this.style.color='#60a5fa'" onmouseout="this.style.color='#cbd5e1'">
+          ./${nombreArchivo}.sh
+        </a>
+      </div>
+    `;
+  });
+
+  sidebarNav.innerHTML = html;
+}
+
+/* ==========================================================================
    LÓGICA DE LA PORTADA (CARPETAS Y FICHEROS)
    ========================================================================== */
 
@@ -26,7 +71,6 @@ function setupNavigation() {
   const folders = document.querySelectorAll('.folder-btn');
   const btnBack = document.getElementById('btn-back');
 
-  // Si no existen los botones de carpeta (porque no estamos en el index), salimos
   if (folders.length === 0) return;
 
   folders.forEach(btn => {
@@ -64,8 +108,6 @@ function closeDirectory() {
   document.getElementById('files-view').style.display = 'none';
   
   document.getElementById('path-prompt').innerText = `pedrooliver@asir:~/la_sectasir/practicas$ ls -la`;
-  
-  // Limpiamos la URL para no arrastrar la categoría si recargamos en la raíz
   window.history.pushState({}, document.title, window.location.pathname + '#practicas');
 }
 
@@ -117,7 +159,6 @@ function renderGrid(filtro) {
 function renderSinglePractica(id) {
   if (typeof PRACTICAS === 'undefined') return;
   
-  // Buscamos la práctica en el array de practicas-data.js
   const practica = PRACTICAS.find(p => p.id === id);
   
   if (!practica) {
@@ -126,10 +167,8 @@ function renderSinglePractica(id) {
     return;
   }
 
-  // Actualizamos el título de la pestaña del navegador
   document.title = practica.titulo + " — La SectASIR";
 
-  // Inyectamos los datos en los contenedores de practica.html
   const tituloEl = document.getElementById('practica-titulo');
   const contenidoEl = document.getElementById('practica-contenido');
   const fechaEl = document.getElementById('practica-fecha');
@@ -143,15 +182,22 @@ function renderSinglePractica(id) {
     tagsEl.innerHTML = practica.tags.map(t => `<span class="stack-tag">${t}</span>`).join('');
   }
 
-  // MAGIA: Configuramos dinámicamente el botón de volver para que recuerde la categoría
   const urlRetorno = `../index.html?cat=${practica.categoria}#practicas`;
   
-  // 1. Modificamos el enlace normal de "cd .."
   const btnBack = document.getElementById('btn-back-to-folder');
   if (btnBack) {
     btnBack.href = urlRetorno;
   }
   
-  // 2. Guardamos la variable global para el script de animación del botón rojo
-  window.returnToFolderUrl = urlRetorno;
+  const closeBtn = document.getElementById('close-terminal-btn');
+  const terminalApp = document.getElementById('main-terminal');
+
+  if (closeBtn && terminalApp) {
+    closeBtn.addEventListener('click', () => {
+      terminalApp.classList.add('minimize-animation');
+      setTimeout(() => {
+        window.location.href = urlRetorno;
+      }, 400);
+    });
+  }
 }
