@@ -56,32 +56,66 @@ function renderSidebar() {
     </div>
   `;
 
-  // 2. Agrupamos las prácticas por categoría
+  // 2. Agrupamos las prácticas por categoría (normalizando a minúsculas)
   const categorias = {};
   PRACTICAS.forEach(p => {
-    const cat = p.categoria || 'otras';
+    const cat = p.categoria ? p.categoria.toLowerCase() : 'otras';
     if (!categorias[cat]) categorias[cat] = [];
     categorias[cat].push(p);
   });
 
-  // 3. Renderizamos cada grupo con su cabecera "cd /carpeta" y sus archivos "cat archivo"
-  for (const cat in categorias) {
-    html += `
-      <div style="color: #4ade80; margin-top: 16px; margin-bottom: 6px; font-family: var(--mono); font-size: 0.85rem; font-weight: 600;">
-        cd /${cat.toLowerCase()}
-      </div>
-    `;
-    
-    categorias[cat].forEach(p => {
-      const nombreArchivo = p.filename || p.id;
+  // SINCRONIZACIÓN DE SYSADMIN: Orden exacto y alias en mayúsculas para las etiquetas "cd"
+  const ordenCategorias = ['gbdd', 'redes', 'servicios', 'iaw', 'infraestructura'];
+  const nombreVisible = {
+    'gbdd': 'GBDD',
+    'redes': 'REDES',
+    'servicios': 'SERVICIOS',
+    'iaw': 'IAW',
+    'infraestructura': 'IV',
+    'otras': 'OTRAS'
+  };
+
+  // 3. Renderizamos cada grupo siguiendo rigurosamente el nuevo orden establecido
+  ordenCategorias.forEach(cat => {
+    if (categorias[cat] && categorias[cat].length > 0) {
       html += `
-        <div class="line" style="margin-bottom: 8px; padding-left: 12px;">
-          <a href="${pathPrefix}practica.html?id=${p.id}" style="color: #cbd5e1; text-decoration: none; font-family: var(--mono); font-size: 0.85rem;" onmouseover="this.style.color='#f8fafc'" onmouseout="this.style.color='#cbd5e1'">
-            cat ${nombreArchivo}.md
-          </a>
+        <div style="color: #4ade80; margin-top: 16px; margin-bottom: 6px; font-family: var(--mono); font-size: 0.85rem; font-weight: 600;">
+          cd /${nombreVisible[cat]}
         </div>
       `;
-    });
+      
+      categorias[cat].forEach(p => {
+        const nombreArchivo = p.filename || p.id;
+        html += `
+          <div class="line" style="margin-bottom: 8px; padding-left: 12px;">
+            <a href="${pathPrefix}practica.html?id=${p.id}" style="color: #cbd5e1; text-decoration: none; font-family: var(--mono); font-size: 0.85rem;" onmouseover="this.style.color='#f8fafc'" onmouseout="this.style.color='#cbd5e1'">
+              cat ${nombreArchivo}.md
+            </a>
+          </div>
+        `;
+      });
+    }
+  });
+
+  // Bucle de seguridad por si en el futuro introduces una categoría fuera del mapa de asignaturas
+  for (const cat in categorias) {
+    if (!ordenCategorias.includes(cat)) {
+      html += `
+        <div style="color: #4ade80; margin-top: 16px; margin-bottom: 6px; font-family: var(--mono); font-size: 0.85rem; font-weight: 600;">
+          cd /${cat.toUpperCase()}
+        </div>
+      `;
+      categorias[cat].forEach(p => {
+        const nombreArchivo = p.filename || p.id;
+        html += `
+          <div class="line" style="margin-bottom: 8px; padding-left: 12px;">
+            <a href="${pathPrefix}practica.html?id=${p.id}" style="color: #cbd5e1; text-decoration: none; font-family: var(--mono); font-size: 0.85rem;" onmouseover="this.style.color='#f8fafc'" onmouseout="this.style.color='#cbd5e1'">
+              cat ${nombreArchivo}.md
+            </a>
+          </div>
+        `;
+      });
+    }
   }
 
   sidebarNav.innerHTML = html;
