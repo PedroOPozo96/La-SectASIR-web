@@ -859,3 +859,26 @@ footer{
   font-family: var(--mono, 'JetBrains Mono', monospace);
   color: #94a3b8;
 }
+
+
+/* ==========================================================================
+   ANIMACIÓN DEL ÍNDICE LATERAL (Aparece y desaparece desde el botón)
+   ========================================================================== */
+.site-sidebar {
+  /* Fija el punto de origen de la animación en la esquina superior derecha */
+  transform-origin: top right;
+  /* Estado cerrado: la ventana es más pequeña, transparente y está ligeramente movida hacia el botón */
+  transform: scale(0.4) translate(40px, -40px) !important;
+  opacity: 0 !important;
+  visibility: hidden;
+  /* Transición con un efecto fluido y ligeramente "elástico" (rebote) al final */
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1.1), opacity 0.25s ease, visibility 0.35s !important;
+}
+
+.site-sidebar.open, .site-sidebar.active {
+  /* Estado abierto: tamaño real, visible y en su posición original */
+  transform: scale(1) translate(0, 0) !important;
+  opacity: 1 !important;
+  visibility: visible;
+}
+
