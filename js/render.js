@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Si venimos rebotados de una práctica, abrimos su carpeta directamente
     if (catPractica) {
-      openDirectory(catPractica);
+      openDirectory(catPractica.toLowerCase()); 
     }
   }
 });
@@ -32,9 +32,8 @@ function setupSidebar() {
 
   if (toggleBtn && sidebar) {
     toggleBtn.addEventListener('click', () => {
-      // Alternamos una clase para abrir/cerrar. Tu CSS original debería manejar esto
       sidebar.classList.toggle('open');
-      sidebar.classList.toggle('active'); // Por si tu CSS usa 'active' en lugar de 'open'
+      sidebar.classList.toggle('active');
     });
   }
 }
@@ -43,22 +42,47 @@ function renderSidebar() {
   const sidebarNav = document.getElementById('sidebar-nav');
   if (!sidebarNav || typeof PRACTICAS === 'undefined') return;
 
-  // Comprobamos si estamos dentro de la carpeta 'practicas' para ajustar las rutas de los enlaces
+  // Calculamos rutas dependiendo de si estamos en la raíz o dentro de /practicas
   const isInsidePracticas = window.location.pathname.includes('/practicas/');
   const pathPrefix = isInsidePracticas ? '' : 'practicas/';
+  const homePath = isInsidePracticas ? '../index.html' : 'index.html';
 
-  let html = '';
+  // 1. Añadimos el enlace para volver al inicio siempre arriba
+  let html = `
+    <div class="line" style="margin-bottom: 16px; border-bottom: 1px solid #1e293b; padding-bottom: 12px;">
+      <a href="${homePath}" style="color: #60a5fa; text-decoration: none; font-family: var(--mono); font-size: 0.9rem; font-weight: bold;" onmouseover="this.style.color='#93c5fd'" onmouseout="this.style.color='#60a5fa'">
+        cd ~/la_sectasir (inicio)
+      </a>
+    </div>
+  `;
+
+  // 2. Agrupamos las prácticas por categoría
+  const categorias = {};
   PRACTICAS.forEach(p => {
-    // Generamos un enlace por cada práctica
-    const nombreArchivo = p.filename || p.id;
+    const cat = p.categoria || 'otras';
+    if (!categorias[cat]) categorias[cat] = [];
+    categorias[cat].push(p);
+  });
+
+  // 3. Renderizamos cada grupo con su cabecera "cd /carpeta" y sus archivos "cat archivo"
+  for (const cat in categorias) {
     html += `
-      <div class="line" style="margin-bottom: 8px;">
-        <a href="${pathPrefix}practica.html?id=${p.id}" style="color: #cbd5e1; text-decoration: none; font-family: var(--mono); font-size: 0.9rem;" onmouseover="this.style.color='#60a5fa'" onmouseout="this.style.color='#cbd5e1'">
-          ./${nombreArchivo}.sh
-        </a>
+      <div style="color: #4ade80; margin-top: 16px; margin-bottom: 6px; font-family: var(--mono); font-size: 0.85rem; font-weight: 600;">
+        cd /${cat.toLowerCase()}
       </div>
     `;
-  });
+    
+    categorias[cat].forEach(p => {
+      const nombreArchivo = p.filename || p.id;
+      html += `
+        <div class="line" style="margin-bottom: 8px; padding-left: 12px;">
+          <a href="${pathPrefix}practica.html?id=${p.id}" style="color: #cbd5e1; text-decoration: none; font-family: var(--mono); font-size: 0.85rem;" onmouseover="this.style.color='#f8fafc'" onmouseout="this.style.color='#cbd5e1'">
+            cat ${nombreArchivo}.md
+          </a>
+        </div>
+      `;
+    });
+  }
 
   sidebarNav.innerHTML = html;
 }
@@ -96,7 +120,7 @@ function openDirectory(categoria) {
     foldersView.style.display = 'none';
     filesView.style.display = 'block';
 
-    const dirName = categoria === 'todas' ? '' : `/${categoria}`;
+    const dirName = categoria === 'todas' ? '' : `/${categoria.toLowerCase()}`;
     document.getElementById('path-prompt').innerText = `pedrooliver@asir:~/la_sectasir/practicas${dirName}$ ls -la`;
 
     renderGrid(categoria);
@@ -119,7 +143,7 @@ function renderGrid(filtro) {
 
   const datosFiltrados = filtro === 'todas' 
     ? PRACTICAS 
-    : PRACTICAS.filter(p => p.categoria === filtro);
+    : PRACTICAS.filter(p => p.categoria && p.categoria.toLowerCase() === filtro.toLowerCase());
 
   if (datosFiltrados.length === 0) {
     grid.innerHTML = '<div class="loading-state">El directorio está vacío...</div>';
@@ -182,7 +206,8 @@ function renderSinglePractica(id) {
     tagsEl.innerHTML = practica.tags.map(t => `<span class="stack-tag">${t}</span>`).join('');
   }
 
-  const urlRetorno = `../index.html?cat=${practica.categoria}#practicas`;
+  const safeCategory = practica.categoria ? practica.categoria.toLowerCase() : 'todas';
+  const urlRetorno = `../index.html?cat=${safeCategory}#practicas`;
   
   const btnBack = document.getElementById('btn-back-to-folder');
   if (btnBack) {
