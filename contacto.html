@@ -113,6 +113,23 @@
   </div>
 </nav>
 
+<button class="sidebar-toggle" id="sidebar-toggle">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
+</button>
+
+<aside class="site-sidebar">
+  <div class="terminal-window" style="box-shadow: none !important; background: transparent !important; border: none !important;">
+    <div class="terminal-titlebar" style="background: transparent !important; border-bottom: 1px solid #1e293b !important; padding-bottom: 8px;">
+      <span class="tb-dot r"></span><span class="tb-dot y"></span><span class="tb-dot g"></span>
+      <span>La SectASIR — Índice</span>
+    </div>
+    <div class="terminal-body" style="padding: 20px 0; background: transparent !important;">
+      <nav class="sidebar-nav" id="sidebar-nav">
+      </nav>
+    </div>
+  </div>
+</aside>
+
 <section class="section" style="padding-top: 40px;">
   <div class="wrap">
     <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; max-width: 900px; margin: 0 auto;">
@@ -154,7 +171,7 @@
             <!-- Botón Salir (Simula el botón rojo) -->
             <a href="index.html" id="nano-exit" class="nano-shortcut"><span>^X</span> Salir</a>
             
-            <!-- Botón Enviar (Lanza el script) -->
+            <!-- Botón Enviar (Lanza el script a Gmail) -->
             <a href="#" onclick="sendNanoEmail(); return false;" class="nano-shortcut"><span>^S</span> Enviar Email</a>
           </div>
 
@@ -172,35 +189,34 @@
 <script src="js/practicas-data.js"></script>
 <script src="js/render.js"></script>
 
-<!-- Script para el editor Nano interactivo -->
+<!-- Script para el editor Nano interactivo con Gmail -->
 <script>
   function sendNanoEmail() {
     const subject = document.getElementById('email-subject').value;
     const body = document.getElementById('email-body').value;
     
-    // Hash de tu correo (actualmente: mailto:tu-email@ejemplo.com)
-    // Para poner el tuyo propio: abre la consola del navegador y teclea btoa('mailto:tu-correo@gmail.com') y pégalo aquí
-    const target = atob('bWFpbHRvOnR1LWVtYWlsQGVqZW1wbG8uY29t'); 
+    // Configura aquí tu cuenta de Gmail real
+    const emailDestino = 'tu-correo@gmail.com'; 
     
-    const mailtoUrl = target + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
-    window.location.href = mailtoUrl;
+    // URL directa al redactor web de Gmail
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(emailDestino)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    
+    // Abrimos Gmail en una nueva pestaña
+    window.open(gmailUrl, '_blank');
   }
 
-  // Atajos de teclado reales para los más frikis
+  // Atajos de teclado
   document.addEventListener('keydown', function(event) {
-    // Si pulsa Ctrl+S
     if (event.ctrlKey && event.key === 's') {
-      event.preventDefault(); // Evita que el navegador intente guardar la página web
+      event.preventDefault(); 
       sendNanoEmail();
     }
-    // Si pulsa Ctrl+X
     if (event.ctrlKey && event.key === 'x') {
       event.preventDefault();
-      document.getElementById('close-terminal-btn').click(); // Dispara la animación de salida
+      document.getElementById('close-terminal-btn').click(); 
     }
   });
 
-  // Hacemos que el botón ^X de abajo use también la animación del botón rojo
   document.getElementById('nano-exit').addEventListener('click', function(e) {
     e.preventDefault();
     const closeBtn = document.getElementById('close-terminal-btn');
