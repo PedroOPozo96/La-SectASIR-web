@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // 1. ENRUTADOR: Detectamos en qué página estamos leyendo los parámetros de la URL
   const urlParams = new URLSearchParams(window.location.search);
   const idPractica = urlParams.get('id');
+  const catPractica = urlParams.get('cat'); // Añadido para recordar la carpeta
 
   if (idPractica) {
     // Si hay una ID en la URL, estamos en practicas/practica.html
@@ -9,6 +10,11 @@ document.addEventListener('DOMContentLoaded', () => {
   } else {
     // Si no hay ID, estamos en la portada (index.html)
     setupNavigation();
+    
+    // Si venimos rebotados de una práctica, abrimos su carpeta directamente
+    if (catPractica) {
+      openDirectory(catPractica);
+    }
   }
 });
 
@@ -39,13 +45,18 @@ function setupNavigation() {
 }
 
 function openDirectory(categoria) {
-  document.getElementById('gui-folders').style.display = 'none';
-  document.getElementById('files-view').style.display = 'block';
+  const foldersView = document.getElementById('gui-folders');
+  const filesView = document.getElementById('files-view');
+  
+  if(foldersView && filesView) {
+    foldersView.style.display = 'none';
+    filesView.style.display = 'block';
 
-  const dirName = categoria === 'todas' ? '' : `/${categoria}`;
-  document.getElementById('path-prompt').innerText = `pedrooliver@asir:~/la_sectasir/practicas${dirName}$ ls -la`;
+    const dirName = categoria === 'todas' ? '' : `/${categoria}`;
+    document.getElementById('path-prompt').innerText = `pedrooliver@asir:~/la_sectasir/practicas${dirName}$ ls -la`;
 
-  renderGrid(categoria);
+    renderGrid(categoria);
+  }
 }
 
 function closeDirectory() {
@@ -53,6 +64,9 @@ function closeDirectory() {
   document.getElementById('files-view').style.display = 'none';
   
   document.getElementById('path-prompt').innerText = `pedrooliver@asir:~/la_sectasir/practicas$ ls -la`;
+  
+  // Limpiamos la URL para no arrastrar la categoría si recargamos en la raíz
+  window.history.pushState({}, document.title, window.location.pathname + '#practicas');
 }
 
 function renderGrid(filtro) {
@@ -107,7 +121,6 @@ function renderSinglePractica(id) {
   const practica = PRACTICAS.find(p => p.id === id);
   
   if (!practica) {
-    // Si meten una URL con una ID que no existe
     const container = document.querySelector('main') || document.body;
     container.innerHTML = '<div style="text-align:center; padding: 100px 20px;"><h1 style="color:#ef4444;">Error 404</h1><p>El fichero solicitado no existe en el sistema.</p><a href="../index.html" style="color:#60a5fa; text-decoration:none;">cd .. (volver al inicio)</a></div>';
     return;
@@ -129,4 +142,16 @@ function renderSinglePractica(id) {
   if (tagsEl && practica.tags) {
     tagsEl.innerHTML = practica.tags.map(t => `<span class="stack-tag">${t}</span>`).join('');
   }
+
+  // MAGIA: Configuramos dinámicamente el botón de volver para que recuerde la categoría
+  const urlRetorno = `../index.html?cat=${practica.categoria}#practicas`;
+  
+  // 1. Modificamos el enlace normal de "cd .."
+  const btnBack = document.getElementById('btn-back-to-folder');
+  if (btnBack) {
+    btnBack.href = urlRetorno;
+  }
+  
+  // 2. Guardamos la variable global para el script de animación del botón rojo
+  window.returnToFolderUrl = urlRetorno;
 }
