@@ -9,13 +9,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const catPractica = urlParams.get('cat'); 
 
   if (idPractica) {
-    // Si hay una ID en la URL, estamos en practicas/practica.html
     renderSinglePractica(idPractica);
   } else {
-    // Si no hay ID, estamos en la portada (index.html)
+    // Escaneamos las prácticas y actualizamos los iconos ANTES de cargar la navegación
+    updateFolderIcons(); 
     setupNavigation();
     
-    // Si venimos rebotados de una práctica, abrimos su carpeta directamente
     if (catPractica) {
       openDirectory(catPractica.toLowerCase()); 
     }
@@ -42,12 +41,10 @@ function renderSidebar() {
   const sidebarNav = document.getElementById('sidebar-nav');
   if (!sidebarNav || typeof PRACTICAS === 'undefined') return;
 
-  // Calculamos rutas dependiendo de si estamos en la raíz o dentro de /practicas
   const isInsidePracticas = window.location.pathname.includes('/practicas/');
   const pathPrefix = isInsidePracticas ? '' : 'practicas/';
   const homePath = isInsidePracticas ? '../index.html' : 'index.html';
 
-  // 1. Añadimos el enlace para volver al inicio siempre arriba
   let html = `
     <div class="line" style="margin-bottom: 16px; border-bottom: 1px solid #1e293b; padding-bottom: 12px;">
       <a href="${homePath}" style="color: #60a5fa; text-decoration: none; font-family: var(--mono); font-size: 0.9rem; font-weight: bold;" onmouseover="this.style.color='#93c5fd'" onmouseout="this.style.color='#60a5fa'">
@@ -56,7 +53,6 @@ function renderSidebar() {
     </div>
   `;
 
-  // 2. Agrupamos las prácticas por categoría (normalizando a minúsculas)
   const categorias = {};
   PRACTICAS.forEach(p => {
     const cat = p.categoria ? p.categoria.toLowerCase() : 'otras';
@@ -64,7 +60,6 @@ function renderSidebar() {
     categorias[cat].push(p);
   });
 
-  // SINCRONIZACIÓN DE SYSADMIN: Orden exacto y alias en mayúsculas para las etiquetas "cd"
   const ordenCategorias = ['gbdd', 'redes', 'servicios', 'iaw', 'infraestructura'];
   const nombreVisible = {
     'gbdd': 'GBDD',
@@ -75,7 +70,6 @@ function renderSidebar() {
     'otras': 'OTRAS'
   };
 
-  // 3. Renderizamos cada grupo siguiendo rigurosamente el nuevo orden establecido
   ordenCategorias.forEach(cat => {
     if (categorias[cat] && categorias[cat].length > 0) {
       html += `
@@ -97,7 +91,6 @@ function renderSidebar() {
     }
   });
 
-  // Bucle de seguridad por si en el futuro introduces una categoría fuera del mapa de asignaturas
   for (const cat in categorias) {
     if (!ordenCategorias.includes(cat)) {
       html += `
@@ -124,6 +117,49 @@ function renderSidebar() {
 /* ==========================================================================
    LÓGICA DE LA PORTADA (CARPETAS Y FICHEROS)
    ========================================================================== */
+
+// Novedad: Función que lee los archivos y cambia el diseño visual de las carpetas
+function updateFolderIcons() {
+  const folders = document.querySelectorAll('.folder-btn');
+  
+  folders.forEach(btn => {
+    const category = btn.getAttribute('data-target');
+    const spanElement = btn.querySelector('span');
+    const spanText = spanElement ? spanElement.innerText : category;
+    
+    let count = 0;
+    if (category === 'todas') {
+      count = typeof PRACTICAS !== 'undefined' ? PRACTICAS.length : 0;
+    } else {
+      count = typeof PRACTICAS !== 'undefined' ? PRACTICAS.filter(p => p.categoria && p.categoria.toLowerCase() === category.toLowerCase()).length : 0;
+    }
+
+    if (count > 0) {
+      // DISEÑO: Carpeta ABIERTA con documentos (Categoría con contenido)
+      btn.innerHTML = `
+        <svg viewBox="0 0 24 24" width="64" height="64">
+          <!-- Trasera de la carpeta -->
+          <path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z" fill="#3b82f6" opacity="0.6"/>
+          <!-- Documento blanco asomando -->
+          <path d="M15 8H7v10h10V10l-2-2z" fill="#e2e8f0"/>
+          <!-- Líneas de texto del documento -->
+          <path d="M9 11h5v1H9zm0 2h6v1H9zm0 2h4v1H9z" fill="#94a3b8"/>
+          <!-- Solapa delantera abierta e inclinada -->
+          <path d="M2.01 19.5c0 .83.67 1.5 1.5 1.5h15.07c.64 0 1.19-.4 1.39-.99l2.88-8.52c.18-.53-.21-1.09-.76-1.09H4.17c-.64 0-1.19.4-1.39.99L2.01 19.5z" fill="#60a5fa"/>
+        </svg>
+        <span style="color: #f8fafc;">${spanText}</span>
+      `;
+    } else {
+      // DISEÑO: Carpeta CERRADA y grisácea (Categoría vacía)
+      btn.innerHTML = `
+        <svg viewBox="0 0 24 24" width="64" height="64" fill="#475569">
+          <path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/>
+        </svg>
+        <span style="color: #64748b;">${spanText}</span>
+      `;
+    }
+  });
+}
 
 function setupNavigation() {
   const folders = document.querySelectorAll('.folder-btn');
