@@ -8,94 +8,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/styles.css">
-<style>
-  /* Estilos específicos para el editor Nano */
-  .nano-editor {
-    background: #0f172a;
-    color: #cbd5e1;
-    font-family: var(--mono, 'JetBrains Mono', monospace);
-    display: flex;
-    flex-direction: column;
-    height: 60vh;
-    min-height: 400px;
-    margin: 0;
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
-    overflow: hidden;
-  }
-  .nano-header {
-    background: #e2e8f0;
-    color: #0f172a;
-    padding: 4px 16px;
-    display: flex;
-    justify-content: space-between;
-    font-weight: bold;
-    font-size: 0.95rem;
-  }
-  .nano-body {
-    padding: 16px;
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-  .nano-input-row {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-  }
-  .nano-input-row span {
-    color: #60a5fa;
-    font-weight: 600;
-  }
-  .nano-input {
-    background: transparent;
-    border: none;
-    color: #f8fafc;
-    font-family: inherit;
-    font-size: 1rem;
-    flex-grow: 1;
-    outline: none;
-  }
-  .nano-textarea {
-    background: transparent;
-    border: none;
-    color: #f8fafc;
-    font-family: inherit;
-    font-size: 1rem;
-    flex-grow: 1;
-    outline: none;
-    resize: none;
-    margin-top: 16px;
-  }
-  .nano-shortcuts {
-    background: #1e293b;
-    padding: 16px;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
-    font-size: 0.9rem;
-  }
-  .nano-shortcut {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    color: #cbd5e1;
-    cursor: pointer;
-    transition: color 0.2s;
-    text-decoration: none;
-  }
-  .nano-shortcut:hover {
-    color: #f8fafc;
-  }
-  .nano-shortcut span {
-    background: #f8fafc;
-    color: #0f172a;
-    padding: 0 4px;
-    border-radius: 2px;
-    font-weight: bold;
-  }
-</style>
 </head>
 <body>
 
@@ -134,16 +46,13 @@
   <div class="wrap">
     <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; max-width: 900px; margin: 0 auto;">
       
-      <!-- Ventana principal con ID activado -->
       <div id="main-terminal" class="terminal-window" style="box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 100%;">
         <div class="terminal-titlebar">
           <span class="tb-dot r" id="close-terminal-btn" title="Cerrar y volver a inicio"></span><span class="tb-dot y"></span><span class="tb-dot g"></span>
           <span>bash - send_email.sh</span>
         </div>
         
-        <!-- Simulador de Nano -->
         <div class="nano-editor">
-          
           <div class="nano-header">
             <span>GNU nano 7.2</span>
             <span>Nuevo Mensaje</span>
@@ -163,18 +72,12 @@
             <textarea id="email-body" class="nano-textarea" placeholder="Redacta tu mensaje aquí..."></textarea>
           </div>
 
-          <!-- Botonera inferior de atajos -->
           <div class="nano-shortcuts">
             <div class="nano-shortcut" style="cursor: default;"><span>^G</span> Ayuda</div>
             <div class="nano-shortcut" style="cursor: default;"><span>^O</span> Guardar</div>
-            
-            <!-- Botón Salir (Simula el botón rojo) -->
             <a href="index.html" id="nano-exit" class="nano-shortcut"><span>^X</span> Salir</a>
-            
-            <!-- Botón Enviar (Lanza el script a Gmail) -->
             <a href="#" onclick="sendNanoEmail(); return false;" class="nano-shortcut"><span>^S</span> Enviar Email</a>
           </div>
-
         </div>
       </div>
 
@@ -189,23 +92,15 @@
 <script src="js/practicas-data.js"></script>
 <script src="js/render.js"></script>
 
-<!-- Script para el editor Nano interactivo con Gmail -->
 <script>
   function sendNanoEmail() {
     const subject = document.getElementById('email-subject').value;
     const body = document.getElementById('email-body').value;
-    
-    // Configura aquí tu cuenta de Gmail real
     const emailDestino = 'tu-correo@gmail.com'; 
-    
-    // URL directa al redactor web de Gmail
     const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(emailDestino)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    
-    // Abrimos Gmail en una nueva pestaña
     window.open(gmailUrl, '_blank');
   }
 
-  // Atajos de teclado
   document.addEventListener('keydown', function(event) {
     if (event.ctrlKey && event.key === 's') {
       event.preventDefault(); 
