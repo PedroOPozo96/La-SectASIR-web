@@ -195,7 +195,6 @@ docker compose restart</code></pre>
     `
   },
 
-
   /**
    * ============================================================
    * 2. PRÁCTICA: INSTALACIÓN MARIADB
@@ -289,7 +288,6 @@ sudo systemctl enable mariadb</code></pre>
     `
   },
 
-
   /**
    * ============================================================
    * 3. PRÁCTICA: INSTALACIÓN POSTGRESQL
@@ -374,8 +372,8 @@ sudo apt install postgresql postgresql-contrib</code></pre>
       <h3>Método 2: Otro método arreglándolo con una regla específica</h3>
       <p>Existe otro método que sería dejar la línea que hemos tocado tal y como está y añadir nosotros debajo nuestra database "empresa" y usuario "scott" con autenticación md5:</p>
       
-      <pre><code># TYPE  DATABASE   USER    ADDRESS   METHOD
-local   empresa    scott             md5</code></pre>
+      <pre><code># TYPE  DATABASE   USER    ADDRESS    METHOD
+local   empresa    scott              md5</code></pre>
 
       <img src="../img/postgresql/postgres-10-nano-specific.png" alt="Añadiendo regla específica en pg_hba" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
 
@@ -392,11 +390,131 @@ local   empresa    scott             md5</code></pre>
       
       <p>Y hasta aquí estaría todo instalado y configurado correctamente.</p>
     `
+  },
+
+  /**
+   * ============================================================
+   * 4. PRÁCTICA: INSTALACIÓN ORACLE 21c
+   * ============================================================
+   */
+  {
+    id: "instalacion-oracle-21c-debian13",
+    filename: "install-oracle21c",
+    titulo: "Instalación, configuración y uso de Oracle 21c EE en Debian 13",
+    resumen: "Guía completa para instalar Oracle 21c Enterprise Edition en Debian 13, resolviendo problemas de dependencias y configurando PL/SQL.",
+    fecha: "Junio 2026",
+    categoria: "gbdd",
+    tags: ["Oracle 21c", "Debian 13", "PL/SQL", "Bases de Datos"],
+    contenidoHTML: `
+      <h2>Objetivo</h2>
+      <p>Instalación paso a paso de Oracle 21c Enterprise Edition en un entorno virtualizado con Debian 13, resolviendo los problemas de dependencias actuales y configurando el entorno de forma persistente para el desarrollo con PL/SQL.</p>
+      
+      <h3>1. Requisitos y Dependencias Previas</h3>
+      <p>Antes de realizar la instalación en una máquina real, mi recomendación es hacer la instalación en una máquina virtual ya sea en Proxmox, VMware, Virtualbox o Virtmanager. Y con esto evitar cualquier error en la máquina física y en especial en nuestra máquina de clase.</p>
+      <p>Cualquiera es válida pero yo personalmente voy a utilizar Virtmanager donde tengo una máquina con Debian 13 la cual solo usaré para Oracle.</p>
+      
+      <img src="../img/oracle/oracle-1-virtmanager.png" alt="Gestor de máquinas virtuales" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+      
+      <p>El mínimo puede ser 4 o 6 GB de RAM pero lo recomendado son 8GB, por lo que sé la mayoría de ordenadores de clase cuentan con 16 GB de RAM así que creo podremos ponerle 8 sin problema.</p>
+
+      <img src="../img/oracle/oracle-2-memoria.png" alt="Configuración de memoria de la máquina virtual" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+
+      <p>En primer lugar vamos a realizar un <code>sudo apt update</code> y luego instalaremos los paquetes necesarios. En Debian 13, el antiguo paquete <code>libaio1</code> ha cambiado a <code>libaiolt64</code>, lo que requiere crear un enlace simbólico para que el instalador de Oracle lo reconozca.</p>
+      <pre><code>sudo apt update
+sudo apt install rlwrap libaiolt64 libaio-dev unixodbc wget -y
+sudo ln -s /usr/lib/x86_64-linux-gnu/libaio.so.1t64 /usr/lib/x86_64-linux-gnu/libaio.so.1</code></pre>
+
+      <img src="../img/oracle/oracle-3-deps.png" alt="Instalación de dependencias libaio" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+      
+      <div class="detail-callout">
+        <strong>NOTA IMPORTANTE:</strong> Hay que tener cuidado con no olvidar esta parte, me ha pasado varias veces que se me olvidó y los errores que se generan al continuar con los pasos posteriores son difíciles de arreglar y muy confusos, por eso mejor hacerlo en máquinas virtuales que podamos eliminar sin problemas.
+      </div>
+
+      <h3>2. Descarga e Instalación de Oracle</h3>
+      <p>Con el comando <code>wget</code> descargamos el fichero de instalación, esto puede tardar un rato dependiendo de la conexión a Internet que tengamos.</p>
+      <pre><code>wget https://files.diegovargas.es/deb/oracle-database-ee-21c_1.0-2_amd64.deb</code></pre>
+      
+      <img src="../img/oracle/oracle-4-wget.png" alt="Descarga de Oracle con wget" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+      
+      <p>Ahora con el comando <code>dpkg</code> instalaremos el paquete. Ignoren el mensaje que sale de "fallo al crear el enlace simbólico '/bin/awk': El fichero ya existe", la instalación continuará sin problema.</p>
+      <pre><code>sudo dpkg -i oracle-database-ee-21c_1.0-2_amd64.deb</code></pre>
+
+      <img src="../img/oracle/oracle-5-dpkg.png" alt="Instalación del paquete deb de Oracle" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+
+      <h3>3. Configuración de Oracle</h3>
+      <p>Este comando lo usamos para añadir una IP al host para alguna funciones que tiene Oracle:</p>
+      <pre><code>echo "$(hostname -I | awk '{print $1}') $(hostname)" | sudo tee -a /etc/hosts</code></pre>
+
+      <img src="../img/oracle/oracle-6-hosts-cmd.png" alt="Comando echo hosts" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+      <img src="../img/oracle/oracle-7-hosts-nano.png" alt="Archivo hosts modificado en nano" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+
+      <p>A continuación vamos a ejecutar un comando que completará las configuraciones que Oracle necesita:</p>
+      <pre><code>sudo /etc/init.d/oracledb_ORCLCDB-21c configure</code></pre>
+
+      <img src="../img/oracle/oracle-8-config-cmd.png" alt="Comando de configuración" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+
+      <p>Veremos el progreso de la configuración hasta llegar al 100% y crear la base de datos:</p>
+      <img src="../img/oracle/oracle-9-config-output.png" alt="Salida del comando configure" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+
+      <p>Utilizamos este comando para añadir nuestro usuario al grupo dba para que Oracle lo reconozca y nos permita entrar al administrador, y añadimos los alias que va a utilizar Oracle:</p>
+      <pre><code>sudo usermod -aG dba $USER
+echo 'export ORACLE_HOME=/opt/oracle/product/21c/dbhome_1' >> ~/.bashrc
+echo 'export ORACLE_SID=ORCLCDB' >> ~/.bashrc
+echo 'export NLS_LANG=SPANISH_SPAIN.AL32UTF8' >> ~/.bashrc
+echo 'export ORACLE_BASE=/opt/oracle' >> ~/.bashrc
+echo 'export LD_LIBRARY_PATH=$ORACLE_HOME/lib:$LD_LIBRARY_PATH' >> ~/.bashrc
+echo 'export PATH=$ORACLE_HOME/bin:$PATH' >> ~/.bashrc
+echo "alias sqlplus='rlwrap sqlplus'" >> ~/.bashrc
+source ~/.bashrc</code></pre>
+
+      <h3>4. Uso de Oracle y Persistencia del Servicio</h3>
+      <p>Entramos en Oracle con el comando <code>sqlplus / as sysdba</code>. En un primer momento podemos ver el mensaje de "Conectado a una instancia inactiva". Salimos de Oracle ejecutando un <code>exit</code> y volvemos a la consola normal de Debian.</p>
+      <p>Vamos a ejecutar <code>sudo crontab -e</code> y pegaremos esta línea al final para que el servicio de Oracle se active cada vez que iniciemos la máquina virtual:</p>
+      <pre><code>@reboot sudo systemctl restart oracledb_ORCLCDB-21c.service</code></pre>
+
+      <img src="../img/oracle/oracle-10-crontab.png" alt="Añadiendo servicio a crontab" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+
+      <h3>5. Configuración de sesión y creación de usuario</h3>
+      <p>Por otro lado hay un comando que deberemos poner cada vez que queramos crear un usuario nuevo y es: <code>ALTER SESSION SET "_ORACLE_SCRIPT"=true;</code>.</p>
+      <pre><code>sqlplus / as sysdba
+ALTER SESSION SET "_ORACLE_SCRIPT"=true;</code></pre>
+
+      <img src="../img/oracle/oracle-11-altersession.png" alt="Alter session en Oracle" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+
+      <p>Visto esto ahora podemos crear el usuario Scott aquí en oracle, una cosa que distingue a Oracle de MariaDB y Postgresql es que aquí no se crean database aquí solo crearemos el usuario y le daremos los permisos.</p>
+      <pre><code>CREATE USER Scott IDENTIFIED BY Tiger;
+GRANT ALL PRIVILEGES TO Scott;
+Conn Scott; --> este es para conectarnos al usuario una vez lo hemos creado y le damos los permisos.</code></pre>
+
+      <img src="../img/oracle/oracle-12-createuser.png" alt="Creación de usuario Scott" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+      <img src="../img/oracle/oracle-13-conn.png" alt="Conexión con el usuario Scott" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+
+      <h3>6. Habilitar comando de forma permanente para PLSQL</h3>
+      <p>Vamos a habilitar esta opción en Oracle para realizar procedimientos y funciones con PLSQL sin tener que poner el comando <code>SET SERVEROUTPUT ON</code> cada vez que los creemos. Este método es válido tanto para Oracle 21c XE como para Oracle 21c EE.</p>
+      
+      <h4>6.1. Editamos el fichero de inicio de sesión de Oracle</h4>
+      <p>Lo que tenemos que hacer es buscar el fichero <code>glogin.sql</code> fichero que se genera automáticamente cuando lo hemos instalado, el cuál suele utilizar Oracle cada vez que inicia sesión.</p>
+      <pre><code>sudo nano /opt/oracle/product/21c/dbhome_1/sqlplus/admin/glogin.sql
+# Añadir al final del archivo:
+SET SERVEROUTPUT ON
+PROMPT *** Pedro Bienvenido a ORACLE ***</code></pre>
+      
+      <img src="../img/oracle/oracle-14-glogin.png" alt="Configuración de glogin.sql" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+
+      <h4>6.2. Le damos permisos a ese fichero</h4>
+      <p>Por si acaso no los tuviera ya le daremos los siguientes permisos al fichero y le cambiamos la propiedad:</p>
+      <pre><code>sudo chmod 644 /opt/oracle/product/21c/dbhome_1/sqlplus/admin/glogin.sql
+sudo chown oracle:oinstall /opt/oracle/product/21c/dbhome_1/sqlplus/admin/glogin.sql</code></pre>
+
+      <h4>6.3. Pruebas para verificarlo y procedimientos</h4>
+      <p>Y aquí tenemos los resultados de las pruebas utilizando el esquema recién creado y verificando la funcionalidad de PL/SQL:</p>
+
+      <img src="../img/oracle/oracle-15-test.png" alt="Pruebas de conexión y PL/SQL" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+
+    `
   }
 
-
 ]; // <--- ¡Y AQUÍ SE CIERRA EL ARRAY GENERAL! No añadas prácticas debajo de este corchete.
-
 
 /**
  * ============================================================
