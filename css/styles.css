@@ -905,34 +905,286 @@ footer{
 
 
 
+/* ==========================================================================
+   ESTILO DE FICHEROS GRANDES (Vista interior de carpeta)
+   ========================================================================== */
+.file-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 120px;
+  padding: 16px;
+  border-radius: 8px;
+  background: transparent;
+  border: 1px solid transparent;
+  transition: all 0.2s;
+  text-decoration: none;
+  cursor: pointer;
+}
 
-/* Estilo para los nuevos iconos de fichero */
-.file-row {
+.file-item:hover {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  transform: translateY(-2px);
+}
+
+.file-item .file-icon-svg {
+  transition: transform 0.2s;
+}
+
+.file-item:hover .file-icon-svg {
+  transform: scale(1.05);
+}
+
+.file-item .file-name {
+  color: #cbd5e1;
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  text-align: center;
+  word-break: break-word;
+  line-height: 1.4;
+}
+
+
+/* ==========================================================================
+   TARJETA DE PREVISUALIZACIÓN (HOVER EN FICHEROS)
+   ========================================================================== */
+.file-item {
+  position: relative; /* Necesario para que la miniatura se posicione encima */
+}
+
+.file-preview {
+  position: absolute;
+  bottom: 115%; /* Aparece por encima del icono */
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  width: 280px;
+  background: rgba(15, 23, 42, 0.85); /* Fondo oscuro semitransparente */
+  backdrop-filter: blur(8px); /* Efecto cristal */
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 16px;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+  pointer-events: none; /* Evita que el ratón interfiera con el popup */
+  box-shadow: 0 15px 35px rgba(0,0,0,0.8);
+  z-index: 100;
+  text-align: left;
+}
+
+/* Al pasar el ratón por el fichero, el popup aparece y sube un poco */
+.file-item:hover .file-preview {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+.preview-cat {
+  color: #60a5fa;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+.preview-title {
+  color: #f8fafc;
+  font-size: 0.95rem;
+  margin: 0 0 10px 0;
+  line-height: 1.4;
+}
+
+.preview-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.preview-tags span {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  color: #cbd5e1;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* ==========================================================================
+   ANIMACIÓN DE APERTURA DE LA TERMINAL (MAXIMIZAR)
+   ========================================================================== */
+@keyframes maximizeTerminal {
+  0% {
+    transform: scale(0.6) translateY(150px);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+.maximize-animation {
+  animation: maximizeTerminal 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  transform-origin: center bottom;
+}
+
+
+/* ==========================================================================
+   ANIMACIÓN DE CIERRE DE LA TERMINAL (ENCOGER HACIA EL FICHERO)
+   ========================================================================== */
+@keyframes shrinkToGrid {
+  0% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+  100% {
+    /* Se hace pequeñita y se mueve ligeramente hacia arriba dando sensación de profundidad */
+    transform: scale(0.5) translateY(-50px);
+    opacity: 0;
+  }
+}
+
+.shrink-back-animation {
+  animation: shrinkToGrid 0.3s cubic-bezier(0.5, 0, 0.2, 1) forwards !important;
+  transform-origin: center center;
+}
+
+
+
+/* ==========================================================================
+   BOTÓN Y MODAL DE BÚSQUEDA (COMMAND PALETTE)
+   ========================================================================== */
+#search-toggle {
+  position: fixed;
+  /* Ajustamos el 'top' para bajarlo a la altura del menú de hamburguesa. 
+     (Si en tu pantalla no queda 100% exacto, solo tienes que subir o bajar este 85px) */
+  top: 85px; 
+  right: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  background-color: #1e293b;
+  border-radius: 50%;
+  color: #60a5fa; /* Color azul para la lupa */
+  cursor: pointer;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+  transition: all 0.2s;
+  z-index: 100;
+}
+
+#search-toggle:hover {
+  background-color: #334155;
+  color: #93c5fd; /* Un azul un poco más brillante al pasar el ratón */
+  transform: scale(1.05);
+}
+
+.search-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(5px);
+  z-index: 9999;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 15vh;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.search-modal.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.search-container {
+  width: 90%;
+  max-width: 650px;
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+  overflow: hidden;
+  transform: translateY(-20px);
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.search-modal.active .search-container {
+  transform: translateY(0);
+}
+
+.search-header {
+  display: flex;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #1e293b;
+  font-family: var(--mono);
+  font-size: 0.95rem;
+  background: #1e293b;
+}
+
+.search-header input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #f8fafc;
+  font-family: var(--mono);
+  font-size: 1.05rem;
+  margin-left: 10px;
+  outline: none;
+}
+
+.search-results {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.search-result-item {
   display: flex;
   align-items: center;
   gap: 15px;
-  padding: 12px 16px;
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.03);
-  margin-bottom: 8px;
-  transition: background 0.2s;
+  padding: 15px 20px;
   text-decoration: none;
-  color: #e2e8f0;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid #1e293b;
+  transition: background 0.2s;
+  cursor: pointer;
 }
 
-.file-row:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: #60a5fa;
+.search-result-item:hover {
+  background: rgba(255, 255, 255, 0.05);
 }
 
-.file-icon {
+.search-result-icon {
   width: 24px;
   height: 24px;
-  fill: #94a3b8;
+  fill: #60a5fa;
+  flex-shrink: 0;
 }
 
-.file-name {
+.search-result-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.search-result-title {
+  color: #f8fafc;
+  font-size: 1rem;
+  font-family: var(--sans);
+  margin-bottom: 4px;
+}
+
+.search-result-path {
+  color: #64748b;
+  font-size: 0.8rem;
   font-family: var(--mono);
-  font-size: 0.95rem;
 }
