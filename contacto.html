@@ -29,8 +29,10 @@
   <div class="wrap">
     <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; max-width: 900px; margin: 0 auto;">
       
-      <!-- Formulario real conectado a Formspree -->
       <form action="https://formspree.io/f/xpqgqpkg" method="POST" id="main-terminal" class="terminal-window" style="box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 100%; border: none;">
+        
+        <input type="hidden" name="_next" value="https://pedroopozo96.github.io/La-SectASIR-web/contacto.html">
+
         <div class="terminal-titlebar">
           <span class="tb-dot r" id="close-terminal-btn" title="Cerrar y volver a inicio"></span><span class="tb-dot y"></span><span class="tb-dot g"></span>
           <span>bash - send_email.sh</span>
@@ -49,7 +51,7 @@
             </div>
             <div class="nano-input-row">
               <span>De:</span>
-              <input type="email" name="email" class="nano-input" placeholder="Tu correo electrónico..." required>
+              <input type="email" name="_replyto" class="nano-input" placeholder="Tu correo electrónico..." required>
             </div>
             <div class="nano-input-row" style="border-bottom: 1px solid #334155; padding-bottom: 8px;">
               <span>Asunto:</span>
@@ -63,7 +65,6 @@
             <div class="nano-shortcut"><span>^G</span> Ayuda</div>
             <div class="nano-shortcut"><span>^O</span> Guardar</div>
             <a href="index.html" id="nano-exit" class="nano-shortcut"><span>^X</span> Salir</a>
-            <!-- Botón de envío real -->
             <button type="submit" class="nano-shortcut" style="background: none; border: none; font-family: inherit; font-size: inherit;"><span>^S</span> Enviar Email</button>
           </div>
         </div>
@@ -79,7 +80,6 @@
 
 <script src="js/render.js"></script>
 <script>
-  // Mantener los atajos de teclado para el botón de enviar
   document.addEventListener('keydown', function(event) {
     if (event.ctrlKey && event.key === 's') {
       event.preventDefault();
