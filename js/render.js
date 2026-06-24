@@ -18,7 +18,6 @@ document.addEventListener('DOMContentLoaded', () => {
       openDirectory(catPractica.toLowerCase()); 
     }
 
-    // NUEVO: Lógica global para cerrar la terminal en Contacto y Sobre Mí
     const closeBtn = document.getElementById('close-terminal-btn');
     const terminalApp = document.getElementById('main-terminal');
 
@@ -26,7 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
       closeBtn.addEventListener('click', () => {
         terminalApp.classList.add('minimize-animation');
         setTimeout(() => {
-          // Si estamos en contacto.html o sobre-mi.html, volvemos al index
           window.location.href = 'index.html'; 
         }, 400);
       });
@@ -43,13 +41,11 @@ function setupSidebar() {
   const sidebar = document.querySelector('.site-sidebar');
 
   if (toggleBtn && sidebar) {
-    // Botón de hamburguesa abre/cierra
     toggleBtn.addEventListener('click', () => {
       sidebar.classList.toggle('open');
       sidebar.classList.toggle('active');
     });
 
-    // NUEVO: El botón rojo de la ventana del índice también cierra el menú
     const closeSidebarBtn = sidebar.querySelector('.terminal-titlebar .tb-dot.r');
     if (closeSidebarBtn) {
       closeSidebarBtn.addEventListener('click', () => {
@@ -159,7 +155,7 @@ function updateFolderIcons() {
     if (count > 0) {
       btn.innerHTML = `
         <svg viewBox="0 0 24 24" width="64" height="64">
-          <path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z" fill="#3b82f6" opacity="0.6"/>
+          <path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" fill="#3b82f6" opacity="0.6"/>
           <path d="M15 8H7v10h10V10l-2-2z" fill="#e2e8f0"/>
           <path d="M9 11h5v1H9zm0 2h6v1H9zm0 2h4v1H9z" fill="#94a3b8"/>
           <path d="M2.01 19.5c0 .83.67 1.5 1.5 1.5h15.07c.64 0 1.19-.4 1.39-.99l2.88-8.52c.18-.53-.21-1.09-.76-1.09H4.17c-.64 0-1.19.4-1.39.99L2.01 19.5z" fill="#60a5fa"/>
@@ -206,6 +202,11 @@ function openDirectory(categoria) {
     foldersView.style.display = 'none';
     filesView.style.display = 'block';
 
+    // Disparamos la animación de la rejilla de archivos
+    filesView.classList.remove('folder-anim');
+    void filesView.offsetWidth; // Forzamos repintado del navegador
+    filesView.classList.add('folder-anim');
+
     const dirName = categoria === 'todas' ? '' : `/${categoria.toLowerCase()}`;
     document.getElementById('path-prompt').innerText = `pedrooliver@asir:~/la_sectasir/practicas${dirName}$ ls -la`;
 
@@ -214,8 +215,16 @@ function openDirectory(categoria) {
 }
 
 function closeDirectory() {
-  document.getElementById('gui-folders').style.display = 'flex';
-  document.getElementById('files-view').style.display = 'none';
+  const foldersView = document.getElementById('gui-folders');
+  const filesView = document.getElementById('files-view');
+  
+  filesView.style.display = 'none';
+  foldersView.style.display = 'flex';
+  
+  // Disparamos la animación de las carpetas al volver atrás
+  foldersView.classList.remove('folder-anim');
+  void foldersView.offsetWidth; // Forzamos repintado
+  foldersView.classList.add('folder-anim');
   
   document.getElementById('path-prompt').innerText = `pedrooliver@asir:~/la_sectasir/practicas$ ls -la`;
   window.history.pushState({}, document.title, window.location.pathname + '#practicas');
