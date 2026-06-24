@@ -18,7 +18,7 @@ const PRACTICAS = [
     filename: "ghost-blog-docker", 
     resumen: "Instalación de Ghost Blog con MySQL 8.0 en Docker Compose, persistencia con bind mounts, y migración a un VPS con Nginx como proxy inverso y HTTPS mediante Let's Encrypt.",
     tags: ["Docker Compose", "Ghost", "MySQL", "Nginx", "Let's Encrypt"],
-    fecha: "2025",
+    fecha: "2026",
     contenidoHTML: `
       <h2>Objetivo</h2>
       <p>Instalar la plataforma de blogging <strong>Ghost</strong> junto con una base de datos <strong>MySQL 8.0</strong> usando Docker Compose, garantizando la persistencia de los datos mediante bind mounts. Después, migrar todo el proyecto a un VPS, exponerlo con <strong>Nginx</strong> como proxy inverso y asegurar el acceso con un certificado SSL de <strong>Let's Encrypt</strong>.</p>
