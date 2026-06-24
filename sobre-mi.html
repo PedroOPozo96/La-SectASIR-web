@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sobre mí — La SectASIR</title>
+<title>Sobre Mí — La SectASIR</title>
 <link rel="icon" type="image/svg+xml" href="img/favicon.svg?v=3">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -18,47 +18,24 @@
       <img src="img/favicon.svg" alt="Logo SectASIR" width="28" height="28" class="nav-logo">
     </a>
     <div class="nav-links">
-      <a href="sobre-mi.html" class="active">sobre-mi</a>
+      <a href="sobre-mi.html">sobre-mi</a>
       <a href="index.html#practicas">practicas</a>
       <a href="contacto.html">contacto</a>
     </div>
   </div>
 </nav>
 
-<button class="sidebar-toggle" id="sidebar-toggle">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
-</button>
-
-<aside class="site-sidebar">
-  <div class="terminal-window" style="box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
-    <div class="terminal-titlebar">
-      <span class="tb-dot r"></span><span class="tb-dot y"></span><span class="tb-dot g"></span>
-      <span>La SectASIR — Índice</span>
-    </div>
-    <nav class="sidebar-nav" id="sidebar-nav">
-      <!-- generado dinámicamente desde js/render.js -->
-    </nav>
-  </div>
-</aside>
-
-<header class="hero" style="padding-bottom: 40px;">
-  <div class="wrap">
-    <div class="hero-eyebrow">cat sobre-mi.txt</div>
-    <h1 class="hero-title">Sobre <span class="accent">mí</span></h1>
-  </div>
-</header>
-
-<section class="section" style="padding-top: 0;">
+<section class="section" style="padding-top: 40px; min-height: 80vh;">
   <div class="wrap">
     <div style="display: flex; flex-direction: column; gap: 40px; max-width: 850px; margin: 0 auto;">
       
-      <div class="terminal-window" style="box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 100%;">
+      <div id="main-terminal" class="terminal-window" style="box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 100%;">
         <div class="terminal-titlebar">
-          <span class="tb-dot r"></span><span class="tb-dot y"></span><span class="tb-dot g"></span>
+          <span class="tb-dot r" id="close-terminal-btn" title="Cerrar y volver a inicio"></span><span class="tb-dot y"></span><span class="tb-dot g"></span>
           <span>nano sobre-mi.txt</span>
         </div>
-        <div class="terminal-body" style="padding: 24px; line-height: 1.6;">
-          <p>Soy Pedro Oliver Pozo, estudiante del IES Gonzalo Nazareno y Futuro Administrador de Sistemas y Redes. Durante el curso he trabajado en prácticas de las asignaturas de Servicios, Implantación de Aplicaciones Web, Infraestructura Virtual, Base de Datos y Redes.</p>
+        <div class="terminal-body" style="padding: 30px; line-height: 1.6;">
+          <p>Soy Pedro Oliver Pozo, estudiante del IES Gonzalo Nazareno en Sevilla y Futuro Administrador de Sistemas y Redes. Durante el curso he trabajado en prácticas de las asignaturas de Servicios, Implantación de Aplicaciones Web, Infraestructura Virtual, Base de Datos y Redes.</p>
           <p style="margin-top: 16px;">Esta web reúne esas prácticas para mostrar cómo aplico la teoría a problemas reales: desde levantar una infraestructura virtualizada hasta desplegar servicios, bases de datos y aplicaciones web paso a paso.</p>
           <p style="margin-top: 16px;">Busco una oportunidad para seguir aprendiendo en un entorno real, aportando lo que ya sé y con muchas ganas de seguir creciendo como técnico de sistemas.</p>
 
@@ -86,15 +63,15 @@
         </div>
         <div class="terminal-body" style="padding: 24px;">
           <div class="stack-tags" style="display: flex; flex-wrap: wrap; gap: 10px;">
-            <span class="stack-tag" style="background: rgba(255,255,255,0.05); padding: 6px 12px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1);">Debian 13</span>
-            <span class="stack-tag" style="background: rgba(255,255,255,0.05); padding: 6px 12px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1);">Docker Compose</span>
-            <span class="stack-tag" style="background: rgba(255,255,255,0.05); padding: 6px 12px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1);">Apache</span>
-            <span class="stack-tag" style="background: rgba(255,255,255,0.05); padding: 6px 12px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1);">MariaDB</span>
-            <span class="stack-tag" style="background: rgba(255,255,255,0.05); padding: 6px 12px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1);">PostgreSQL</span>
-            <span class="stack-tag" style="background: rgba(255,255,255,0.05); padding: 6px 12px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1);">MySQL</span>
-            <span class="stack-tag" style="background: rgba(255,255,255,0.05); padding: 6px 12px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1);">SQL</span>
-            <span class="stack-tag" style="background: rgba(255,255,255,0.05); padding: 6px 12px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1);">Let's Encrypt</span>
-            <span class="stack-tag" style="background: rgba(255,255,255,0.05); padding: 6px 12px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1);">Ghost</span>
+            <span class="stack-tag" style="background: rgba(255,255,255,0.05); padding: 6px 12px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1); color: #94a3b8; font-family: var(--mono);">Debian 13</span>
+            <span class="stack-tag" style="background: rgba(255,255,255,0.05); padding: 6px 12px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1); color: #94a3b8; font-family: var(--mono);">Docker Compose</span>
+            <span class="stack-tag" style="background: rgba(255,255,255,0.05); padding: 6px 12px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1); color: #94a3b8; font-family: var(--mono);">Apache</span>
+            <span class="stack-tag" style="background: rgba(255,255,255,0.05); padding: 6px 12px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1); color: #94a3b8; font-family: var(--mono);">MariaDB</span>
+            <span class="stack-tag" style="background: rgba(255,255,255,0.05); padding: 6px 12px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1); color: #94a3b8; font-family: var(--mono);">PostgreSQL</span>
+            <span class="stack-tag" style="background: rgba(255,255,255,0.05); padding: 6px 12px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1); color: #94a3b8; font-family: var(--mono);">MySQL</span>
+            <span class="stack-tag" style="background: rgba(255,255,255,0.05); padding: 6px 12px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1); color: #94a3b8; font-family: var(--mono);">SQL</span>
+            <span class="stack-tag" style="background: rgba(255,255,255,0.05); padding: 6px 12px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1); color: #94a3b8; font-family: var(--mono);">Let's Encrypt</span>
+            <span class="stack-tag" style="background: rgba(255,255,255,0.05); padding: 6px 12px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1); color: #94a3b8; font-family: var(--mono);">Ghost</span>
           </div>
         </div>
       </div>
