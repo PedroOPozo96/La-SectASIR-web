@@ -241,33 +241,32 @@ function renderGrid(filtro) {
     : PRACTICAS.filter(p => p.categoria && p.categoria.toLowerCase() === filtro.toLowerCase());
 
   if (datosFiltrados.length === 0) {
-    grid.innerHTML = '<div class="loading-state">El directorio está vacío...</div>';
+    grid.innerHTML = '<div class="loading-state">Directorio vacío</div>';
     return;
   }
 
-  let html = '';
-  datosFiltrados.forEach(p => {
-    const tagsHtml = p.tags.map(t => `<span>${t}</span>`).join('');
-    const labelAmigable = (typeof CATEGORIAS_LABEL !== 'undefined' && CATEGORIAS_LABEL[p.categoria]) ? CATEGORIAS_LABEL[p.categoria] : p.categoria;
-    const nombreArchivo = p.filename || p.id;
+  // Cambiamos el estilo de grid a una lista tipo 'ls -l'
+  grid.style.display = 'block'; 
 
+  let html = '<div class="file-list" style="display: flex; flex-direction: column;">';
+  
+  datosFiltrados.forEach(p => {
+    const nombreArchivo = p.filename || p.id;
+    // Asumimos .md por defecto, pero puedes cambiarlo a .pdf o .sh en tu data
+    const extension = p.extension || '.md'; 
+    
     html += `
-      <a href="practicas/practica.html?id=${p.id}" class="practice-card">
-        <div class="card-bar">
-          <span class="tb-dot r"></span><span class="tb-dot y"></span><span class="tb-dot g"></span>
-          <span class="card-filename">${nombreArchivo}.sh</span>
-        </div>
-        <div class="card-body">
-          <div class="card-category">${labelAmigable}</div>
-          <h3 class="card-title">${p.titulo}</h3>
-          <p class="card-desc">${p.resumen}</p>
-          <div class="card-tags">${tagsHtml}</div>
-          <div class="card-link">cat ${nombreArchivo}.md <span class="arrow">→</span></div>
-        </div>
+      <a href="practicas/practica.html?id=${p.id}" class="file-row">
+        <svg class="file-icon" viewBox="0 0 24 24">
+          <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+        </svg>
+        <span class="file-name">${nombreArchivo}${extension}</span>
+        <span style="margin-left: auto; color: #64748b; font-size: 0.8rem;">${p.fecha}</span>
       </a>
     `;
   });
-
+  
+  html += '</div>';
   grid.innerHTML = html;
 }
 
