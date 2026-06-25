@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setupSidebar();
   renderSidebar();
   setupSearch(); // <-- Nuevo módulo de búsqueda
+  setupGenericCloseButtons(); // <-- Cierra terminales en páginas sueltas (sobre-mi, contacto...)
 
   const urlParams = new URLSearchParams(window.location.search);
   const idPractica = urlParams.get('id');
@@ -144,6 +145,7 @@ function setupSearch() {
     searchResults.innerHTML = html;
   });
 }
+
 /* ==========================================================================
    LÓGICA DEL MENÚ LATERAL (ÍNDICE)
    ========================================================================== */
@@ -466,4 +468,42 @@ function renderSinglePractica(id) {
     btnBack.href = urlRetorno;
     btnBack.addEventListener('click', closePracticaAnim);
   }
+}
+
+/* ==========================================================================
+   BOTONES DE CIERRE GENÉRICOS (Sobre mí, Contacto, y cualquier página suelta
+   que tenga una "terminal" con botón rojo pero no pase por renderSinglePractica)
+   ========================================================================== */
+
+function setupGenericCloseButtons() {
+  // Si la página tiene ?id=, es una práctica individual: renderSinglePractica
+  // ya gestiona su propio botón de cierre con su propia ruta de retorno.
+  // Evitamos añadir un segundo listener encima del mismo botón.
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('id')) return;
+
+  document.querySelectorAll('#close-terminal-btn').forEach(closeBtn => {
+    // evita duplicar el listener si esta función se llamara más de una vez
+    if (closeBtn.dataset.closeBound) return;
+    closeBtn.dataset.closeBound = 'true';
+
+    const terminalApp = closeBtn.closest('.terminal-window');
+
+    // ruta de vuelta al inicio según la profundidad de la página actual
+    const isInsidePracticas = window.location.pathname.includes('/practicas/');
+    const homePath = isInsidePracticas ? '../index.html' : 'index.html';
+
+    closeBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+
+      if (terminalApp) {
+        terminalApp.classList.add('shrink-back-animation');
+        setTimeout(() => {
+          window.location.href = homePath;
+        }, 300);
+      } else {
+        window.location.href = homePath;
+      }
+    });
+  });
 }

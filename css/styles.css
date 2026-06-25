@@ -654,7 +654,6 @@ footer{
   opacity: 0;
 }
 
-/* Mostrar el botón al pasar el ratón por la caja negra */
 .detail-body pre:hover .copy-btn {
   opacity: 1;
 }
@@ -665,7 +664,6 @@ footer{
   border-color: var(--accent);
 }
 
-/* Clase dinámica que el JS añadirá cuando se haga clic */
 .copy-btn.copied {
   background: #27C93F;
   color: #121F35;
@@ -687,7 +685,7 @@ footer{
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: transparent !important; /* Obligamos a que no haya caja blanca */
+  background-color: transparent !important;
   border: none !important;
   outline: none;
   cursor: pointer;
@@ -723,8 +721,6 @@ footer{
   color: #f8fafc !important;
 }
 
-
-/* MAGIA FRIKI: Animación y estilos de los botones rojos de cerrar */
 .tb-dot.r { 
   cursor: pointer; 
   transition: transform 0.1s ease, filter 0.2s ease, box-shadow 0.2s ease; 
@@ -747,7 +743,6 @@ footer{
   animation: minimizeTerminal 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
   transform-origin: center bottom;
 }
-
 
 /* ==========================================================================
    ESTILOS DEL EDITOR NANO (Contacto)
@@ -860,28 +855,22 @@ footer{
   color: #94a3b8;
 }
 
-
 /* ==========================================================================
    ANIMACIÓN DEL ÍNDICE LATERAL (Aparece y desaparece desde el botón)
    ========================================================================== */
 .site-sidebar {
-  /* Fija el punto de origen de la animación en la esquina superior derecha */
   transform-origin: top right;
-  /* Estado cerrado: la ventana es más pequeña, transparente y está ligeramente movida hacia el botón */
   transform: scale(0.4) translate(40px, -40px) !important;
   opacity: 0 !important;
   visibility: hidden;
-  /* Transición con un efecto fluido y ligeramente "elástico" (rebote) al final */
   transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1.1), opacity 0.25s ease, visibility 0.35s !important;
 }
 
 .site-sidebar.open, .site-sidebar.active {
-  /* Estado abierto: tamaño real, visible y en su posición original */
   transform: scale(1) translate(0, 0) !important;
   opacity: 1 !important;
   visibility: visible;
 }
-
 
 /* ==========================================================================
    ANIMACIÓN DE NAVEGACIÓN DE CARPETAS (Efecto zoom OS)
@@ -901,9 +890,6 @@ footer{
   animation: folderPop 0.35s cubic-bezier(0.2, 0.8, 0.2, 1.1) forwards;
   transform-origin: center top;
 }
-
-
-
 
 /* ==========================================================================
    ESTILO DE FICHEROS GRANDES (Vista interior de carpeta)
@@ -947,35 +933,33 @@ footer{
   line-height: 1.4;
 }
 
-
 /* ==========================================================================
    TARJETA DE PREVISUALIZACIÓN (HOVER EN FICHEROS)
    ========================================================================== */
 .file-item {
-  position: relative; /* Necesario para que la miniatura se posicione encima */
+  position: relative;
 }
 
 .file-preview {
   position: absolute;
-  bottom: 115%; /* Aparece por encima del icono */
+  bottom: 115%;
   left: 50%;
   transform: translateX(-50%) translateY(10px);
   width: 280px;
-  background: rgba(15, 23, 42, 0.85); /* Fondo oscuro semitransparente */
-  backdrop-filter: blur(8px); /* Efecto cristal */
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(8px);
   border: 1px solid #334155;
   border-radius: 8px;
   padding: 16px;
   opacity: 0;
   visibility: hidden;
   transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
-  pointer-events: none; /* Evita que el ratón interfiera con el popup */
+  pointer-events: none;
   box-shadow: 0 15px 35px rgba(0,0,0,0.8);
   z-index: 100;
   text-align: left;
 }
 
-/* Al pasar el ratón por el fichero, el popup aparece y sube un poco */
 .file-item:hover .file-preview {
   opacity: 1;
   visibility: visible;
@@ -1032,7 +1016,6 @@ footer{
   transform-origin: center bottom;
 }
 
-
 /* ==========================================================================
    ANIMACIÓN DE CIERRE DE LA TERMINAL (ENCOGER HACIA EL FICHERO)
    ========================================================================== */
@@ -1042,7 +1025,6 @@ footer{
     opacity: 1;
   }
   100% {
-    /* Se hace pequeñita y se mueve ligeramente hacia arriba dando sensación de profundidad */
     transform: scale(0.5) translateY(-50px);
     opacity: 0;
   }
@@ -1053,8 +1035,6 @@ footer{
   transform-origin: center center;
 }
 
-
-
 /* ==========================================================================
    BOTÓN Y MODAL DE BÚSQUEDA (COMMAND PALETTE)
    ========================================================================== */
@@ -1064,13 +1044,18 @@ footer{
   justify-content: center;
   width: 50px;
   height: 50px;
-  background-color: #1e293b;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
   border-radius: 50%;
-  color: #cbd5e1;
+  color: var(--accent);
   cursor: pointer;
   box-shadow: 0 10px 25px rgba(0,0,0,0.5);
   transition: all 0.2s;
   z-index: 100;
+  position: fixed;
+  top: 80px;
+  left: 24px;
+  right: auto !important;
 }
 
 #search-toggle:hover {
@@ -1092,14 +1077,15 @@ footer{
   align-items: flex-start;
   justify-content: center;
   padding-top: 15vh;
-  opacity: 0;
+
+  clip-path: circle(0% at 49px 105px);
   visibility: hidden;
-  transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: clip-path 0.45s cubic-bezier(0.2, 0.8, 0.2, 1), visibility 0.45s;
 }
 
 .search-modal.active {
-  opacity: 1;
   visibility: visible;
+  clip-path: circle(150% at 49px 105px);
 }
 
 .search-container {
@@ -1111,11 +1097,13 @@ footer{
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
   overflow: hidden;
   transform: translateY(-20px);
-  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  opacity: 0;
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.25s ease;
 }
 
 .search-modal.active .search-container {
   transform: translateY(0);
+  opacity: 1;
 }
 
 .search-header {
