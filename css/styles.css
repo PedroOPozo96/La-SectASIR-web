@@ -1059,11 +1059,6 @@ footer{
    BOTÓN Y MODAL DE BÚSQUEDA (COMMAND PALETTE)
    ========================================================================== */
 #search-toggle {
-  position: fixed;
-  /* Ajustamos el 'top' para bajarlo a la altura del menú de hamburguesa. 
-     (Si en tu pantalla no queda 100% exacto, solo tienes que subir o bajar este 85px) */
-  top: 85px; 
-  right: 100px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1071,7 +1066,7 @@ footer{
   height: 50px;
   background-color: #1e293b;
   border-radius: 50%;
-  color: #60a5fa; /* Color azul para la lupa */
+  color: #cbd5e1;
   cursor: pointer;
   box-shadow: 0 10px 25px rgba(0,0,0,0.5);
   transition: all 0.2s;
@@ -1080,7 +1075,7 @@ footer{
 
 #search-toggle:hover {
   background-color: #334155;
-  color: #93c5fd; /* Un azul un poco más brillante al pasar el ratón */
+  color: #60a5fa;
   transform: scale(1.05);
 }
 

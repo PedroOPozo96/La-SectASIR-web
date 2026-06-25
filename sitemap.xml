@@ -1,31 +1,3 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://pedroopozo96.github.io/La-SectASIR-web/index.html</loc>
-    <changefreq>monthly</changefreq>
-  </url>
-  <url>
-    <loc>https://pedroopozo96.github.io/La-SectASIR-web/sobre-mi.html</loc>
-    <changefreq>monthly</changefreq>
-  </url>
-  <url>
-    <loc>https://pedroopozo96.github.io/La-SectASIR-web/contacto.html</loc>
-    <changefreq>monthly</changefreq>
-  </url>
-  <url>
-    <loc>https://pedroopozo96.github.io/La-SectASIR-web/practicas/practica.html?id=ghost-blog-docker</loc>
-    <changefreq>monthly</changefreq>
-  </url>
-  <url>
-    <loc>https://pedroopozo96.github.io/La-SectASIR-web/practicas/practica.html?id=mariadb-debian13</loc>
-    <changefreq>monthly</changefreq>
-  </url>
-  <url>
-    <loc>https://pedroopozo96.github.io/La-SectASIR-web/practicas/practica.html?id=postgresql-debian13</loc>
-    <changefreq>monthly</changefreq>
-  </url>
-  <url>
-    <loc>https://pedroopozo96.github.io/La-SectASIR-web/practicas/practica.html?id=instalacion-oracle-21c-debian13</loc>
-    <changefreq>monthly</changefreq>
-  </url>
 </urlset>
