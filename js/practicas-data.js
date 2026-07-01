@@ -543,8 +543,77 @@ sudo chown oracle:oinstall /opt/oracle/product/21c/dbhome_1/sqlplus/admin/glogin
         <h2>Objetivo</h2>
         <p>Simular una red inspirada en <strong>Los Juegos del Hambre</strong>: cada "distrito" es una red distinta conectada mediante 5 routers, con personajes de la saga representando los hosts. La práctica cubre enrutamiento estático entre todas las redes, control de tráfico mediante ACL estándar y extendidas según las relaciones (y enemistades) entre personajes, un servidor DHCP, y un servidor web accesible solo para ciertos distritos.</p>
 
-        <h2>Escenario</h2>
-        <img src="../img/redes11/p11-01-topologia.png" alt="Topología completa del escenario en GNS3" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+        <h2 id="escenario">Escenario</h2>
+
+        <div style="text-align: center; margin: 40px 0; font-family: var(--mono, monospace);">
+            <p style="color: #94a3b8; margin-bottom: 20px; font-size: 0.9rem;">> Esperando inicialización del entorno GNS3...</p>
+            
+            <button onclick="
+                const mapa = document.getElementById('gns3-escenario');
+                const btn = this;
+                const textoStatus = document.getElementById('gns3-status-text');
+                
+                if (mapa.style.maxHeight === '0px' || !mapa.style.maxHeight) {
+                    // ENCIENDE EL MAPA
+                    mapa.style.maxHeight = '1500px';
+                    mapa.style.opacity = '1';
+                    mapa.style.marginTop = '20px';
+                    btn.style.animation = 'none';
+                    btn.style.filter = 'brightness(0.6)';
+                    textoStatus.innerText = '> ENTORNO DE SIMULACIÓN ACTIVO. ENRUTAMIENTO OK.';
+                    textoStatus.style.color = '#4ade80';
+                } else {
+                    // APAGA EL MAPA
+                    mapa.style.maxHeight = '0px';
+                    mapa.style.opacity = '0';
+                    mapa.style.marginTop = '0px';
+                    btn.style.animation = 'gns3-pulse 1.5s infinite';
+                    btn.style.filter = 'brightness(1)';
+                    textoStatus.innerText = '> Esperando inicialización del entorno GNS3...';
+                    textoStatus.style.color = '#94a3b8';
+                }
+            " style="
+                background: transparent;
+                border: none;
+                cursor: pointer;
+                border-radius: 50%;
+                padding: 0;
+                animation: gns3-pulse 1.5s infinite;
+                transition: all 0.3s ease;
+            ">
+                <img src="../img/redes11/gns3-logo.png" alt="Iniciar GNS3" width="100" style="border-radius: 50%;">
+            </button>
+            <p id="gns3-status-text" style="color: #94a3b8; margin-top: 15px; font-size: 0.85rem; transition: color 0.3s;">> RUN SIMULATION</p>
+
+            <div id="gns3-escenario" style="
+                max-height: 0px;
+                opacity: 0;
+                overflow: hidden;
+                transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+                border: 1px solid #334155;
+                border-radius: 8px;
+                background-color: #0f172a;
+                padding: 0;
+                margin-top: 0px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            ">
+                <div style="background-color: #1e293b; padding: 10px 15px; text-align: left; border-bottom: 1px solid #334155; font-size: 0.8rem; color: #4ade80; display: flex; align-items: center; gap: 8px;">
+                    <div style="width: 10px; height: 10px; background-color: #4ade80; border-radius: 50%; box-shadow: 0 0 8px #4ade80;"></div>
+                    [GNS3 SERVER]: Topología cargada y enlaces operativos.
+                </div>
+                
+                <img src="../img/redes11/p11-01-topologia.png" alt="Escenario GNS3" style="width: 100%; display: block; padding: 15px; box-sizing: border-box;">
+            </div>
+        </div>
+
+        <style>
+            @keyframes gns3-pulse {
+                0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.8); transform: scale(1); }
+                70% { box-shadow: 0 0 0 25px rgba(59, 130, 246, 0); transform: scale(1.05); }
+                100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); transform: scale(1); }
+            }
+        </style>
+
         <p>Cinco routers conectan los distintos distritos: el Distrito 1 ("Superpijos"), Distrito 2 ("Pijos"), Distrito 11 ("Pobres"), Distrito 12 ("Indigentes") y el Distrito 13, que alberga el servidor web. Cada distrito tiene sus propios hosts identificados con nombres de personajes de la saga.</p>
 
         <h3>Distrito 1 — Superpijos</h3>
@@ -781,8 +850,7 @@ FastEthernet2/0        10.0.13.1       YES manual up</code></pre>
         <h2>Conclusiones</h2>
         <p>Esta práctica combina en un solo escenario los tres pilares de control de tráfico en redes Cisco: enrutamiento estático, ACL estándar (por red completa) y ACL extendidas (por host y puerto concreto). Lo más interesante fue decidir <strong>dónde</strong> aplicar cada ACL y en qué sentido (<code>in</code> vs <code>out</code>): la misma regla de filtrado puede generar resultados muy distintos, e incluso bloquear servicios como el DHCP, según la interfaz y el sentido en que se aplique.</p>
       `
-    }
-    
+    }    
   ]; 
 
 /**
