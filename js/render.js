@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
   setupSidebar();
   renderSidebar();
-  setupSearch(); // <-- Nuevo módulo de búsqueda
-  setupGenericCloseButtons(); // <-- Cierra terminales en páginas sueltas (sobre-mi, contacto...)
+  setupSearch(); // <-- Módulo de búsqueda con Easter Eggs e Historial persistente (.bash_history)
+  setupGenericCloseButtons(); // <-- Cierra terminales en páginas sueltas
 
   const urlParams = new URLSearchParams(window.location.search);
   const idPractica = urlParams.get('id');
@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* ==========================================================================
-   LÓGICA DEL BUSCADOR (COMMAND PALETTE)
+   LÓGICA DEL BUSCADOR (COMMAND PALETTE), EASTER EGGS Y .BASH_HISTORY
    ========================================================================== */
 
 function setupSearch() {
@@ -34,7 +34,6 @@ function setupSearch() {
     searchBtn.title = "Buscar fichero (Ctrl+K)";
     searchBtn.innerHTML = `<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>`;
     
-    // Simplemente lo insertamos, sin tocar los estilos del padre
     sidebarToggle.parentNode.insertBefore(searchBtn, sidebarToggle);
   }
 
@@ -60,10 +59,17 @@ function setupSearch() {
   const searchResults = document.getElementById('search-results');
   const searchToggle = document.getElementById('search-toggle');
 
+  // --- PERSISTENCIA ESTILO .bash_history ---
+  // Cargamos el historial de LocalStorage o creamos uno vacío
+  let searchHistory = JSON.parse(localStorage.getItem('bash_history')) || [];
+  let historyIndex = searchHistory.length;
+
   const openSearch = () => {
     searchModal.classList.add('active');
     searchInput.value = '';
     searchResults.innerHTML = '';
+    // Reseteamos el índice al final del historial cada vez que abrimos
+    historyIndex = searchHistory.length; 
     setTimeout(() => searchInput.focus(), 100);
   };
 
@@ -78,6 +84,7 @@ function setupSearch() {
     if (e.target === searchModal) closeSearch();
   });
 
+  // Atajos globales para abrir/cerrar
   document.addEventListener('keydown', (e) => {
     if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
       e.preventDefault();
@@ -88,9 +95,79 @@ function setupSearch() {
     }
   });
 
-  // 3. Lógica de filtrado dinámico
+  // --- LÓGICA DE TECLADO INTERNO (Enter, Flechas) ---
+  searchInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const val = searchInput.value.trim();
+      
+      // Guardar en el historial si no está vacío y no es igual al último comando
+      if (val && searchHistory[searchHistory.length - 1] !== val) {
+        searchHistory.push(val);
+        // Limitamos el historial a 50 comandos para no llenar la caché
+        if (searchHistory.length > 50) {
+          searchHistory.shift();
+        }
+        // Guardamos físicamente en el navegador
+        localStorage.setItem('bash_history', JSON.stringify(searchHistory));
+      }
+      historyIndex = searchHistory.length;
+
+      // Hacer clic automático en el primer resultado
+      const firstResult = searchResults.querySelector('a');
+      if (firstResult) {
+        firstResult.click();
+      }
+    } 
+    else if (e.key === 'ArrowUp') {
+      e.preventDefault(); 
+      if (searchHistory.length > 0 && historyIndex > 0) {
+        historyIndex--;
+        searchInput.value = searchHistory[historyIndex];
+        searchInput.dispatchEvent(new Event('input')); // Dispara la búsqueda visual
+      }
+    } 
+    else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (historyIndex < searchHistory.length - 1) {
+        historyIndex++;
+        searchInput.value = searchHistory[historyIndex];
+        searchInput.dispatchEvent(new Event('input')); 
+      } else if (historyIndex === searchHistory.length - 1) {
+        // Al llegar al final, limpiamos la línea
+        historyIndex++;
+        searchInput.value = '';
+        searchInput.dispatchEvent(new Event('input'));
+      }
+    }
+  });
+
+  // 3. Lógica de filtrado dinámico y Easter Eggs
   searchInput.addEventListener('input', (e) => {
     const query = e.target.value.toLowerCase().trim();
+    
+    /* ---------------------------------------------------
+       EASTER EGG: ORACLE DBA
+       --------------------------------------------------- */
+    if (query === 'sqlplus sys as sysdba' || query === 'sqlplus / as sysdba') {
+      closeSearch(); 
+      
+      const isInsidePracticas = window.location.pathname.includes('/practicas/');
+      if (isInsidePracticas) {
+        window.location.href = '../index.html?cat=gbdd#practicas';
+      } else {
+        openDirectory('gbdd');
+        setTimeout(() => {
+          const pathPrompt = document.getElementById('path-prompt');
+          if (pathPrompt) {
+            pathPrompt.innerHTML = `<span style="color: #f59e0b; font-weight: bold;">SQL></span> Connected to Oracle Database 21c Express Edition Release 21.0.0.0.0 - Production`;
+          }
+        }, 50);
+      }
+      return;
+    }
+    /* --------------------------------------------------- */
+
     if (query.length < 2) {
       searchResults.innerHTML = '';
       return;
@@ -430,13 +507,12 @@ function renderSinglePractica(id) {
   if (contenidoEl) contenidoEl.innerHTML = practica.contenidoHTML;
 
   /* ==========================================================================
-     NUEVO: GENERADOR AUTOMÁTICO DE ÍNDICE (BOTÓN FLOTANTE Y PANEL)
+     GENERADOR AUTOMÁTICO DE ÍNDICE (BOTÓN FLOTANTE Y PANEL)
      ========================================================================== */
   if (contenidoEl) {
     const titulos = contenidoEl.querySelectorAll('h2');
 
     if (titulos.length > 0) {
-      // 1. Inyectamos los estilos necesarios en el <head>
       if (!document.getElementById('estilos-indice-flotante')) {
         const style = document.createElement('style');
         style.id = 'estilos-indice-flotante';
@@ -483,17 +559,16 @@ function renderSinglePractica(id) {
             display: flex;
             flex-direction: column;
             box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-            /* Animación de crecer desde el botón (abajo a la derecha) */
             transform-origin: bottom right;
             transform: scale(0);
             opacity: 0;
-            pointer-events: none; /* Inactivo mientras está oculto */
+            pointer-events: none;
             transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.25s ease-in-out;
           }
           #panel-indice-interno.abierto {
             transform: scale(1);
             opacity: 1;
-            pointer-events: auto; /* Activo cuando está visible */
+            pointer-events: auto;
           }
           .panel-header {
             display: flex;
@@ -550,20 +625,17 @@ function renderSinglePractica(id) {
         document.head.appendChild(style);
       }
 
-      // 2. Creamos el botón flotante
       const btnToggle = document.createElement('div');
       btnToggle.id = 'btn-indice-interno';
       btnToggle.title = 'Abrir índice de la práctica';
       btnToggle.innerHTML = `<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>`;
       document.body.appendChild(btnToggle);
 
-      // 3. Creamos el panel desplegable
       const panel = document.createElement('div');
       panel.id = 'panel-indice-interno';
       
       let enlacesHtml = '';
       titulos.forEach((titulo, index) => {
-        // Le asignamos un ID al título en el HTML si no lo tenía ya
         if (!titulo.id) titulo.id = 'seccion-auto-' + index;
         enlacesHtml += `
           <li class="item-indice-interno">
@@ -589,7 +661,6 @@ function renderSinglePractica(id) {
       `;
       document.body.appendChild(panel);
 
-      // 4. Lógica de apertura y cierre del menú (toggle real)
       btnToggle.addEventListener('click', () => {
         panel.classList.toggle('abierto');
         btnToggle.classList.toggle('activo');
@@ -600,7 +671,6 @@ function renderSinglePractica(id) {
         btnToggle.classList.remove('activo');
       });
 
-      // Cerrar el menú automáticamente al hacer clic en un enlace
       panel.querySelectorAll('.link-indice-interno').forEach(enlace => {
         enlace.addEventListener('click', () => {
           panel.classList.remove('abierto');
@@ -608,7 +678,6 @@ function renderSinglePractica(id) {
         });
       });
 
-      // 5. Función de limpieza
       window.limpiarIndiceFlotante = () => {
         if (btnToggle.parentNode) btnToggle.parentNode.removeChild(btnToggle);
         if (panel.parentNode) panel.parentNode.removeChild(panel);
@@ -637,7 +706,6 @@ function renderSinglePractica(id) {
   function closePracticaAnim(e) {
     if(e) e.preventDefault();
 
-    // Llamamos a la limpieza del índice antes de volver al menú principal
     if (typeof window.limpiarIndiceFlotante === 'function') {
       window.limpiarIndiceFlotante();
     }
