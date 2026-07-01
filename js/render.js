@@ -428,6 +428,195 @@ function renderSinglePractica(id) {
 
   if (tituloEl) tituloEl.innerHTML = practica.titulo;
   if (contenidoEl) contenidoEl.innerHTML = practica.contenidoHTML;
+
+  /* ==========================================================================
+     NUEVO: GENERADOR AUTOMÁTICO DE ÍNDICE (BOTÓN FLOTANTE Y PANEL)
+     ========================================================================== */
+  if (contenidoEl) {
+    const titulos = contenidoEl.querySelectorAll('h2');
+
+    if (titulos.length > 0) {
+      // 1. Inyectamos los estilos necesarios en el <head>
+      if (!document.getElementById('estilos-indice-flotante')) {
+        const style = document.createElement('style');
+        style.id = 'estilos-indice-flotante';
+        style.textContent = `
+          #btn-indice-interno {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 999;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            color: #60a5fa;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+          }
+          #btn-indice-interno:hover {
+            transform: scale(1.1);
+            background-color: #0f172a;
+            color: #93c5fd;
+          }
+          #btn-indice-interno.activo {
+            transform: rotate(90deg);
+            background-color: #0f172a;
+            border-color: #60a5fa;
+            color: #4ade80;
+          }
+          #panel-indice-interno {
+            position: fixed;
+            bottom: 95px;
+            right: 30px;
+            width: 320px;
+            max-height: 65vh;
+            background-color: #0f172a; 
+            border: 1px solid #334155;
+            border-radius: 8px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            /* Animación de crecer desde el botón (abajo a la derecha) */
+            transform-origin: bottom right;
+            transform: scale(0);
+            opacity: 0;
+            pointer-events: none; /* Inactivo mientras está oculto */
+            transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.25s ease-in-out;
+          }
+          #panel-indice-interno.abierto {
+            transform: scale(1);
+            opacity: 1;
+            pointer-events: auto; /* Activo cuando está visible */
+          }
+          .panel-header {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            background-color: #1e293b;
+            border-bottom: 1px solid #334155;
+            border-radius: 8px 8px 0 0;
+          }
+          .dots-container {
+            display: flex;
+            gap: 8px;
+            margin-right: 15px;
+          }
+          .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+          }
+          .dot.red { background-color: #ef4444; cursor: pointer; }
+          .dot.yellow { background-color: #f59e0b; }
+          .dot.green { background-color: #10b981; }
+          .panel-title {
+            color: #94a3b8;
+            font-family: var(--mono, monospace);
+            font-size: 0.9rem;
+          }
+          .panel-content {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+          }
+          .lista-indice-interno {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+          }
+          .item-indice-interno {
+            margin-bottom: 12px;
+            font-family: var(--mono, monospace);
+            font-size: 0.85rem;
+          }
+          .link-indice-interno {
+            color: #60a5fa;
+            text-decoration: none;
+            transition: color 0.2s;
+            display: block;
+            padding: 4px 0;
+          }
+          .link-indice-interno:hover {
+            color: #4ade80;
+          }
+        `;
+        document.head.appendChild(style);
+      }
+
+      // 2. Creamos el botón flotante
+      const btnToggle = document.createElement('div');
+      btnToggle.id = 'btn-indice-interno';
+      btnToggle.title = 'Abrir índice de la práctica';
+      btnToggle.innerHTML = `<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>`;
+      document.body.appendChild(btnToggle);
+
+      // 3. Creamos el panel desplegable
+      const panel = document.createElement('div');
+      panel.id = 'panel-indice-interno';
+      
+      let enlacesHtml = '';
+      titulos.forEach((titulo, index) => {
+        // Le asignamos un ID al título en el HTML si no lo tenía ya
+        if (!titulo.id) titulo.id = 'seccion-auto-' + index;
+        enlacesHtml += `
+          <li class="item-indice-interno">
+            <a href="#${titulo.id}" class="link-indice-interno">📍 ${titulo.textContent}</a>
+          </li>
+        `;
+      });
+
+      panel.innerHTML = `
+        <div class="panel-header">
+          <div class="dots-container">
+            <div class="dot red" id="cerrar-indice-interno" title="Cerrar índice"></div>
+            <div class="dot yellow"></div>
+            <div class="dot green"></div>
+          </div>
+          <span class="panel-title">Índice Local</span>
+        </div>
+        <div class="panel-content">
+          <ul class="lista-indice-interno">
+            ${enlacesHtml}
+          </ul>
+        </div>
+      `;
+      document.body.appendChild(panel);
+
+      // 4. Lógica de apertura y cierre del menú (toggle real)
+      btnToggle.addEventListener('click', () => {
+        panel.classList.toggle('abierto');
+        btnToggle.classList.toggle('activo');
+      });
+
+      document.getElementById('cerrar-indice-interno').addEventListener('click', () => {
+        panel.classList.remove('abierto');
+        btnToggle.classList.remove('activo');
+      });
+
+      // Cerrar el menú automáticamente al hacer clic en un enlace
+      panel.querySelectorAll('.link-indice-interno').forEach(enlace => {
+        enlace.addEventListener('click', () => {
+          panel.classList.remove('abierto');
+          btnToggle.classList.remove('activo');
+        });
+      });
+
+      // 5. Función de limpieza
+      window.limpiarIndiceFlotante = () => {
+        if (btnToggle.parentNode) btnToggle.parentNode.removeChild(btnToggle);
+        if (panel.parentNode) panel.parentNode.removeChild(panel);
+      };
+    }
+  }
+  /* ========================================================================== */
+
   if (fechaEl && practica.fecha) fechaEl.innerHTML = practica.fecha;
   
   if (tagsEl && practica.tags) {
@@ -447,6 +636,12 @@ function renderSinglePractica(id) {
 
   function closePracticaAnim(e) {
     if(e) e.preventDefault();
+
+    // Llamamos a la limpieza del índice antes de volver al menú principal
+    if (typeof window.limpiarIndiceFlotante === 'function') {
+      window.limpiarIndiceFlotante();
+    }
+
     if (terminalApp) {
       terminalApp.classList.remove('maximize-animation');
       terminalApp.classList.remove('minimize-animation'); 
@@ -471,25 +666,18 @@ function renderSinglePractica(id) {
 }
 
 /* ==========================================================================
-   BOTONES DE CIERRE GENÉRICOS (Sobre mí, Contacto, y cualquier página suelta
-   que tenga una "terminal" con botón rojo pero no pase por renderSinglePractica)
+   BOTONES DE CIERRE GENÉRICOS (Sobre mí, Contacto, y cualquier página suelta)
    ========================================================================== */
 
 function setupGenericCloseButtons() {
-  // Si la página tiene ?id=, es una práctica individual: renderSinglePractica
-  // ya gestiona su propio botón de cierre con su propia ruta de retorno.
-  // Evitamos añadir un segundo listener encima del mismo botón.
   const params = new URLSearchParams(window.location.search);
   if (params.get('id')) return;
 
   document.querySelectorAll('#close-terminal-btn').forEach(closeBtn => {
-    // evita duplicar el listener si esta función se llamara más de una vez
     if (closeBtn.dataset.closeBound) return;
     closeBtn.dataset.closeBound = 'true';
 
     const terminalApp = closeBtn.closest('.terminal-window');
-
-    // ruta de vuelta al inicio según la profundidad de la página actual
     const isInsidePracticas = window.location.pathname.includes('/practicas/');
     const homePath = isInsidePracticas ? '../index.html' : 'index.html';
 
