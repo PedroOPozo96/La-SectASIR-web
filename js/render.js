@@ -172,7 +172,7 @@ function setupSearch() {
             <span class="search-result-path">cd ~/${cat}</span>
           </div>
         </a>
-      `; // <--- ¡AQUÍ ESTABA EL ERROR! Faltaba esta comilla invertida.
+      `;
     });
 
     const matchesPrac = PRACTICAS.filter(p => {
@@ -686,64 +686,81 @@ function renderSinglePractica(id) {
   
   const terminalApp = document.getElementById('main-terminal');
   
-  // Selección universal de botones de ventana (Rojo = Cerrar, Verde = Siguiente)
+  // Selección universal de los tres botones de la ventana
   const closeBtns = document.querySelectorAll('#close-terminal-btn, .terminal-window .tb-dot.r, .terminal-window .dot.red, .terminal-titlebar .tb-dot.r, .terminal-titlebar .dot.red');
+  const yellowBtns = document.querySelectorAll('.terminal-titlebar .tb-dot.y, .terminal-titlebar .dot.yellow');
   const greenBtns = document.querySelectorAll('.terminal-titlebar .tb-dot.g, .terminal-titlebar .dot.green');
+  
   const btnBack = document.getElementById('btn-back-to-folder');
   
   if (terminalApp) {
     terminalApp.classList.add('maximize-animation');
   }
 
+  // --- FUNCIÓN ROJO: Cerrar práctica ---
   function closePracticaAnim(e) {
     if(e) e.preventDefault();
-
-    if (typeof window.limpiarIndiceFlotante === 'function') {
-      window.limpiarIndiceFlotante();
-    }
+    if (typeof window.limpiarIndiceFlotante === 'function') window.limpiarIndiceFlotante();
 
     if (terminalApp) {
       terminalApp.classList.remove('maximize-animation');
       terminalApp.classList.remove('minimize-animation'); 
       terminalApp.classList.add('shrink-back-animation');
-      
-      setTimeout(() => {
-        window.location.href = urlRetorno;
-      }, 300);
+      setTimeout(() => { window.location.href = urlRetorno; }, 300);
     } else {
       window.location.href = urlRetorno;
     }
   }
 
-  // --- NUEVA FUNCIÓN: Animación para cambiar a la siguiente práctica ---
-  function switchPracticaAnim(e) {
+  // --- FUNCIÓN VERDE: Siguiente práctica (Efecto pasar página adelante) ---
+  function nextPracticaAnim(e) {
     if(e) e.preventDefault();
-
-    if (typeof window.limpiarIndiceFlotante === 'function') {
-      window.limpiarIndiceFlotante();
-    }
+    if (typeof window.limpiarIndiceFlotante === 'function') window.limpiarIndiceFlotante();
 
     const currentIndex = PRACTICAS.findIndex(p => p.id === id);
     let nextIndex = currentIndex + 1;
-    if (nextIndex >= PRACTICAS.length) nextIndex = 0; 
+    if (nextIndex >= PRACTICAS.length) nextIndex = 0; // Vuelve a empezar si llega al final
     
     const nextId = PRACTICAS[nextIndex].id;
     const nextUrl = window.location.pathname + '?id=' + nextId;
 
     if (terminalApp) {
-      // Animación de "cambio de escritorio virtual"
-      terminalApp.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease-in';
-      terminalApp.style.transform = 'translateX(-150%) scale(0.8)'; 
+      // Efecto pasar página hacia la izquierda
+      terminalApp.style.transition = 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease-in';
+      terminalApp.style.transformOrigin = 'left center';
+      terminalApp.style.transform = 'perspective(1200px) rotateY(-90deg)'; 
       terminalApp.style.opacity = '0';
-      
-      setTimeout(() => {
-        window.location.href = nextUrl;
-      }, 400);
+      setTimeout(() => { window.location.href = nextUrl; }, 500);
     } else {
       window.location.href = nextUrl;
     }
   }
 
+  // --- FUNCIÓN AMARILLO: Práctica anterior (Efecto pasar página atrás) ---
+  function prevPracticaAnim(e) {
+    if(e) e.preventDefault();
+    if (typeof window.limpiarIndiceFlotante === 'function') window.limpiarIndiceFlotante();
+
+    const currentIndex = PRACTICAS.findIndex(p => p.id === id);
+    let prevIndex = currentIndex - 1;
+    if (prevIndex < 0) prevIndex = PRACTICAS.length - 1; // Salta a la última si estamos en la primera
+    
+    const prevId = PRACTICAS[prevIndex].id;
+    const prevUrl = window.location.pathname + '?id=' + prevId;
+
+    if (terminalApp) {
+      // Efecto pasar página hacia la derecha
+      terminalApp.style.transition = 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease-in';
+      terminalApp.style.transformOrigin = 'right center';
+      terminalApp.style.transform = 'perspective(1200px) rotateY(90deg)'; 
+      terminalApp.style.opacity = '0';
+      setTimeout(() => { window.location.href = prevUrl; }, 500);
+    } else {
+      window.location.href = prevUrl;
+    }
+  }
+
+  // --- ASIGNACIÓN DE EVENTOS A LOS BOTONES ---
   if (closeBtns.length > 0) {
     closeBtns.forEach(btn => {
       btn.title = "Cerrar práctica";
@@ -752,12 +769,19 @@ function renderSinglePractica(id) {
     });
   }
 
-  // Asignamos el evento al botón verde
+  if (yellowBtns.length > 0) {
+    yellowBtns.forEach(btn => {
+      btn.title = "<- Práctica anterior";
+      btn.style.cursor = 'pointer';
+      btn.addEventListener('click', prevPracticaAnim);
+    });
+  }
+
   if (greenBtns.length > 0) {
     greenBtns.forEach(btn => {
       btn.title = "Siguiente práctica ->";
       btn.style.cursor = 'pointer';
-      btn.addEventListener('click', switchPracticaAnim);
+      btn.addEventListener('click', nextPracticaAnim);
     });
   }
 
