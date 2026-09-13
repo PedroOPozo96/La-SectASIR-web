@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+  setupWindowButtonsStyles(); // <-- NUEVO: Estilos y animaciones para los botones de colores
   setupSidebar();
   renderSidebar();
   setupSearch(); 
@@ -19,6 +20,69 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 });
+
+/* ==========================================================================
+   ANIMACIONES Y ESTILOS PARA LOS BOTONES DE LA VENTANA (UX/UI)
+   ========================================================================== */
+
+function setupWindowButtonsStyles() {
+  if (!document.getElementById('estilos-botones-ventana')) {
+    const style = document.createElement('style');
+    style.id = 'estilos-botones-ventana';
+    style.textContent = `
+      /* Aseguramos que los puntos puedan contener texto centrado */
+      .terminal-titlebar .tb-dot, .panel-header .dot {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+        position: relative;
+      }
+
+      /* Animación de latido para llamar la atención al cargar la web */
+      @keyframes pulse-attention {
+        0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,255,255,0.4); }
+        50% { transform: scale(1.3); filter: brightness(1.2); box-shadow: 0 0 8px 2px rgba(255,255,255,0.1); }
+        100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,255,255,0); }
+      }
+      
+      /* Aplicamos el latido secuencial a los botones */
+      .terminal-titlebar .tb-dot.r, .panel-header .dot.red { animation: pulse-attention 0.6s ease-in-out 1s 2; }
+      .terminal-titlebar .tb-dot.y, .panel-header .dot.yellow { animation: pulse-attention 0.6s ease-in-out 1.1s 2; }
+      .terminal-titlebar .tb-dot.g, .panel-header .dot.green { animation: pulse-attention 0.6s ease-in-out 1.2s 2; }
+
+      /* Símbolos ocultos por defecto dentro de los botones */
+      .terminal-titlebar .tb-dot::after, .panel-header .dot::after {
+        opacity: 0;
+        color: rgba(0, 0, 0, 0.65);
+        font-size: 8px;
+        font-weight: 900;
+        font-family: system-ui, -apple-system, sans-serif;
+        transition: opacity 0.2s ease;
+        position: absolute;
+        pointer-events: none;
+      }
+
+      /* Mostrar los símbolos al pasar el ratón por la barra de título */
+      .terminal-titlebar:hover .tb-dot::after, .panel-header:hover .dot::after {
+        opacity: 1;
+      }
+
+      /* Definir el símbolo exacto para cada color */
+      .tb-dot.r::after, .dot.red::after { content: '✕'; font-size: 8px; }
+      .tb-dot.y::after, .dot.yellow::after { content: '◄'; font-size: 7px; margin-right: 1px; }
+      .tb-dot.g::after, .dot.green::after { content: '►'; font-size: 7px; margin-left: 1px; }
+
+      /* Efecto extra cuando pasas el ratón por encima del botón en concreto */
+      .terminal-titlebar .tb-dot:hover, .panel-header .dot:hover {
+        transform: scale(1.4) !important;
+        filter: brightness(1.2);
+        z-index: 10;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+}
 
 /* ==========================================================================
    LÓGICA DEL BUSCADOR (COMMAND PALETTE), EASTER EGGS Y .BASH_HISTORY
@@ -499,7 +563,6 @@ function renderSinglePractica(id) {
     });
   });
 
-  /* --- NUEVO: Estilos CSS puros para las transiciones de página --- */
   if (!document.getElementById('estilos-transicion-practicas')) {
     const styleT = document.createElement('style');
     styleT.id = 'estilos-transicion-practicas';
@@ -709,7 +772,6 @@ function renderSinglePractica(id) {
   
   const terminalApp = document.getElementById('main-terminal');
   
-  // Selección universal de los tres botones de la ventana
   const closeBtns = document.querySelectorAll('#close-terminal-btn, .terminal-window .tb-dot.r, .terminal-window .dot.red, .terminal-titlebar .tb-dot.r, .terminal-titlebar .dot.red');
   const yellowBtns = document.querySelectorAll('.terminal-titlebar .tb-dot.y, .terminal-titlebar .dot.yellow');
   const greenBtns = document.querySelectorAll('.terminal-titlebar .tb-dot.g, .terminal-titlebar .dot.green');
@@ -720,7 +782,6 @@ function renderSinglePractica(id) {
     terminalApp.classList.add('maximize-animation');
   }
 
-  // --- FUNCIÓN ROJO: Cerrar práctica ---
   function closePracticaAnim(e) {
     if(e) e.preventDefault();
     if (typeof window.limpiarIndiceFlotante === 'function') window.limpiarIndiceFlotante();
@@ -735,7 +796,6 @@ function renderSinglePractica(id) {
     }
   }
 
-  // --- FUNCIÓN VERDE: Siguiente práctica ---
   function nextPracticaAnim(e) {
     if(e) e.preventDefault();
     if (typeof window.limpiarIndiceFlotante === 'function') window.limpiarIndiceFlotante();
@@ -748,7 +808,6 @@ function renderSinglePractica(id) {
     const nextUrl = window.location.pathname + '?id=' + nextId;
 
     if (terminalApp) {
-      // Aplicamos la animación definida por CSS Keyframes
       terminalApp.classList.remove('maximize-animation', 'minimize-animation');
       terminalApp.classList.add('anim-page-next');
       setTimeout(() => { window.location.href = nextUrl; }, 420);
@@ -757,7 +816,6 @@ function renderSinglePractica(id) {
     }
   }
 
-  // --- FUNCIÓN AMARILLO: Práctica anterior ---
   function prevPracticaAnim(e) {
     if(e) e.preventDefault();
     if (typeof window.limpiarIndiceFlotante === 'function') window.limpiarIndiceFlotante();
@@ -770,7 +828,6 @@ function renderSinglePractica(id) {
     const prevUrl = window.location.pathname + '?id=' + prevId;
 
     if (terminalApp) {
-      // Aplicamos la animación definida por CSS Keyframes
       terminalApp.classList.remove('maximize-animation', 'minimize-animation');
       terminalApp.classList.add('anim-page-prev');
       setTimeout(() => { window.location.href = prevUrl; }, 420);
@@ -779,7 +836,6 @@ function renderSinglePractica(id) {
     }
   }
 
-  // --- ASIGNACIÓN DE EVENTOS A LOS BOTONES ---
   if (closeBtns.length > 0) {
     closeBtns.forEach(btn => {
       btn.title = "Cerrar práctica";
