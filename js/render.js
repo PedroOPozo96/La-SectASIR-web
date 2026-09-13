@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
   setupSidebar();
   renderSidebar();
-  setupSearch();
-  setupGenericCloseButtons();
+  setupSearch(); 
+  setupGenericCloseButtons(); 
 
   const urlParams = new URLSearchParams(window.location.search);
   const idPractica = urlParams.get('id');
@@ -32,6 +32,7 @@ function setupSearch() {
     searchBtn.id = 'search-toggle';
     searchBtn.title = "Buscar fichero (Ctrl+K)";
     searchBtn.innerHTML = `<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>`;
+    
     sidebarToggle.parentNode.insertBefore(searchBtn, sidebarToggle);
   }
 
@@ -108,7 +109,7 @@ function setupSearch() {
       if (searchHistory.length > 0 && historyIndex > 0) {
         historyIndex--;
         searchInput.value = searchHistory[historyIndex];
-        searchInput.dispatchEvent(new Event('input'));
+        searchInput.dispatchEvent(new Event('input')); 
       }
     } 
     else if (e.key === 'ArrowDown') {
@@ -130,6 +131,7 @@ function setupSearch() {
     
     if (query === 'sqlplus sys as sysdba' || query === 'sqlplus / as sysdba') {
       closeSearch(); 
+      
       const isInsidePracticas = window.location.pathname.includes('/practicas/');
       if (isInsidePracticas) {
         window.location.href = '../index.html?cat=gbdd#practicas';
@@ -156,8 +158,9 @@ function setupSearch() {
     const homePath = isInsidePracticas ? '../index.html' : 'index.html';
 
     const categoriasNombres = Object.keys(CATEGORIAS_LABEL);
+    
     const matchesCat = categoriasNombres.filter(c => 
-      c.includes(query) || CATEGORIAS_LABEL[c].toLowerCase().includes(query)
+      c.toLowerCase().startsWith(query) || CATEGORIAS_LABEL[c].toLowerCase().includes(query)
     );
 
     matchesCat.forEach(cat => {
@@ -169,14 +172,13 @@ function setupSearch() {
             <span class="search-result-path">cd ~/${cat}</span>
           </div>
         </a>
-      `;
-    });
+      });
 
-    const matchesPrac = PRACTICAS.filter(p => 
-      p.titulo.toLowerCase().includes(query) || 
-      (p.resumen && p.resumen.toLowerCase().includes(query)) ||
-      (p.tags && p.tags.some(t => t.toLowerCase().includes(query)))
-    );
+    const matchesPrac = PRACTICAS.filter(p => {
+      const tituloMatch = p.titulo.toLowerCase().includes(query);
+      const tagMatch = p.tags && p.tags.some(t => t.toLowerCase().includes(query));
+      return tituloMatch || tagMatch;
+    });
 
     matchesPrac.forEach(p => {
       const extension = p.extension || '.pdf';
@@ -264,6 +266,7 @@ function renderSidebar() {
           cd /${nombreVisible[cat]}
         </div>
       `;
+      
       categorias[cat].forEach(p => {
         const nombreArchivo = p.filename || p.id;
         html += `
@@ -350,19 +353,22 @@ function setupNavigation() {
     btn.addEventListener('click', (e) => {
       const botonClicado = e.target.closest('.folder-btn');
       if (!botonClicado) return;
+      
       const category = botonClicado.getAttribute('data-target');
       openDirectory(category);
     });
   });
 
-  if (btnBack) btnBack.addEventListener('click', closeDirectory);
+  if (btnBack) {
+    btnBack.addEventListener('click', closeDirectory);
+  }
 }
 
 function openDirectory(categoria) {
   const foldersView = document.getElementById('gui-folders');
   const filesView = document.getElementById('files-view');
   
-  if (foldersView && filesView) {
+  if(foldersView && filesView) {
     foldersView.style.display = 'none';
     filesView.style.display = 'block';
 
@@ -441,6 +447,7 @@ function renderGrid(filtro) {
           <path d="M8 12h8v1H8zm0 3h8v1H8zm0 3h5v1H8z" fill="#94a3b8"/>
         </svg>
         <span class="file-name">${nombreArchivo}${extension}</span>
+
         <div class="file-preview">
           <div class="preview-cat">${labelAmigable}</div>
           <h4 class="preview-title">${p.titulo}</h4>
@@ -474,21 +481,23 @@ function renderSinglePractica(id) {
   const contenidoEl = document.getElementById('practica-contenido');
   const fechaEl = document.getElementById('practica-fecha');
   const tagsEl = document.getElementById('practica-tags');
-  const filenameEl = document.getElementById('terminal-filename'); // <-- NUEVO
 
   if (tituloEl) tituloEl.innerHTML = practica.titulo;
   if (contenidoEl) contenidoEl.innerHTML = practica.contenidoHTML;
-  if (fechaEl && practica.fecha) fechaEl.innerHTML = practica.fecha;
-  if (tagsEl && practica.tags) tagsEl.innerHTML = practica.tags.map(t => `<span class="stack-tag">${t}</span>`).join('');
 
-  // Actualiza el nombre en la barra de la terminal con el filename real de la práctica
-  if (filenameEl) {
-    filenameEl.textContent = 'cat ' + (practica.filename || practica.id) + (practica.extension || '.md');
-  }
+  const nombreReal = practica.filename || practica.id;
+  const extensionReal = practica.extension || '.md';
+  
+  const terminalTitlebars = document.querySelectorAll('.terminal-titlebar');
+  terminalTitlebars.forEach(tb => {
+    const spans = tb.querySelectorAll('span, div');
+    spans.forEach(span => {
+      if (span.textContent.toLowerCase().includes('cat ')) {
+        span.textContent = `cat ${nombreReal}${extensionReal}`;
+      }
+    });
+  });
 
-  /* ==========================================================================
-     GENERADOR AUTOMÁTICO DE ÍNDICE (BOTÓN FLOTANTE Y PANEL)
-     ========================================================================== */
   if (contenidoEl) {
     const titulos = contenidoEl.querySelectorAll('h2');
 
@@ -664,19 +673,29 @@ function renderSinglePractica(id) {
       };
     }
   }
-  /* ========================================================================== */
+
+  if (fechaEl && practica.fecha) fechaEl.innerHTML = practica.fecha;
+  
+  if (tagsEl && practica.tags) {
+    tagsEl.innerHTML = practica.tags.map(t => `<span class="stack-tag">${t}</span>`).join('');
+  }
 
   const safeCategory = practica.categoria ? practica.categoria.toLowerCase() : 'todas';
   const urlRetorno = `../index.html?cat=${safeCategory}#practicas`;
   
   const terminalApp = document.getElementById('main-terminal');
-  const closeBtn = document.getElementById('close-terminal-btn');
+  
+  // Selección universal de botones de ventana (Rojo = Cerrar, Verde = Siguiente)
+  const closeBtns = document.querySelectorAll('#close-terminal-btn, .terminal-window .tb-dot.r, .terminal-window .dot.red, .terminal-titlebar .tb-dot.r, .terminal-titlebar .dot.red');
+  const greenBtns = document.querySelectorAll('.terminal-titlebar .tb-dot.g, .terminal-titlebar .dot.green');
   const btnBack = document.getElementById('btn-back-to-folder');
   
-  if (terminalApp) terminalApp.classList.add('maximize-animation');
+  if (terminalApp) {
+    terminalApp.classList.add('maximize-animation');
+  }
 
   function closePracticaAnim(e) {
-    if (e) e.preventDefault();
+    if(e) e.preventDefault();
 
     if (typeof window.limpiarIndiceFlotante === 'function') {
       window.limpiarIndiceFlotante();
@@ -695,7 +714,51 @@ function renderSinglePractica(id) {
     }
   }
 
-  if (closeBtn) closeBtn.addEventListener('click', closePracticaAnim);
+  // --- NUEVA FUNCIÓN: Animación para cambiar a la siguiente práctica ---
+  function switchPracticaAnim(e) {
+    if(e) e.preventDefault();
+
+    if (typeof window.limpiarIndiceFlotante === 'function') {
+      window.limpiarIndiceFlotante();
+    }
+
+    const currentIndex = PRACTICAS.findIndex(p => p.id === id);
+    let nextIndex = currentIndex + 1;
+    if (nextIndex >= PRACTICAS.length) nextIndex = 0; 
+    
+    const nextId = PRACTICAS[nextIndex].id;
+    const nextUrl = window.location.pathname + '?id=' + nextId;
+
+    if (terminalApp) {
+      // Animación de "cambio de escritorio virtual"
+      terminalApp.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease-in';
+      terminalApp.style.transform = 'translateX(-150%) scale(0.8)'; 
+      terminalApp.style.opacity = '0';
+      
+      setTimeout(() => {
+        window.location.href = nextUrl;
+      }, 400);
+    } else {
+      window.location.href = nextUrl;
+    }
+  }
+
+  if (closeBtns.length > 0) {
+    closeBtns.forEach(btn => {
+      btn.title = "Cerrar práctica";
+      btn.style.cursor = 'pointer'; 
+      btn.addEventListener('click', closePracticaAnim);
+    });
+  }
+
+  // Asignamos el evento al botón verde
+  if (greenBtns.length > 0) {
+    greenBtns.forEach(btn => {
+      btn.title = "Siguiente práctica ->";
+      btn.style.cursor = 'pointer';
+      btn.addEventListener('click', switchPracticaAnim);
+    });
+  }
 
   if (btnBack) {
     btnBack.href = urlRetorno;
@@ -711,9 +774,12 @@ function setupGenericCloseButtons() {
   const params = new URLSearchParams(window.location.search);
   if (params.get('id')) return;
 
-  document.querySelectorAll('#close-terminal-btn').forEach(closeBtn => {
+  const genericCloseBtns = document.querySelectorAll('#close-terminal-btn, .terminal-window .tb-dot.r, .terminal-titlebar .tb-dot.r, .terminal-window .dot.red');
+  
+  genericCloseBtns.forEach(closeBtn => {
     if (closeBtn.dataset.closeBound) return;
     closeBtn.dataset.closeBound = 'true';
+    closeBtn.style.cursor = 'pointer';
 
     const terminalApp = closeBtn.closest('.terminal-window');
     const isInsidePracticas = window.location.pathname.includes('/practicas/');
@@ -721,6 +787,7 @@ function setupGenericCloseButtons() {
 
     closeBtn.addEventListener('click', (e) => {
       e.preventDefault();
+
       if (terminalApp) {
         terminalApp.classList.add('shrink-back-animation');
         setTimeout(() => {
