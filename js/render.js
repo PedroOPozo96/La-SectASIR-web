@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
   setupSidebar();
   renderSidebar();
-  setupSearch(); // <-- Módulo de búsqueda con Easter Eggs e Historial persistente (.bash_history)
-  setupGenericCloseButtons(); // <-- Cierra terminales en páginas sueltas
+  setupSearch();
+  setupGenericCloseButtons();
 
   const urlParams = new URLSearchParams(window.location.search);
   const idPractica = urlParams.get('id');
@@ -27,17 +27,14 @@ document.addEventListener('DOMContentLoaded', () => {
 function setupSearch() {
   const sidebarToggle = document.getElementById('sidebar-toggle');
   
-  // 1. Inyectar botón sin romper el body
   if (sidebarToggle && !document.getElementById('search-toggle')) {
     const searchBtn = document.createElement('div');
     searchBtn.id = 'search-toggle';
     searchBtn.title = "Buscar fichero (Ctrl+K)";
     searchBtn.innerHTML = `<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>`;
-    
     sidebarToggle.parentNode.insertBefore(searchBtn, sidebarToggle);
   }
 
-  // 2. Inyectar el Modal de Búsqueda
   if (!document.getElementById('search-modal')) {
     const modal = document.createElement('div');
     modal.id = 'search-modal';
@@ -59,8 +56,6 @@ function setupSearch() {
   const searchResults = document.getElementById('search-results');
   const searchToggle = document.getElementById('search-toggle');
 
-  // --- PERSISTENCIA ESTILO .bash_history ---
-  // Cargamos el historial de LocalStorage o creamos uno vacío
   let searchHistory = JSON.parse(localStorage.getItem('bash_history')) || [];
   let historyIndex = searchHistory.length;
 
@@ -68,7 +63,6 @@ function setupSearch() {
     searchModal.classList.add('active');
     searchInput.value = '';
     searchResults.innerHTML = '';
-    // Reseteamos el índice al final del historial cada vez que abrimos
     historyIndex = searchHistory.length; 
     setTimeout(() => searchInput.focus(), 100);
   };
@@ -84,7 +78,6 @@ function setupSearch() {
     if (e.target === searchModal) closeSearch();
   });
 
-  // Atajos globales para abrir/cerrar
   document.addEventListener('keydown', (e) => {
     if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
       e.preventDefault();
@@ -95,36 +88,27 @@ function setupSearch() {
     }
   });
 
-  // --- LÓGICA DE TECLADO INTERNO (Enter, Flechas) ---
   searchInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
       const val = searchInput.value.trim();
       
-      // Guardar en el historial si no está vacío y no es igual al último comando
       if (val && searchHistory[searchHistory.length - 1] !== val) {
         searchHistory.push(val);
-        // Limitamos el historial a 50 comandos para no llenar la caché
-        if (searchHistory.length > 50) {
-          searchHistory.shift();
-        }
-        // Guardamos físicamente en el navegador
+        if (searchHistory.length > 50) searchHistory.shift();
         localStorage.setItem('bash_history', JSON.stringify(searchHistory));
       }
       historyIndex = searchHistory.length;
 
-      // Hacer clic automático en el primer resultado
       const firstResult = searchResults.querySelector('a');
-      if (firstResult) {
-        firstResult.click();
-      }
+      if (firstResult) firstResult.click();
     } 
     else if (e.key === 'ArrowUp') {
       e.preventDefault(); 
       if (searchHistory.length > 0 && historyIndex > 0) {
         historyIndex--;
         searchInput.value = searchHistory[historyIndex];
-        searchInput.dispatchEvent(new Event('input')); // Dispara la búsqueda visual
+        searchInput.dispatchEvent(new Event('input'));
       }
     } 
     else if (e.key === 'ArrowDown') {
@@ -134,7 +118,6 @@ function setupSearch() {
         searchInput.value = searchHistory[historyIndex];
         searchInput.dispatchEvent(new Event('input')); 
       } else if (historyIndex === searchHistory.length - 1) {
-        // Al llegar al final, limpiamos la línea
         historyIndex++;
         searchInput.value = '';
         searchInput.dispatchEvent(new Event('input'));
@@ -142,16 +125,11 @@ function setupSearch() {
     }
   });
 
-  // 3. Lógica de filtrado dinámico y Easter Eggs
   searchInput.addEventListener('input', (e) => {
     const query = e.target.value.toLowerCase().trim();
     
-    /* ---------------------------------------------------
-       EASTER EGG: ORACLE DBA
-       --------------------------------------------------- */
     if (query === 'sqlplus sys as sysdba' || query === 'sqlplus / as sysdba') {
       closeSearch(); 
-      
       const isInsidePracticas = window.location.pathname.includes('/practicas/');
       if (isInsidePracticas) {
         window.location.href = '../index.html?cat=gbdd#practicas';
@@ -166,7 +144,6 @@ function setupSearch() {
       }
       return;
     }
-    /* --------------------------------------------------- */
 
     if (query.length < 2) {
       searchResults.innerHTML = '';
@@ -287,7 +264,6 @@ function renderSidebar() {
           cd /${nombreVisible[cat]}
         </div>
       `;
-      
       categorias[cat].forEach(p => {
         const nombreArchivo = p.filename || p.id;
         html += `
@@ -374,22 +350,19 @@ function setupNavigation() {
     btn.addEventListener('click', (e) => {
       const botonClicado = e.target.closest('.folder-btn');
       if (!botonClicado) return;
-      
       const category = botonClicado.getAttribute('data-target');
       openDirectory(category);
     });
   });
 
-  if (btnBack) {
-    btnBack.addEventListener('click', closeDirectory);
-  }
+  if (btnBack) btnBack.addEventListener('click', closeDirectory);
 }
 
 function openDirectory(categoria) {
   const foldersView = document.getElementById('gui-folders');
   const filesView = document.getElementById('files-view');
   
-  if(foldersView && filesView) {
+  if (foldersView && filesView) {
     foldersView.style.display = 'none';
     filesView.style.display = 'block';
 
@@ -468,7 +441,6 @@ function renderGrid(filtro) {
           <path d="M8 12h8v1H8zm0 3h8v1H8zm0 3h5v1H8z" fill="#94a3b8"/>
         </svg>
         <span class="file-name">${nombreArchivo}${extension}</span>
-
         <div class="file-preview">
           <div class="preview-cat">${labelAmigable}</div>
           <h4 class="preview-title">${p.titulo}</h4>
@@ -502,9 +474,17 @@ function renderSinglePractica(id) {
   const contenidoEl = document.getElementById('practica-contenido');
   const fechaEl = document.getElementById('practica-fecha');
   const tagsEl = document.getElementById('practica-tags');
+  const filenameEl = document.getElementById('terminal-filename'); // <-- NUEVO
 
   if (tituloEl) tituloEl.innerHTML = practica.titulo;
   if (contenidoEl) contenidoEl.innerHTML = practica.contenidoHTML;
+  if (fechaEl && practica.fecha) fechaEl.innerHTML = practica.fecha;
+  if (tagsEl && practica.tags) tagsEl.innerHTML = practica.tags.map(t => `<span class="stack-tag">${t}</span>`).join('');
+
+  // Actualiza el nombre en la barra de la terminal con el filename real de la práctica
+  if (filenameEl) {
+    filenameEl.textContent = 'cat ' + (practica.filename || practica.id) + (practica.extension || '.md');
+  }
 
   /* ==========================================================================
      GENERADOR AUTOMÁTICO DE ÍNDICE (BOTÓN FLOTANTE Y PANEL)
@@ -686,12 +666,6 @@ function renderSinglePractica(id) {
   }
   /* ========================================================================== */
 
-  if (fechaEl && practica.fecha) fechaEl.innerHTML = practica.fecha;
-  
-  if (tagsEl && practica.tags) {
-    tagsEl.innerHTML = practica.tags.map(t => `<span class="stack-tag">${t}</span>`).join('');
-  }
-
   const safeCategory = practica.categoria ? practica.categoria.toLowerCase() : 'todas';
   const urlRetorno = `../index.html?cat=${safeCategory}#practicas`;
   
@@ -699,12 +673,10 @@ function renderSinglePractica(id) {
   const closeBtn = document.getElementById('close-terminal-btn');
   const btnBack = document.getElementById('btn-back-to-folder');
   
-  if (terminalApp) {
-    terminalApp.classList.add('maximize-animation');
-  }
+  if (terminalApp) terminalApp.classList.add('maximize-animation');
 
   function closePracticaAnim(e) {
-    if(e) e.preventDefault();
+    if (e) e.preventDefault();
 
     if (typeof window.limpiarIndiceFlotante === 'function') {
       window.limpiarIndiceFlotante();
@@ -723,9 +695,7 @@ function renderSinglePractica(id) {
     }
   }
 
-  if (closeBtn) {
-    closeBtn.addEventListener('click', closePracticaAnim);
-  }
+  if (closeBtn) closeBtn.addEventListener('click', closePracticaAnim);
 
   if (btnBack) {
     btnBack.href = urlRetorno;
@@ -751,7 +721,6 @@ function setupGenericCloseButtons() {
 
     closeBtn.addEventListener('click', (e) => {
       e.preventDefault();
-
       if (terminalApp) {
         terminalApp.classList.add('shrink-back-animation');
         setTimeout(() => {
