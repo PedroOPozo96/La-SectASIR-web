@@ -172,7 +172,8 @@ function setupSearch() {
             <span class="search-result-path">cd ~/${cat}</span>
           </div>
         </a>
-      });
+      `; // <--- ¡AQUÍ ESTABA EL ERROR! Faltaba esta comilla invertida.
+    });
 
     const matchesPrac = PRACTICAS.filter(p => {
       const tituloMatch = p.titulo.toLowerCase().includes(query);
