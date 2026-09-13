@@ -499,6 +499,29 @@ function renderSinglePractica(id) {
     });
   });
 
+  /* --- NUEVO: Estilos CSS puros para las transiciones de página --- */
+  if (!document.getElementById('estilos-transicion-practicas')) {
+    const styleT = document.createElement('style');
+    styleT.id = 'estilos-transicion-practicas';
+    styleT.textContent = `
+      @keyframes pageTurnNext {
+        0% { transform: perspective(2000px) rotateY(0deg); transform-origin: left center; opacity: 1; }
+        100% { transform: perspective(2000px) rotateY(-90deg); transform-origin: left center; opacity: 0; }
+      }
+      @keyframes pageTurnPrev {
+        0% { transform: perspective(2000px) rotateY(0deg); transform-origin: right center; opacity: 1; }
+        100% { transform: perspective(2000px) rotateY(90deg); transform-origin: right center; opacity: 0; }
+      }
+      .anim-page-next { 
+        animation: pageTurnNext 0.45s forwards cubic-bezier(0.4, 0, 0.2, 1); 
+      }
+      .anim-page-prev { 
+        animation: pageTurnPrev 0.45s forwards cubic-bezier(0.4, 0, 0.2, 1); 
+      }
+    `;
+    document.head.appendChild(styleT);
+  }
+
   if (contenidoEl) {
     const titulos = contenidoEl.querySelectorAll('h2');
 
@@ -712,49 +735,45 @@ function renderSinglePractica(id) {
     }
   }
 
-  // --- FUNCIÓN VERDE: Siguiente práctica (Efecto pasar página adelante) ---
+  // --- FUNCIÓN VERDE: Siguiente práctica ---
   function nextPracticaAnim(e) {
     if(e) e.preventDefault();
     if (typeof window.limpiarIndiceFlotante === 'function') window.limpiarIndiceFlotante();
 
     const currentIndex = PRACTICAS.findIndex(p => p.id === id);
     let nextIndex = currentIndex + 1;
-    if (nextIndex >= PRACTICAS.length) nextIndex = 0; // Vuelve a empezar si llega al final
+    if (nextIndex >= PRACTICAS.length) nextIndex = 0; 
     
     const nextId = PRACTICAS[nextIndex].id;
     const nextUrl = window.location.pathname + '?id=' + nextId;
 
     if (terminalApp) {
-      // Efecto pasar página hacia la izquierda
-      terminalApp.style.transition = 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease-in';
-      terminalApp.style.transformOrigin = 'left center';
-      terminalApp.style.transform = 'perspective(1200px) rotateY(-90deg)'; 
-      terminalApp.style.opacity = '0';
-      setTimeout(() => { window.location.href = nextUrl; }, 500);
+      // Aplicamos la animación definida por CSS Keyframes
+      terminalApp.classList.remove('maximize-animation', 'minimize-animation');
+      terminalApp.classList.add('anim-page-next');
+      setTimeout(() => { window.location.href = nextUrl; }, 420);
     } else {
       window.location.href = nextUrl;
     }
   }
 
-  // --- FUNCIÓN AMARILLO: Práctica anterior (Efecto pasar página atrás) ---
+  // --- FUNCIÓN AMARILLO: Práctica anterior ---
   function prevPracticaAnim(e) {
     if(e) e.preventDefault();
     if (typeof window.limpiarIndiceFlotante === 'function') window.limpiarIndiceFlotante();
 
     const currentIndex = PRACTICAS.findIndex(p => p.id === id);
     let prevIndex = currentIndex - 1;
-    if (prevIndex < 0) prevIndex = PRACTICAS.length - 1; // Salta a la última si estamos en la primera
+    if (prevIndex < 0) prevIndex = PRACTICAS.length - 1; 
     
     const prevId = PRACTICAS[prevIndex].id;
     const prevUrl = window.location.pathname + '?id=' + prevId;
 
     if (terminalApp) {
-      // Efecto pasar página hacia la derecha
-      terminalApp.style.transition = 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease-in';
-      terminalApp.style.transformOrigin = 'right center';
-      terminalApp.style.transform = 'perspective(1200px) rotateY(90deg)'; 
-      terminalApp.style.opacity = '0';
-      setTimeout(() => { window.location.href = prevUrl; }, 500);
+      // Aplicamos la animación definida por CSS Keyframes
+      terminalApp.classList.remove('maximize-animation', 'minimize-animation');
+      terminalApp.classList.add('anim-page-prev');
+      setTimeout(() => { window.location.href = prevUrl; }, 420);
     } else {
       window.location.href = prevUrl;
     }
