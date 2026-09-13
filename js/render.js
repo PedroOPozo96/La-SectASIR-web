@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-  setupWindowButtonsStyles(); // <-- NUEVO: Estilos y animaciones para los botones de colores
+  setupWindowButtonsStyles(); // <-- Mantenemos los estilos visuales de los botones
   setupSidebar();
   renderSidebar();
   setupSearch(); 
@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* ==========================================================================
-   ANIMACIONES Y ESTILOS PARA LOS BOTONES DE LA VENTANA (UX/UI)
+   ESTILOS PARA LOS BOTONES DE LA VENTANA (UX/UI MEJORADO - SIN ANIMACIONES ROTAS)
    ========================================================================== */
 
 function setupWindowButtonsStyles() {
@@ -35,37 +35,38 @@ function setupWindowButtonsStyles() {
         display: flex !important;
         align-items: center;
         justify-content: center;
-        transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+        transition: transform 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
         position: relative;
       }
 
-      /* Animación de latido para llamar la atención al cargar la web */
-      @keyframes pulse-attention {
-        0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,255,255,0.4); }
-        50% { transform: scale(1.3); filter: brightness(1.2); box-shadow: 0 0 8px 2px rgba(255,255,255,0.1); }
-        100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,255,255,0); }
+      /* Latido CONSTANTE muy suave para indicar que son interactivos */
+      @keyframes gentle-pulse {
+        0% { box-shadow: 0 0 0 0 rgba(255,255,255,0.4); }
+        70% { box-shadow: 0 0 0 4px rgba(255,255,255,0); }
+        100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); }
       }
       
-      /* Aplicamos el latido secuencial a los botones */
-      .terminal-titlebar .tb-dot.r, .panel-header .dot.red { animation: pulse-attention 0.6s ease-in-out 1s 2; }
-      .terminal-titlebar .tb-dot.y, .panel-header .dot.yellow { animation: pulse-attention 0.6s ease-in-out 1.1s 2; }
-      .terminal-titlebar .tb-dot.g, .panel-header .dot.green { animation: pulse-attention 0.6s ease-in-out 1.2s 2; }
+      .terminal-titlebar .tb-dot.y, .panel-header .dot.yellow,
+      .terminal-titlebar .tb-dot.g, .panel-header .dot.green {
+        animation: gentle-pulse 2s infinite ease-in-out;
+      }
 
-      /* Símbolos ocultos por defecto dentro de los botones */
+      /* Símbolos SIEMPRE VISIBLES */
       .terminal-titlebar .tb-dot::after, .panel-header .dot::after {
-        opacity: 0;
-        color: rgba(0, 0, 0, 0.65);
+        opacity: 0.65; 
+        color: rgba(0, 0, 0, 0.8);
         font-size: 8px;
         font-weight: 900;
         font-family: system-ui, -apple-system, sans-serif;
-        transition: opacity 0.2s ease;
+        transition: opacity 0.2s ease, font-size 0.2s ease;
         position: absolute;
         pointer-events: none;
       }
 
-      /* Mostrar los símbolos al pasar el ratón por la barra de título */
-      .terminal-titlebar:hover .tb-dot::after, .panel-header:hover .dot::after {
+      /* Al pasar el ratón se ven perfectos y un pelín más grandes */
+      .terminal-titlebar .tb-dot:hover::after, .panel-header .dot:hover::after {
         opacity: 1;
+        font-size: 9px;
       }
 
       /* Definir el símbolo exacto para cada color */
@@ -73,11 +74,12 @@ function setupWindowButtonsStyles() {
       .tb-dot.y::after, .dot.yellow::after { content: '◄'; font-size: 7px; margin-right: 1px; }
       .tb-dot.g::after, .dot.green::after { content: '►'; font-size: 7px; margin-left: 1px; }
 
-      /* Efecto extra cuando pasas el ratón por encima del botón en concreto */
+      /* Efecto de crecimiento al pasar el ratón */
       .terminal-titlebar .tb-dot:hover, .panel-header .dot:hover {
-        transform: scale(1.4) !important;
+        transform: scale(1.3) !important;
         filter: brightness(1.2);
         z-index: 10;
+        animation: none; 
       }
     `;
     document.head.appendChild(style);
@@ -230,7 +232,7 @@ function setupSearch() {
     matchesCat.forEach(cat => {
       html += `
         <a href="${homePath}?cat=${cat}#practicas" class="search-result-item" onclick="setTimeout(()=>window.location.reload(), 50)">
-          <svg class="search-result-icon" viewBox="0 0 24 24"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z" fill="#3b82f6"/></svg>
+          <svg class="search-result-icon" viewBox="0 0 24 24"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" fill="#3b82f6"/></svg>
           <div class="search-result-info">
             <span class="search-result-title">Directorio: ${CATEGORIAS_LABEL[cat]}</span>
             <span class="search-result-path">cd ~/${cat}</span>
@@ -563,28 +565,6 @@ function renderSinglePractica(id) {
     });
   });
 
-  if (!document.getElementById('estilos-transicion-practicas')) {
-    const styleT = document.createElement('style');
-    styleT.id = 'estilos-transicion-practicas';
-    styleT.textContent = `
-      @keyframes pageTurnNext {
-        0% { transform: perspective(2000px) rotateY(0deg); transform-origin: left center; opacity: 1; }
-        100% { transform: perspective(2000px) rotateY(-90deg); transform-origin: left center; opacity: 0; }
-      }
-      @keyframes pageTurnPrev {
-        0% { transform: perspective(2000px) rotateY(0deg); transform-origin: right center; opacity: 1; }
-        100% { transform: perspective(2000px) rotateY(90deg); transform-origin: right center; opacity: 0; }
-      }
-      .anim-page-next { 
-        animation: pageTurnNext 0.45s forwards cubic-bezier(0.4, 0, 0.2, 1); 
-      }
-      .anim-page-prev { 
-        animation: pageTurnPrev 0.45s forwards cubic-bezier(0.4, 0, 0.2, 1); 
-      }
-    `;
-    document.head.appendChild(styleT);
-  }
-
   if (contenidoEl) {
     const titulos = contenidoEl.querySelectorAll('h2');
 
@@ -772,6 +752,7 @@ function renderSinglePractica(id) {
   
   const terminalApp = document.getElementById('main-terminal');
   
+  // Selección universal de los botones
   const closeBtns = document.querySelectorAll('#close-terminal-btn, .terminal-window .tb-dot.r, .terminal-window .dot.red, .terminal-titlebar .tb-dot.r, .terminal-titlebar .dot.red');
   const yellowBtns = document.querySelectorAll('.terminal-titlebar .tb-dot.y, .terminal-titlebar .dot.yellow');
   const greenBtns = document.querySelectorAll('.terminal-titlebar .tb-dot.g, .terminal-titlebar .dot.green');
@@ -782,6 +763,8 @@ function renderSinglePractica(id) {
     terminalApp.classList.add('maximize-animation');
   }
 
+  // --- FUNCIONES DE NAVEGACIÓN LIMPIAS (Sin animaciones CSS complejas) ---
+  
   function closePracticaAnim(e) {
     if(e) e.preventDefault();
     if (typeof window.limpiarIndiceFlotante === 'function') window.limpiarIndiceFlotante();
@@ -804,16 +787,7 @@ function renderSinglePractica(id) {
     let nextIndex = currentIndex + 1;
     if (nextIndex >= PRACTICAS.length) nextIndex = 0; 
     
-    const nextId = PRACTICAS[nextIndex].id;
-    const nextUrl = window.location.pathname + '?id=' + nextId;
-
-    if (terminalApp) {
-      terminalApp.classList.remove('maximize-animation', 'minimize-animation');
-      terminalApp.classList.add('anim-page-next');
-      setTimeout(() => { window.location.href = nextUrl; }, 420);
-    } else {
-      window.location.href = nextUrl;
-    }
+    window.location.href = window.location.pathname + '?id=' + PRACTICAS[nextIndex].id;
   }
 
   function prevPracticaAnim(e) {
@@ -824,18 +798,10 @@ function renderSinglePractica(id) {
     let prevIndex = currentIndex - 1;
     if (prevIndex < 0) prevIndex = PRACTICAS.length - 1; 
     
-    const prevId = PRACTICAS[prevIndex].id;
-    const prevUrl = window.location.pathname + '?id=' + prevId;
-
-    if (terminalApp) {
-      terminalApp.classList.remove('maximize-animation', 'minimize-animation');
-      terminalApp.classList.add('anim-page-prev');
-      setTimeout(() => { window.location.href = prevUrl; }, 420);
-    } else {
-      window.location.href = prevUrl;
-    }
+    window.location.href = window.location.pathname + '?id=' + PRACTICAS[prevIndex].id;
   }
 
+  // --- ASIGNACIÓN DE EVENTOS A LOS BOTONES ---
   if (closeBtns.length > 0) {
     closeBtns.forEach(btn => {
       btn.title = "Cerrar práctica";
@@ -846,7 +812,7 @@ function renderSinglePractica(id) {
 
   if (yellowBtns.length > 0) {
     yellowBtns.forEach(btn => {
-      btn.title = "<- Práctica anterior";
+      btn.title = "Práctica anterior";
       btn.style.cursor = 'pointer';
       btn.addEventListener('click', prevPracticaAnim);
     });
@@ -854,7 +820,7 @@ function renderSinglePractica(id) {
 
   if (greenBtns.length > 0) {
     greenBtns.forEach(btn => {
-      btn.title = "Siguiente práctica ->";
+      btn.title = "Siguiente práctica";
       btn.style.cursor = 'pointer';
       btn.addEventListener('click', nextPracticaAnim);
     });
