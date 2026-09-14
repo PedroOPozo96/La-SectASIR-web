@@ -14,21 +14,33 @@ document.addEventListener('DOMContentLoaded', () => {
   if (idPractica) {
     renderSinglePractica(idPractica);
   } else {
-    updateFolderIcons(); 
     setupNavigation();
     
     if (catPractica) {
+      updateFolderIcons(); 
       openDirectory(catPractica.toLowerCase()); 
     } else {
-      // Animación de la terminal Hero (Boot SSH)
+      // ESTAMOS EN LA PORTADA PRINCIPAL
       animateHeroTerminal();
       
-      // Animación LENTA del comando debajo del título "Prácticas"
       const promptEl = document.getElementById('path-prompt');
+      const foldersContainer = document.getElementById('gui-folders');
+      
+      // 1. Ocultamos las carpetas para que esperen su turno
+      if (foldersContainer) foldersContainer.style.visibility = 'hidden';
+
       if (promptEl) {
-        promptEl.textContent = ''; // Vaciamos el texto estático del HTML
+        promptEl.textContent = ''; 
         const prefix = `<span style="color: #64748b;">#</span> <span style="color: #4ade80;">pedrooliver@asir</span>:<span style="color: #60a5fa;">~/la_sectasir/practicas</span>$ `;
-        typeCommand(promptEl, prefix, 'ls -la', 150); // <-- 150ms para que teclee más despacio
+        
+        // 2. Tecleamos LENTO (200ms) y le pasamos una función que se ejecuta al terminar
+        typeCommand(promptEl, prefix, 'ls -la', 200, () => {
+          // 3. Cuando termina, mostramos el contenedor y creamos las carpetas animadas
+          if (foldersContainer) foldersContainer.style.visibility = 'visible';
+          updateFolderIcons();
+        });
+      } else {
+        updateFolderIcons();
       }
     }
   }
@@ -54,7 +66,7 @@ function animateHeroTerminal() {
       ${promptHTML} <span class="cmd">cat sobre-mi.txt</span>
     </div>
     <div class="line boot-line" style="margin-bottom: 14px; color: var(--text-bright); line-height: 1.6; animation-delay: 0.55s;">
-      Soy Pedro Oliver Pozo, estudiante del IES Gonzalo Nazareno y Futuro Administrador de Sistemas y Redes. &nbsp;[ <a href="#" style="color: var(--celeste);">leer más →</a> ]
+      Soy Pedro Oliver Pozo, estudiante del IES Gonzalo Nazareno y Futuro Administrador de Sistemas y Redes. &nbsp;[ <a href="sobre-mi.html" style="color: var(--celeste);">leer más →</a> ]
     </div>
     <div class="line boot-line" style="margin-bottom: 14px; animation-delay: 0.7s;">
       ${promptHTML} <span class="cmd">Realizando Prácticas...</span><span class="blinking-cursor"></span>
@@ -67,7 +79,7 @@ function animateHeroTerminal() {
 }
 
 /* ==========================================================================
-   ACTUALIZADO: ICONOS DE CARPETA (CASCADA, PAPEL ANIMADO Y CARPETAS GRISES)
+   ACTUALIZADO: ICONOS DE CARPETA (TIEMPOS SEPARADOS)
    ========================================================================== */
 function updateFolderIcons() {
   const folders = document.querySelectorAll('.folder-btn');
@@ -77,21 +89,23 @@ function updateFolderIcons() {
     style.id = 'estilos-anim-carpetas';
     style.textContent = `
       @keyframes folderEntrance {
-        0% { opacity: 0; transform: translateY(30px) scale(0.9); }
+        0% { opacity: 0; transform: translateY(20px) scale(0.9); }
         100% { opacity: 1; transform: translateY(0) scale(1); }
       }
       .folder-btn {
         opacity: 0; 
-        animation: folderEntrance 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        animation: folderEntrance 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
       }
+      
       @keyframes paperSlideUp {
         0% { transform: translateY(12px); opacity: 0; }
-        50% { opacity: 1; }
         100% { transform: translateY(0); opacity: 1; }
       }
       .folder-paper-anim {
-        animation: paperSlideUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1.2) forwards;
+        opacity: 0;
+        animation: paperSlideUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1.2) forwards;
       }
+
       .folder-btn.has-practices:hover svg {
         transform: scale(1.08) translateY(-4px);
         filter: drop-shadow(0 8px 12px rgba(96, 165, 250, 0.3));
@@ -105,8 +119,8 @@ function updateFolderIcons() {
     const spanElement = btn.querySelector('span');
     const spanText = spanElement ? spanElement.innerText : category;
     
-    // Retraso escalonado para la cascada (0s, 0.1s, 0.2s...)
-    btn.style.animationDelay = `${index * 0.1}s`;
+    // Entran en cascada separadas por 0.15s
+    btn.style.animationDelay = `${index * 0.15}s`;
 
     let count = 0;
     if (typeof PRACTICAS !== 'undefined') {
@@ -118,12 +132,15 @@ function updateFolderIcons() {
     }
 
     if (count > 0) {
-      // CARPETA LLENA (AZUL Y CON PAPEL)
       btn.classList.add('has-practices');
+      
+      // El papel espera a que casi todas las carpetas estén puestas (0.8s de base)
+      const paperDelay = 0.8 + (index * 0.1);
+
       btn.innerHTML = `
         <svg viewBox="0 0 24 24" width="64" height="64" style="overflow: visible;">
           <path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" fill="#3b82f6" opacity="0.6"/>
-          <g class="folder-paper-anim" style="animation-delay: ${(index * 0.1) + 0.4}s; opacity: 0;">
+          <g class="folder-paper-anim" style="animation-delay: ${paperDelay}s;">
             <path d="M15 8H7v10h10V10l-2-2z" fill="#e2e8f0"/>
             <path d="M9 11h5v1H9zm0 2h6v1H9zm0 2h4v1H9z" fill="#94a3b8"/>
           </g>
@@ -132,7 +149,6 @@ function updateFolderIcons() {
         <span style="color: #f8fafc; margin-top: 8px;">${spanText}</span>
       `;
     } else {
-      // CARPETA VACÍA (GRIS, SIN PAPEL)
       btn.classList.remove('has-practices');
       btn.innerHTML = `
         <svg viewBox="0 0 24 24" width="64" height="64" fill="#475569">
@@ -176,7 +192,8 @@ function setupTypingStyles() {
   }
 }
 
-function typeCommand(element, prefixHTML, commandText, speed = 40) {
+// NUEVO: Ahora acepta una función (callback) que se ejecuta al terminar
+function typeCommand(element, prefixHTML, commandText, speed = 40, callback = null) {
   if(element.typeTimeout) clearTimeout(element.typeTimeout);
   element.innerHTML = prefixHTML + '<span class="typing-text"></span><span class="blinking-cursor"></span>';
   const textContainer = element.querySelector('.typing-text');
@@ -186,6 +203,8 @@ function typeCommand(element, prefixHTML, commandText, speed = 40) {
       textContainer.textContent += commandText.charAt(i);
       i++;
       element.typeTimeout = setTimeout(type, speed);
+    } else {
+      if (callback) callback(); // Avisamos de que ha terminado
     }
   }
   type();
@@ -218,7 +237,6 @@ function setupTransitionStyles() {
       @keyframes pageTurnPrevOut { 0% { transform: perspective(2000px) rotateY(0deg); transform-origin: right center; opacity: 1; } 100% { transform: perspective(2000px) rotateY(90deg); transform-origin: right center; opacity: 0; } }
       .anim-page-next-out { animation: pageTurnNextOut 0.45s forwards cubic-bezier(0.4, 0, 0.2, 1); }
       .anim-page-prev-out { animation: pageTurnPrevOut 0.45s forwards cubic-bezier(0.4, 0, 0.2, 1); }
-
       @keyframes pageTurnNextIn { 0% { transform: perspective(2000px) rotateY(90deg); transform-origin: right center; opacity: 0; } 100% { transform: perspective(2000px) rotateY(0deg); transform-origin: right center; opacity: 1; } }
       @keyframes pageTurnPrevIn { 0% { transform: perspective(2000px) rotateY(-90deg); transform-origin: left center; opacity: 0; } 100% { transform: perspective(2000px) rotateY(0deg); transform-origin: left center; opacity: 1; } }
       .anim-page-next-in { animation: pageTurnNextIn 0.5s forwards cubic-bezier(0.2, 0.8, 0.2, 1); }
@@ -397,7 +415,7 @@ function openDirectory(categoria) {
     if(promptEl) {
       promptEl.textContent = '';
       const prefix = `<span style="color: #64748b;">#</span> <span style="color: #4ade80;">pedrooliver@asir</span>:<span style="color: #60a5fa;">~/la_sectasir/practicas${dirName}</span>$ `;
-      typeCommand(promptEl, prefix, 'ls -la', 40); // Más rápido al entrar en carpetas
+      typeCommand(promptEl, prefix, 'ls -la', 40);
     }
     renderGrid(categoria);
   }
@@ -416,8 +434,9 @@ function closeDirectory() {
   if(promptEl) {
     promptEl.textContent = '';
     const prefix = `<span style="color: #64748b;">#</span> <span style="color: #4ade80;">pedrooliver@asir</span>:<span style="color: #60a5fa;">~/la_sectasir/practicas</span>$ `;
-    typeCommand(promptEl, prefix, 'ls -la', 40); // Más rápido al volver
+    typeCommand(promptEl, prefix, 'ls -la', 40);
   }
+  updateFolderIcons(); // Re-disparar animación de carpetas
   window.history.pushState({}, document.title, window.location.pathname + '#practicas');
 }
 
