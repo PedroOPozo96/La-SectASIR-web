@@ -26,17 +26,17 @@ document.addEventListener('DOMContentLoaded', () => {
       const promptEl = document.getElementById('path-prompt');
       const foldersContainer = document.getElementById('gui-folders');
       
-      // 1. Ocultamos las carpetas para que esperen su turno
-      if (foldersContainer) foldersContainer.style.visibility = 'hidden';
+      if (promptEl && foldersContainer) {
+        // 1. Ocultamos las carpetas para que esperen su turno
+        foldersContainer.style.display = 'none';
 
-      if (promptEl) {
         promptEl.textContent = ''; 
         const prefix = `<span style="color: #64748b;">#</span> <span style="color: #4ade80;">pedrooliver@asir</span>:<span style="color: #60a5fa;">~/la_sectasir/practicas</span>$ `;
         
-        // 2. Tecleamos LENTO (200ms) y le pasamos una función que se ejecuta al terminar
-        typeCommand(promptEl, prefix, 'ls -la', 200, () => {
-          // 3. Cuando termina, mostramos el contenedor y creamos las carpetas animadas
-          if (foldersContainer) foldersContainer.style.visibility = 'visible';
+        // 2. Tecleamos muy LENTO (150ms)
+        typeCommand(promptEl, prefix, 'ls -la', 150, () => {
+          // 3. Cuando termina, mostramos el contenedor y activamos la animación
+          foldersContainer.style.display = 'flex';
           updateFolderIcons();
         });
       } else {
@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* ==========================================================================
-   ANIMACIÓN DE LA TERMINAL DE LA PORTADA (OPCIÓN 2 - BOOT SSH RÁPIDO)
+   ANIMACIÓN DE LA TERMINAL DE LA PORTADA (BOOT SSH RÁPIDO)
    ========================================================================== */
 function animateHeroTerminal() {
   const heroTerminal = document.querySelector('.hero .terminal-body');
@@ -79,7 +79,7 @@ function animateHeroTerminal() {
 }
 
 /* ==========================================================================
-   ACTUALIZADO: ICONOS DE CARPETA (TIEMPOS SEPARADOS)
+   ICONOS DE CARPETA (SE ABREN FÍSICAMENTE AL PASAR EL RATÓN)
    ========================================================================== */
 function updateFolderIcons() {
   const folders = document.querySelectorAll('.folder-btn');
@@ -88,27 +88,41 @@ function updateFolderIcons() {
     const style = document.createElement('style');
     style.id = 'estilos-anim-carpetas';
     style.textContent = `
+      /* Animación de entrada en cascada */
       @keyframes folderEntrance {
         0% { opacity: 0; transform: translateY(20px) scale(0.9); }
         100% { opacity: 1; transform: translateY(0) scale(1); }
       }
       .folder-btn {
         opacity: 0; 
-        animation: folderEntrance 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        animation: folderEntrance 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
       }
       
-      @keyframes paperSlideUp {
-        0% { transform: translateY(12px); opacity: 0; }
-        100% { transform: translateY(0); opacity: 1; }
-      }
-      .folder-paper-anim {
+      /* ESTADOS DE LA CARPETA (Toggle de opacidad suave) */
+      .folder-closed-shape { opacity: 1; transition: opacity 0.2s ease; }
+      .folder-open-shape { opacity: 0; transition: opacity 0.2s ease; }
+
+      /* ESTADO DEL PAPEL */
+      .folder-paper-hover {
         opacity: 0;
-        animation: paperSlideUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1.2) forwards;
+        transform: translateY(0);
+        transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
       }
 
+      /* EFECTOS AL PASAR EL RATÓN */
       .folder-btn.has-practices:hover svg {
         transform: scale(1.08) translateY(-4px);
         filter: drop-shadow(0 8px 12px rgba(96, 165, 250, 0.3));
+      }
+      
+      /* 1. Ocultar la carpeta cerrada sólida */
+      .folder-btn.has-practices:hover .folder-closed-shape { opacity: 0; }
+      /* 2. Mostrar la carpeta abierta (solapa caída) */
+      .folder-btn.has-practices:hover .folder-open-shape { opacity: 1; }
+      /* 3. Subir el folio hacia arriba */
+      .folder-btn.has-practices:hover .folder-paper-hover {
+        opacity: 1;
+        transform: translateY(-12px); 
       }
     `;
     document.head.appendChild(style);
@@ -119,32 +133,38 @@ function updateFolderIcons() {
     const spanElement = btn.querySelector('span');
     const spanText = spanElement ? spanElement.innerText : category;
     
-    // Entran en cascada separadas por 0.15s
+    // Retraso para la cascada inicial
     btn.style.animationDelay = `${index * 0.15}s`;
 
     let count = 0;
     if (typeof PRACTICAS !== 'undefined') {
-      if (category === 'todas') {
-        count = PRACTICAS.length;
-      } else {
-        count = PRACTICAS.filter(p => p.categoria && p.categoria.toLowerCase() === category.toLowerCase()).length;
-      }
+      if (category === 'todas') count = PRACTICAS.length;
+      else count = PRACTICAS.filter(p => p.categoria && p.categoria.toLowerCase() === category.toLowerCase()).length;
     }
 
     if (count > 0) {
       btn.classList.add('has-practices');
       
-      // El papel espera a que casi todas las carpetas estén puestas (0.8s de base)
-      const paperDelay = 0.8 + (index * 0.1);
-
       btn.innerHTML = `
         <svg viewBox="0 0 24 24" width="64" height="64" style="overflow: visible;">
-          <path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" fill="#3b82f6" opacity="0.6"/>
-          <g class="folder-paper-anim" style="animation-delay: ${paperDelay}s;">
-            <path d="M15 8H7v10h10V10l-2-2z" fill="#e2e8f0"/>
-            <path d="M9 11h5v1H9zm0 2h6v1H9zm0 2h4v1H9z" fill="#94a3b8"/>
+          
+          <!-- FORMA ABIERTA: Parte trasera (Oculta por defecto) -->
+          <path class="folder-open-shape" d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" fill="#3b82f6" opacity="0.6"/>
+          
+          <!-- PAPEL: Sale desde el centro (Oculto por defecto) -->
+          <g class="folder-paper-hover">
+            <rect x="4" y="2" width="16" height="14" rx="1" fill="#f8fafc"/>
+            <rect x="7" y="5" width="8" height="1" fill="#cbd5e1"/>
+            <rect x="7" y="8" width="10" height="1" fill="#cbd5e1"/>
+            <rect x="7" y="11" width="6" height="1" fill="#cbd5e1"/>
           </g>
-          <path d="M2.01 19.5c0 .83.67 1.5 1.5 1.5h15.07c.64 0 1.19-.4 1.39-.99l2.88-8.52c.18-.53-.21-1.09-.76-1.09H4.17c-.64 0-1.19.4-1.39.99L2.01 19.5z" fill="#60a5fa"/>
+
+          <!-- FORMA ABIERTA: Solapa delantera inclinada (Oculta por defecto) -->
+          <path class="folder-open-shape" d="M2.01 19.5c0 .83.67 1.5 1.5 1.5h15.07c.64 0 1.19-.4 1.39-.99l2.88-8.52c.18-.53-.21-1.09-.76-1.09H4.17c-.64 0-1.19.4-1.39.99L2.01 19.5z" fill="#60a5fa"/>
+
+          <!-- FORMA CERRADA SÓLIDA (Visible por defecto, desaparece al hacer hover) -->
+          <path class="folder-closed-shape" d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" fill="#3b82f6"/>
+
         </svg>
         <span style="color: #f8fafc; margin-top: 8px;">${spanText}</span>
       `;
@@ -179,6 +199,7 @@ function setupTypingStyles() {
       }
       @keyframes blink { 50% { opacity: 0; } }
       .typing-text { white-space: pre-wrap; }
+      
       @keyframes fastBootLine {
         0% { opacity: 0; transform: translateY(-10px); }
         100% { opacity: 1; transform: translateY(0); }
@@ -192,7 +213,6 @@ function setupTypingStyles() {
   }
 }
 
-// NUEVO: Ahora acepta una función (callback) que se ejecuta al terminar
 function typeCommand(element, prefixHTML, commandText, speed = 40, callback = null) {
   if(element.typeTimeout) clearTimeout(element.typeTimeout);
   element.innerHTML = prefixHTML + '<span class="typing-text"></span><span class="blinking-cursor"></span>';
@@ -204,7 +224,7 @@ function typeCommand(element, prefixHTML, commandText, speed = 40, callback = nu
       i++;
       element.typeTimeout = setTimeout(type, speed);
     } else {
-      if (callback) callback(); // Avisamos de que ha terminado
+      if (callback) callback(); 
     }
   }
   type();
@@ -247,7 +267,7 @@ function setupTransitionStyles() {
 }
 
 /* ==========================================================================
-   ESTILOS PARA LOS BOTONES DE LA VENTANA (UX/UI MEJORADO)
+   ESTILOS PARA LOS BOTONES DE LA VENTANA
    ========================================================================== */
 function setupWindowButtonsStyles() {
   if (!document.getElementById('estilos-botones-ventana')) {
@@ -347,7 +367,7 @@ function setupSearch() {
 }
 
 /* ==========================================================================
-   LÓGICA DEL MENÚ LATERAL (ÍNDICE) Y PORTADA
+   LÓGICA DEL MENÚ LATERAL (ÍNDICE)
    ========================================================================== */
 function setupSidebar() {
   const toggleBtn = document.getElementById('sidebar-toggle');
@@ -415,7 +435,7 @@ function openDirectory(categoria) {
     if(promptEl) {
       promptEl.textContent = '';
       const prefix = `<span style="color: #64748b;">#</span> <span style="color: #4ade80;">pedrooliver@asir</span>:<span style="color: #60a5fa;">~/la_sectasir/practicas${dirName}</span>$ `;
-      typeCommand(promptEl, prefix, 'ls -la', 40);
+      typeCommand(promptEl, prefix, 'ls -la', 40); 
     }
     renderGrid(categoria);
   }
@@ -436,7 +456,7 @@ function closeDirectory() {
     const prefix = `<span style="color: #64748b;">#</span> <span style="color: #4ade80;">pedrooliver@asir</span>:<span style="color: #60a5fa;">~/la_sectasir/practicas</span>$ `;
     typeCommand(promptEl, prefix, 'ls -la', 40);
   }
-  updateFolderIcons(); // Re-disparar animación de carpetas
+  updateFolderIcons(); 
   window.history.pushState({}, document.title, window.location.pathname + '#practicas');
 }
 
@@ -468,7 +488,7 @@ function renderGrid(filtro) {
 }
 
 /* ==========================================================================
-   LÓGICA DE LA PRÁCTICA INDIVIDUAL (PRACTICA.HTML) Y ANIMACIONES 3D
+   LÓGICA DE LA PRÁCTICA INDIVIDUAL (PRACTICA.HTML)
    ========================================================================== */
 function renderSinglePractica(id) {
   if (typeof PRACTICAS === 'undefined') return;
