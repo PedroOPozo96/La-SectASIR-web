@@ -47,35 +47,74 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* ==========================================================================
-   ANIMACIÓN DE LA TERMINAL DE LA PORTADA (BOOT SSH RÁPIDO)
+   NUEVO: ANIMACIÓN DE LA TERMINAL DE LA PORTADA (OPCIÓN 1 - TIPEO SECUENCIAL)
    ========================================================================== */
 function animateHeroTerminal() {
+  // Buscamos la terminal grande de la portada
   const heroTerminal = document.querySelector('.hero .terminal-body');
   if (!heroTerminal) return;
 
+  // Vaciamos el contenido inicial que hay en el HTML estático
+  heroTerminal.innerHTML = '';
+
+  // Construimos el diseño exacto de tu prompt usando tus variables CSS
   const promptHTML = `<span class="prompt">pedrooliver@asir:</span><span class="path">~/la_sectasir</span> <span style="color: #a78bfa;">(main)</span><span class="prompt">$</span> `;
 
-  const sequenceHTML = `
-    <div class="line boot-line" style="margin-bottom: 14px; animation-delay: 0.1s;">
-      ${promptHTML} <span class="cmd">whoami</span>
-    </div>
-    <div class="line boot-line" style="margin-bottom: 14px; color: var(--text-bright); line-height: 1.6; animation-delay: 0.25s;">
-      Futuro Administrador de Sistemas en Red
-    </div>
-    <div class="line boot-line" style="margin-bottom: 14px; animation-delay: 0.4s;">
-      ${promptHTML} <span class="cmd">cat sobre-mi.txt</span>
-    </div>
-    <div class="line boot-line" style="margin-bottom: 14px; color: var(--text-bright); line-height: 1.6; animation-delay: 0.55s;">
-      Soy Pedro Oliver Pozo, estudiante del IES Gonzalo Nazareno y Futuro Administrador de Sistemas y Redes. &nbsp;[ <a href="sobre-mi.html" style="color: var(--celeste);">leer más →</a> ]
-    </div>
-    <div class="line boot-line" style="margin-bottom: 14px; animation-delay: 0.7s;">
-      ${promptHTML} <span class="cmd">Realizando Prácticas...</span><span class="blinking-cursor"></span>
-    </div>
-  `;
+  // La secuencia exacta de comandos y respuestas de tu captura
+  const sequence = [
+    { type: 'cmd', text: 'whoami' },
+    { type: 'out', text: 'Futuro Administrador de Sistemas en Red\n' },
+    { type: 'cmd', text: 'cat sobre-mi.txt' },
+    { type: 'out', text: 'Soy Pedro Oliver Pozo, estudiante del IES Gonzalo Nazareno y Futuro Administrador de Sistemas y Redes. &nbsp;[ <a href="#" style="color: var(--celeste);">leer más →</a> ]\n' },
+    { type: 'cmd-infinite', text: 'Realizando Prácticas...' }
+  ];
 
-  setTimeout(() => {
-    heroTerminal.innerHTML = sequenceHTML;
-  }, 200);
+  let currentStep = 0;
+
+  function processNextStep() {
+    if (currentStep >= sequence.length) return;
+    
+    const step = sequence[currentStep];
+    const lineDiv = document.createElement('div');
+    lineDiv.className = 'line';
+    lineDiv.style.marginBottom = '14px';
+    heroTerminal.appendChild(lineDiv);
+
+    if (step.type === 'cmd' || step.type === 'cmd-infinite') {
+      // Preparamos la línea con el prompt y el cursor
+      lineDiv.innerHTML = promptHTML + ' <span class="cmd typing-text"></span><span class="blinking-cursor"></span>';
+      const textEl = lineDiv.querySelector('.typing-text');
+      const cursorEl = lineDiv.querySelector('.blinking-cursor');
+      
+      let charIdx = 0;
+      function typeChar() {
+        if (charIdx < step.text.length) {
+          textEl.textContent += step.text.charAt(charIdx);
+          charIdx++;
+          // Velocidad aleatoria para que parezca una persona tecleando (entre 30ms y 110ms)
+          setTimeout(typeChar, Math.random() * 80 + 30); 
+        } else {
+          // Terminó de teclear la línea
+          if (step.type === 'cmd') {
+            cursorEl.style.display = 'none'; // Apagamos el cursor
+            currentStep++;
+            setTimeout(processNextStep, 250); // Simula el tiempo que tardas en pulsar 'Enter'
+          }
+          // Si es 'cmd-infinite', no avanza y se queda el cursor parpadeando eternamente
+        }
+      }
+      setTimeout(typeChar, 500); // Pausa inicial antes de empezar a escribir un comando
+
+    } else if (step.type === 'out') {
+      // El resultado de los comandos aparece de golpe, como en Linux
+      lineDiv.innerHTML = `<div style="color: var(--text-bright); line-height: 1.6;">${step.text}</div>`;
+      currentStep++;
+      setTimeout(processNextStep, 500); // Pausa de lectura antes del siguiente prompt
+    }
+  }
+
+  // Arrancamos la magia un segundito después de cargar la página
+  setTimeout(processNextStep, 600);
 }
 
 /* ==========================================================================
