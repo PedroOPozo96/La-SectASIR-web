@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   setupWindowButtonsStyles(); 
   setupTransitionStyles();    
-  setupTypingStyles();        // <-- NUEVO: Estilos para el cursor parpadeante
+  setupTypingStyles();        
   setupSidebar();
   renderSidebar();
   setupSearch(); 
@@ -20,7 +20,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (catPractica) {
       openDirectory(catPractica.toLowerCase()); 
     } else {
-      // Disparar el efecto de tipeo en la carga inicial de la portada
+      // ESTAMOS EN LA PORTADA PRINCIPAL (INDEX)
+      // Disparamos la nueva animación de la terminal Hero
+      animateHeroTerminal();
+      
       const promptEl = document.getElementById('path-prompt');
       if (promptEl) {
         const prefix = `<span style="color: #4ade80;">pedrooliver@asir</span>:<span style="color: #60a5fa;">~/la_sectasir/practicas</span>$ `;
@@ -31,7 +34,79 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* ==========================================================================
-   NUEVO: LÓGICA Y ESTILOS DEL EFECTO DE TIPEO (TYPING EFFECT)
+   NUEVO: ANIMACIÓN DE LA TERMINAL DE LA PORTADA (OPCIÓN 1 - TIPEO SECUENCIAL)
+   ========================================================================== */
+function animateHeroTerminal() {
+  // Buscamos la terminal grande de la portada
+  const heroTerminal = document.querySelector('.hero .terminal-body');
+  if (!heroTerminal) return;
+
+  // Vaciamos el contenido inicial que hay en el HTML estático
+  heroTerminal.innerHTML = '';
+
+  // Construimos el diseño exacto de tu prompt usando tus variables CSS
+  const promptHTML = `<span class="prompt">pedrooliver@asir:</span><span class="path">~/la_sectasir</span> <span style="color: #a78bfa;">(main)</span><span class="prompt">$</span> `;
+
+  // La secuencia exacta de comandos y respuestas de tu captura
+  const sequence = [
+    { type: 'cmd', text: 'whoami' },
+    { type: 'out', text: 'Futuro Administrador de Sistemas en Red\n' },
+    { type: 'cmd', text: 'cat sobre-mi.txt' },
+    { type: 'out', text: 'Soy Pedro Oliver Pozo, estudiante del IES Gonzalo Nazareno y Futuro Administrador de Sistemas y Redes. &nbsp;[ <a href="#" style="color: var(--celeste);">leer más →</a> ]\n' },
+    { type: 'cmd-infinite', text: 'Realizando Prácticas...' }
+  ];
+
+  let currentStep = 0;
+
+  function processNextStep() {
+    if (currentStep >= sequence.length) return;
+    
+    const step = sequence[currentStep];
+    const lineDiv = document.createElement('div');
+    lineDiv.className = 'line';
+    lineDiv.style.marginBottom = '14px';
+    heroTerminal.appendChild(lineDiv);
+
+    if (step.type === 'cmd' || step.type === 'cmd-infinite') {
+      // Preparamos la línea con el prompt y el cursor
+      lineDiv.innerHTML = promptHTML + ' <span class="cmd typing-text"></span><span class="blinking-cursor"></span>';
+      const textEl = lineDiv.querySelector('.typing-text');
+      const cursorEl = lineDiv.querySelector('.blinking-cursor');
+      
+      let charIdx = 0;
+      function typeChar() {
+        if (charIdx < step.text.length) {
+          textEl.textContent += step.text.charAt(charIdx);
+          charIdx++;
+          // Velocidad aleatoria para que parezca una persona tecleando (entre 30ms y 110ms)
+          setTimeout(typeChar, Math.random() * 80 + 30); 
+        } else {
+          // Terminó de teclear la línea
+          if (step.type === 'cmd') {
+            cursorEl.style.display = 'none'; // Apagamos el cursor
+            currentStep++;
+            setTimeout(processNextStep, 250); // Simula el tiempo que tardas en pulsar 'Enter'
+          }
+          // Si es 'cmd-infinite', no avanza y se queda el cursor parpadeando eternamente
+        }
+      }
+      setTimeout(typeChar, 500); // Pausa inicial antes de empezar a escribir un comando
+
+    } else if (step.type === 'out') {
+      // El resultado de los comandos aparece de golpe, como en Linux
+      lineDiv.innerHTML = `<div style="color: var(--text-bright); line-height: 1.6;">${step.text}</div>`;
+      currentStep++;
+      setTimeout(processNextStep, 500); // Pausa de lectura antes del siguiente prompt
+    }
+  }
+
+  // Arrancamos la magia un segundito después de cargar la página
+  setTimeout(processNextStep, 600);
+}
+
+
+/* ==========================================================================
+   LÓGICA Y ESTILOS DEL EFECTO DE TIPEO GLOBAL
    ========================================================================== */
 function setupTypingStyles() {
   if (!document.getElementById('estilos-tipeo-terminal')) {
@@ -58,7 +133,6 @@ function setupTypingStyles() {
   }
 }
 
-// Función para teclear comandos con prompt (ej: pedrooliver@asir:~$ ls -la)
 function typeCommand(element, prefixHTML, commandText, speed = 40) {
   if(element.typeTimeout) clearTimeout(element.typeTimeout);
   element.innerHTML = prefixHTML + '<span class="typing-text"></span><span class="blinking-cursor"></span>';
@@ -74,7 +148,6 @@ function typeCommand(element, prefixHTML, commandText, speed = 40) {
   type();
 }
 
-// Función para teclear texto simple (ej: títulos o la barra superior "cat archivo.md")
 function typeTextSimple(element, text, speed = 30) {
   if(element.typeTimeout) clearTimeout(element.typeTimeout);
   element.innerHTML = '<span class="typing-text"></span><span class="blinking-cursor" style="width:6px; height:0.9em; background-color: currentColor;"></span>';
@@ -88,28 +161,6 @@ function typeTextSimple(element, text, speed = 30) {
     }
   }
   type();
-}
-
-/* ==========================================================================
-   ANIMACIONES CSS 3D (DESDOBLEZ DE PÁGINA)
-   ========================================================================== */
-function setupTransitionStyles() {
-  if (!document.getElementById('estilos-transicion-practicas')) {
-    const styleT = document.createElement('style');
-    styleT.id = 'estilos-transicion-practicas';
-    styleT.textContent = `
-      @keyframes pageTurnNextOut { 0% { transform: perspective(2000px) rotateY(0deg); transform-origin: left center; opacity: 1; } 100% { transform: perspective(2000px) rotateY(-90deg); transform-origin: left center; opacity: 0; } }
-      @keyframes pageTurnPrevOut { 0% { transform: perspective(2000px) rotateY(0deg); transform-origin: right center; opacity: 1; } 100% { transform: perspective(2000px) rotateY(90deg); transform-origin: right center; opacity: 0; } }
-      .anim-page-next-out { animation: pageTurnNextOut 0.45s forwards cubic-bezier(0.4, 0, 0.2, 1); }
-      .anim-page-prev-out { animation: pageTurnPrevOut 0.45s forwards cubic-bezier(0.4, 0, 0.2, 1); }
-
-      @keyframes pageTurnNextIn { 0% { transform: perspective(2000px) rotateY(90deg); transform-origin: right center; opacity: 0; } 100% { transform: perspective(2000px) rotateY(0deg); transform-origin: right center; opacity: 1; } }
-      @keyframes pageTurnPrevIn { 0% { transform: perspective(2000px) rotateY(-90deg); transform-origin: left center; opacity: 0; } 100% { transform: perspective(2000px) rotateY(0deg); transform-origin: left center; opacity: 1; } }
-      .anim-page-next-in { animation: pageTurnNextIn 0.5s forwards cubic-bezier(0.2, 0.8, 0.2, 1); }
-      .anim-page-prev-in { animation: pageTurnPrevIn 0.5s forwards cubic-bezier(0.2, 0.8, 0.2, 1); }
-    `;
-    document.head.appendChild(styleT);
-  }
 }
 
 /* ==========================================================================
@@ -288,7 +339,6 @@ function openDirectory(categoria) {
     void filesView.offsetWidth; 
     filesView.classList.add('folder-anim');
     
-    // NUEVO: Efecto de tipeo al abrir carpeta
     const dirName = categoria === 'todas' ? '' : `/${categoria.toLowerCase()}`;
     const promptEl = document.getElementById('path-prompt');
     if(promptEl) {
@@ -308,7 +358,6 @@ function closeDirectory() {
   void foldersView.offsetWidth; 
   foldersView.classList.add('folder-anim');
   
-  // NUEVO: Efecto de tipeo al volver a la raíz
   const promptEl = document.getElementById('path-prompt');
   if(promptEl) {
     const prefix = `<span style="color: #4ade80;">pedrooliver@asir</span>:<span style="color: #60a5fa;">~/la_sectasir/practicas</span>$ `;
@@ -345,8 +394,26 @@ function renderGrid(filtro) {
 }
 
 /* ==========================================================================
-   LÓGICA DE LA PRÁCTICA INDIVIDUAL (PRACTICA.HTML) Y GESTIÓN INTELIGENTE DE ANIMACIONES
+   LÓGICA DE LA PRÁCTICA INDIVIDUAL (PRACTICA.HTML) Y ANIMACIONES 3D
    ========================================================================== */
+function setupTransitionStyles() {
+  if (!document.getElementById('estilos-transicion-practicas')) {
+    const styleT = document.createElement('style');
+    styleT.id = 'estilos-transicion-practicas';
+    styleT.textContent = `
+      @keyframes pageTurnNextOut { 0% { transform: perspective(2000px) rotateY(0deg); transform-origin: left center; opacity: 1; } 100% { transform: perspective(2000px) rotateY(-90deg); transform-origin: left center; opacity: 0; } }
+      @keyframes pageTurnPrevOut { 0% { transform: perspective(2000px) rotateY(0deg); transform-origin: right center; opacity: 1; } 100% { transform: perspective(2000px) rotateY(90deg); transform-origin: right center; opacity: 0; } }
+      .anim-page-next-out { animation: pageTurnNextOut 0.45s forwards cubic-bezier(0.4, 0, 0.2, 1); }
+      .anim-page-prev-out { animation: pageTurnPrevOut 0.45s forwards cubic-bezier(0.4, 0, 0.2, 1); }
+      @keyframes pageTurnNextIn { 0% { transform: perspective(2000px) rotateY(90deg); transform-origin: right center; opacity: 0; } 100% { transform: perspective(2000px) rotateY(0deg); transform-origin: right center; opacity: 1; } }
+      @keyframes pageTurnPrevIn { 0% { transform: perspective(2000px) rotateY(-90deg); transform-origin: left center; opacity: 0; } 100% { transform: perspective(2000px) rotateY(0deg); transform-origin: left center; opacity: 1; } }
+      .anim-page-next-in { animation: pageTurnNextIn 0.5s forwards cubic-bezier(0.2, 0.8, 0.2, 1); }
+      .anim-page-prev-in { animation: pageTurnPrevIn 0.5s forwards cubic-bezier(0.2, 0.8, 0.2, 1); }
+    `;
+    document.head.appendChild(styleT);
+  }
+}
+
 function renderSinglePractica(id) {
   if (typeof PRACTICAS === 'undefined') return;
   const practica = PRACTICAS.find(p => p.id === id);
@@ -363,22 +430,17 @@ function renderSinglePractica(id) {
   const fechaEl = document.getElementById('practica-fecha');
   const tagsEl = document.getElementById('practica-tags');
 
-  // NUEVO: Animación de tipeo para el H1 principal
   if (tituloEl) typeTextSimple(tituloEl, practica.titulo, 25);
-  
   if (contenidoEl) contenidoEl.innerHTML = practica.contenidoHTML;
 
   const nombreReal = practica.filename || practica.id;
   const extensionReal = practica.extension || '.md';
   const terminalTitlebars = document.querySelectorAll('.terminal-titlebar');
   
-  // NUEVO: Animación de tipeo para el título de la barra (ej: cat fichero.md)
   terminalTitlebars.forEach(tb => {
     const spans = tb.querySelectorAll('span, div');
     spans.forEach(span => {
-      if (span.textContent.toLowerCase().includes('cat ')) { 
-        typeTextSimple(span, `cat ${nombreReal}${extensionReal}`, 50); 
-      }
+      if (span.textContent.toLowerCase().includes('cat ')) { typeTextSimple(span, `cat ${nombreReal}${extensionReal}`, 50); }
     });
   });
 
