@@ -1173,3 +1173,16 @@ footer{
   font-size: 0.8rem;
   font-family: var(--mono);
 }
+
+
+/* Destacar el prompt debajo del título Prácticas */
+#path-prompt {
+  font-size: 15px; /* Más grande */
+  font-weight: 500;
+  background: var(--bg-elev);
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 6px;
+  border-left: 3px solid var(--accent);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
