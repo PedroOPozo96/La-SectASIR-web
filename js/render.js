@@ -21,37 +21,35 @@ document.addEventListener('DOMContentLoaded', () => {
       openDirectory(catPractica.toLowerCase()); 
     } else {
       // =========================================================
-      // ESTAMOS EN LA PORTADA PRINCIPAL - COREOGRAFÍA DE ENTRADA
+      // ESTAMOS EN LA PORTADA PRINCIPAL - COREOGRAFÍA RÁpIDA
       // =========================================================
       const sectionPracticas = document.getElementById('practicas');
       const promptEl = document.getElementById('path-prompt');
       const foldersContainer = document.getElementById('gui-folders');
       
       if (promptEl && foldersContainer && sectionPracticas) {
-        // 1. Ocultamos TODA la sección de prácticas y las carpetas
         sectionPracticas.style.opacity = '0';
-        sectionPracticas.style.transform = 'translateY(15px)'; // Leve desplazamiento hacia abajo
-        sectionPracticas.style.transition = 'opacity 0.8s ease-out, transform 0.8s ease-out';
+        sectionPracticas.style.transform = 'translateY(10px)';
+        sectionPracticas.style.transition = 'opacity 0.4s ease-out, transform 0.4s ease-out';
         foldersContainer.style.display = 'none';
         promptEl.textContent = ''; 
 
-        // 2. Arrancamos la terminal de arriba y le decimos qué hacer al terminar
+        // Arrancamos la terminal superior con tiempos ágiles
         animateHeroTerminal(() => {
           
-          // 3. Cuando termina "Realizando Prácticas...", aparece la sección de abajo
+          // Al terminar de escribir, la sección de prácticas aparece al instante
           sectionPracticas.style.opacity = '1';
           sectionPracticas.style.transform = 'translateY(0)';
           
-          // 4. Esperamos un poco a que se vea la sección y empezamos a teclear ls -la
           setTimeout(() => {
             const prefix = `<span style="color: #64748b;">#</span> <span style="color: #4ade80;">pedrooliver@asir</span>:<span style="color: #60a5fa;">~/la_sectasir/practicas</span>$ `;
             
-            typeCommand(promptEl, prefix, 'ls -la', 150, () => {
-              // 5. Por último, ¡desatamos la cascada de carpetas!
+            // Tecleo ágil de ls -la
+            typeCommand(promptEl, prefix, 'ls -la', 80, () => {
               foldersContainer.style.display = 'flex';
               updateFolderIcons();
             });
-          }, 600); // 600ms de pausa antes de teclear
+          }, 200); 
           
         });
       } else {
@@ -62,9 +60,8 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* ==========================================================================
-   ANIMACIÓN DE LA TERMINAL DE LA PORTADA (DIAGONAL + TIPEO REALISTA)
+   ANIMACIÓN DE LA TERMINAL DE LA PORTADA (ÁGIL Y DINÁMICA)
    ========================================================================== */
-// NUEVO: Ahora acepta un 'onComplete' para avisar cuando acaba
 function animateHeroTerminal(onComplete) {
   const heroTerminal = document.querySelector('.hero .terminal-body');
   const heroWindow = document.querySelector('.hero .terminal-window');
@@ -77,18 +74,17 @@ function animateHeroTerminal(onComplete) {
     style.id = 'estilos-hero-terminal';
     style.textContent = `
       @keyframes slideInBottomLeft {
-        0% { opacity: 0; transform: translate(-100px, 80px); }
+        0% { opacity: 0; transform: translate(-50px, 40px); }
         100% { opacity: 1; transform: translate(0, 0); }
       }
       .hero .terminal-window {
         opacity: 0;
-        animation: slideInBottomLeft 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        /* Reducido a 0.6s para que sea mucho más rápido y fluido */
+        animation: slideInBottomLeft 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
       }
       .hero .terminal-titlebar .tb-dot {
         pointer-events: none !important;
       }
-      
-      /* NUEVO: REDUCIMOS EL MARGEN GIGANTE ENTRE EL HERO Y LAS PRÁCTICAS */
       .hero { padding-bottom: 20px !important; }
       #practicas { padding-top: 10px !important; }
     `;
@@ -126,28 +122,29 @@ function animateHeroTerminal(onComplete) {
         if (charIdx < step.text.length) {
           textEl.textContent += step.text.charAt(charIdx);
           charIdx++;
-          setTimeout(typeChar, Math.random() * 80 + 30); 
+          // Velocidad de tecleo mucho más rápida (entre 15ms y 35ms)
+          setTimeout(typeChar, Math.random() * 20 + 15); 
         } else {
           if (step.type === 'cmd') {
             cursorEl.style.display = 'none'; 
             currentStep++;
-            setTimeout(processNextStep, 250); 
+            setTimeout(processNextStep, 100); // Pausa mínima entre comandos
           } else if (step.type === 'cmd-infinite') {
-            // ¡TERMINÓ DE ESCRIBIR EL ÚLTIMO COMANDO! Disparamos el aviso
-            if (onComplete) setTimeout(onComplete, 400);
+            if (onComplete) setTimeout(onComplete, 200);
           }
         }
       }
-      setTimeout(typeChar, 400); 
+      setTimeout(typeChar, 150); 
 
     } else if (step.type === 'out') {
       lineDiv.innerHTML = `<div style="color: var(--text-bright); line-height: 1.6;">${step.text}</div>`;
       currentStep++;
-      setTimeout(processNextStep, 400); 
+      setTimeout(processNextStep, 150); 
     }
   }
 
-  setTimeout(processNextStep, 1200);
+  // Arrancamos el tecleo a los 500ms en lugar de 1200ms
+  setTimeout(processNextStep, 500);
 }
 
 /* ==========================================================================
@@ -161,12 +158,12 @@ function updateFolderIcons() {
     style.id = 'estilos-anim-carpetas';
     style.textContent = `
       @keyframes folderEntrance {
-        0% { opacity: 0; transform: translateY(20px) scale(0.9); }
+        0% { opacity: 0; transform: translateY(15px) scale(0.95); }
         100% { opacity: 1; transform: translateY(0) scale(1); }
       }
       .folder-btn {
         opacity: 0; 
-        animation: folderEntrance 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        animation: folderEntrance 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
       }
       .folder-closed-shape { opacity: 1; transition: opacity 0.2s ease; }
       .folder-open-shape { opacity: 0; transition: opacity 0.2s ease; }
@@ -195,7 +192,7 @@ function updateFolderIcons() {
     const spanElement = btn.querySelector('span');
     const spanText = spanElement ? spanElement.innerText : category;
     
-    btn.style.animationDelay = `${index * 0.15}s`;
+    btn.style.animationDelay = `${index * 0.08}s`; // Cascada más rápida
 
     let count = 0;
     if (typeof PRACTICAS !== 'undefined') {
@@ -211,7 +208,7 @@ function updateFolderIcons() {
       
       for (let i = maxVisualPapers - 1; i >= 0; i--) {
         papersHTML += `
-          <g class="folder-paper-hover" style="--depth: ${i}; transition-delay: ${0.05 * i}s;">
+          <g class="folder-paper-hover" style="--depth: ${i}; transition-delay: ${0.03 * i}s;">
             <rect x="4" y="2" width="16" height="14" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="0.5"/>
             <rect x="7" y="5" width="8" height="1" fill="#cbd5e1"/>
             <rect x="7" y="8" width="10" height="1" fill="#cbd5e1"/>
@@ -260,21 +257,12 @@ function setupTypingStyles() {
       }
       @keyframes blink { 50% { opacity: 0; } }
       .typing-text { white-space: pre-wrap; }
-      
-      @keyframes fastBootLine {
-        0% { opacity: 0; transform: translateY(-10px); }
-        100% { opacity: 1; transform: translateY(0); }
-      }
-      .boot-line {
-        opacity: 0; 
-        animation: fastBootLine 0.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-      }
     `;
     document.head.appendChild(style);
   }
 }
 
-function typeCommand(element, prefixHTML, commandText, speed = 40, callback = null) {
+function typeCommand(element, prefixHTML, commandText, speed = 30, callback = null) {
   if(element.typeTimeout) clearTimeout(element.typeTimeout);
   element.innerHTML = prefixHTML + '<span class="typing-text"></span><span class="blinking-cursor"></span>';
   const textContainer = element.querySelector('.typing-text');
@@ -291,7 +279,7 @@ function typeCommand(element, prefixHTML, commandText, speed = 40, callback = nu
   type();
 }
 
-function typeTextSimple(element, text, speed = 30) {
+function typeTextSimple(element, text, speed = 20) {
   if(element.typeTimeout) clearTimeout(element.typeTimeout);
   element.innerHTML = '<span class="typing-text"></span><span class="blinking-cursor" style="width:6px; height:0.9em; background-color: currentColor;"></span>';
   const textContainer = element.querySelector('.typing-text');
@@ -307,7 +295,7 @@ function typeTextSimple(element, text, speed = 30) {
 }
 
 /* ==========================================================================
-   ANIMACIONES CSS 3D (DESDOBLEZ DE PÁGINA)
+   ANIMACIONES CSS 3D (DESDOBLAMIENTO DE PÁGINA)
    ========================================================================== */
 function setupTransitionStyles() {
   if (!document.getElementById('estilos-transicion-practicas')) {
@@ -316,12 +304,12 @@ function setupTransitionStyles() {
     styleT.textContent = `
       @keyframes pageTurnNextOut { 0% { transform: perspective(2000px) rotateY(0deg); transform-origin: left center; opacity: 1; } 100% { transform: perspective(2000px) rotateY(-90deg); transform-origin: left center; opacity: 0; } }
       @keyframes pageTurnPrevOut { 0% { transform: perspective(2000px) rotateY(0deg); transform-origin: right center; opacity: 1; } 100% { transform: perspective(2000px) rotateY(90deg); transform-origin: right center; opacity: 0; } }
-      .anim-page-next-out { animation: pageTurnNextOut 0.45s forwards cubic-bezier(0.4, 0, 0.2, 1); }
-      .anim-page-prev-out { animation: pageTurnPrevOut 0.45s forwards cubic-bezier(0.4, 0, 0.2, 1); }
+      .anim-page-next-out { animation: pageTurnNextOut 0.35s forwards cubic-bezier(0.4, 0, 0.2, 1); }
+      .anim-page-prev-out { animation: pageTurnPrevOut 0.35s forwards cubic-bezier(0.4, 0, 0.2, 1); }
       @keyframes pageTurnNextIn { 0% { transform: perspective(2000px) rotateY(90deg); transform-origin: right center; opacity: 0; } 100% { transform: perspective(2000px) rotateY(0deg); transform-origin: right center; opacity: 1; } }
       @keyframes pageTurnPrevIn { 0% { transform: perspective(2000px) rotateY(-90deg); transform-origin: left center; opacity: 0; } 100% { transform: perspective(2000px) rotateY(0deg); transform-origin: left center; opacity: 1; } }
-      .anim-page-next-in { animation: pageTurnNextIn 0.5s forwards cubic-bezier(0.2, 0.8, 0.2, 1); }
-      .anim-page-prev-in { animation: pageTurnPrevIn 0.5s forwards cubic-bezier(0.2, 0.8, 0.2, 1); }
+      .anim-page-next-in { animation: pageTurnNextIn 0.35s forwards cubic-bezier(0.2, 0.8, 0.2, 1); }
+      .anim-page-prev-in { animation: pageTurnPrevIn 0.35s forwards cubic-bezier(0.2, 0.8, 0.2, 1); }
     `;
     document.head.appendChild(styleT);
   }
@@ -496,7 +484,7 @@ function openDirectory(categoria) {
     if(promptEl) {
       promptEl.textContent = '';
       const prefix = `<span style="color: #64748b;">#</span> <span style="color: #4ade80;">pedrooliver@asir</span>:<span style="color: #60a5fa;">~/la_sectasir/practicas${dirName}</span>$ `;
-      typeCommand(promptEl, prefix, 'ls -la', 40); 
+      typeCommand(promptEl, prefix, 'ls -la', 30); 
     }
     renderGrid(categoria);
   }
@@ -515,7 +503,7 @@ function closeDirectory() {
   if(promptEl) {
     promptEl.textContent = '';
     const prefix = `<span style="color: #64748b;">#</span> <span style="color: #4ade80;">pedrooliver@asir</span>:<span style="color: #60a5fa;">~/la_sectasir/practicas</span>$ `;
-    typeCommand(promptEl, prefix, 'ls -la', 40);
+    typeCommand(promptEl, prefix, 'ls -la', 30);
   }
   updateFolderIcons(); 
   window.history.pushState({}, document.title, window.location.pathname + '#practicas');
@@ -527,8 +515,8 @@ window.openFileAnim = function(event, url) {
   fileElement.style.transform = 'scale(1.5)';
   fileElement.style.opacity = '0';
   fileElement.style.pointerEvents = 'none';
-  fileElement.style.transition = 'all 0.25s ease-in-out';
-  setTimeout(() => { window.location.href = url; }, 250);
+  fileElement.style.transition = 'all 0.2s ease-in-out';
+  setTimeout(() => { window.location.href = url; }, 200);
 }
 
 function renderGrid(filtro) {
@@ -567,7 +555,7 @@ function renderSinglePractica(id) {
   const fechaEl = document.getElementById('practica-fecha');
   const tagsEl = document.getElementById('practica-tags');
 
-  if (tituloEl) typeTextSimple(tituloEl, practica.titulo, 25);
+  if (tituloEl) typeTextSimple(tituloEl, practica.titulo, 20);
   if (contenidoEl) contenidoEl.innerHTML = practica.contenidoHTML;
 
   const nombreReal = practica.filename || practica.id;
@@ -577,7 +565,7 @@ function renderSinglePractica(id) {
   terminalTitlebars.forEach(tb => {
     const spans = tb.querySelectorAll('span, div');
     spans.forEach(span => {
-      if (span.textContent.toLowerCase().includes('cat ')) { typeTextSimple(span, `cat ${nombreReal}${extensionReal}`, 50); }
+      if (span.textContent.toLowerCase().includes('cat ')) { typeTextSimple(span, `cat ${nombreReal}${extensionReal}`, 30); }
     });
   });
 
@@ -623,7 +611,7 @@ function renderSinglePractica(id) {
   function closePracticaAnim(e) {
     if(e) e.preventDefault();
     if (typeof window.limpiarIndiceFlotante === 'function') window.limpiarIndiceFlotante();
-    if (terminalApp) { terminalApp.classList.remove('maximize-animation', 'anim-page-next-in', 'anim-page-prev-in'); terminalApp.classList.add('shrink-back-animation'); setTimeout(() => { window.location.href = urlRetorno; }, 300); } 
+    if (terminalApp) { terminalApp.classList.remove('maximize-animation', 'anim-page-next-in', 'anim-page-prev-in'); terminalApp.classList.add('shrink-back-animation'); setTimeout(() => { window.location.href = urlRetorno; }, 250); } 
     else { window.location.href = urlRetorno; }
   }
 
@@ -632,7 +620,7 @@ function renderSinglePractica(id) {
     if (typeof window.limpiarIndiceFlotante === 'function') window.limpiarIndiceFlotante();
     const currentIndex = PRACTICAS.findIndex(p => p.id === id); let nextIndex = currentIndex + 1; if (nextIndex >= PRACTICAS.length) nextIndex = 0; 
     sessionStorage.setItem('pageTransition', 'next');
-    if (terminalApp) { terminalApp.classList.remove('maximize-animation', 'anim-page-next-in', 'anim-page-prev-in'); terminalApp.classList.add('anim-page-next-out'); setTimeout(() => { window.location.href = window.location.pathname + '?id=' + PRACTICAS[nextIndex].id; }, 420); } 
+    if (terminalApp) { terminalApp.classList.remove('maximize-animation', 'anim-page-next-in', 'anim-page-prev-in'); terminalApp.classList.add('anim-page-next-out'); setTimeout(() => { window.location.href = window.location.pathname + '?id=' + PRACTICAS[nextIndex].id; }, 350); } 
     else { window.location.href = window.location.pathname + '?id=' + PRACTICAS[nextIndex].id; }
   }
 
@@ -641,13 +629,13 @@ function renderSinglePractica(id) {
     if (typeof window.limpiarIndiceFlotante === 'function') window.limpiarIndiceFlotante();
     const currentIndex = PRACTICAS.findIndex(p => p.id === id); let prevIndex = currentIndex - 1; if (prevIndex < 0) prevIndex = PRACTICAS.length - 1; 
     sessionStorage.setItem('pageTransition', 'prev');
-    if (terminalApp) { terminalApp.classList.remove('maximize-animation', 'anim-page-next-in', 'anim-page-prev-in'); terminalApp.classList.add('anim-page-prev-out'); setTimeout(() => { window.location.href = window.location.pathname + '?id=' + PRACTICAS[prevIndex].id; }, 420); } 
+    if (terminalApp) { terminalApp.classList.remove('maximize-animation', 'anim-page-next-in', 'anim-page-prev-in'); terminalApp.classList.add('anim-page-prev-out'); setTimeout(() => { window.location.href = window.location.pathname + '?id=' + PRACTICAS[prevIndex].id; }, 350); } 
     else { window.location.href = window.location.pathname + '?id=' + PRACTICAS[prevIndex].id; }
   }
 
   if (closeBtns.length > 0) closeBtns.forEach(btn => { btn.title = "Cerrar práctica"; btn.style.cursor = 'pointer'; btn.addEventListener('click', closePracticaAnim); });
   if (yellowBtns.length > 0) yellowBtns.forEach(btn => { btn.title = "Práctica anterior"; btn.style.cursor = 'pointer'; btn.addEventListener('click', prevPracticaAnim); });
-  if (greenBtns.length > 0) greenBtns.forEach(btn => { btn.title = "Siguiente práctica"; btn.style.cursor = 'pointer'; btn.addEventListener('click', nextPracticaAnim); });
+  if (greenBtns.length > 0) greenBtns.forEach(btn => { btn.title = "Rápido/Siguiente"; btn.style.cursor = 'pointer'; btn.addEventListener('click', nextPracticaAnim); });
   if (btnBack) { btnBack.href = urlRetorno; btnBack.addEventListener('click', closePracticaAnim); }
 }
 
@@ -660,9 +648,7 @@ function setupGenericCloseButtons() {
   const genericCloseBtns = document.querySelectorAll('#close-terminal-btn, .terminal-window .tb-dot.r, .terminal-titlebar .tb-dot.r, .terminal-window .dot.red');
   
   genericCloseBtns.forEach(closeBtn => {
-    // Evitamos que el botón rojo de la terminal de la portada haga nada
     if (closeBtn.closest('.hero')) return;
-
     if (closeBtn.dataset.closeBound) return;
     closeBtn.dataset.closeBound = 'true';
     closeBtn.style.cursor = 'pointer';
@@ -672,7 +658,7 @@ function setupGenericCloseButtons() {
 
     closeBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      if (terminalApp) { terminalApp.classList.add('shrink-back-animation'); setTimeout(() => { window.location.href = homePath; }, 300); } 
+      if (terminalApp) { terminalApp.classList.add('shrink-back-animation'); setTimeout(() => { window.location.href = homePath; }, 250); } 
       else { window.location.href = homePath; }
     });
   });

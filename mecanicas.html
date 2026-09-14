@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mecánicas de la web — La SectASIR</title>
+  <link rel="icon" type="image/svg+xml" href="img/favicon.svg?v=3">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- MENÚ DE NAVEGACIÓN SUPERIOR -->
+  <nav>
+    <div class="wrap">
+      <a href="index.html" class="nav-brand">
+        La <span class="brand-accent">SectASIR</span>
+        <img src="img/favicon.svg" alt="Logo SectASIR" width="28" height="28" class="nav-logo">
+      </a>
+      <div class="nav-links">
+        <a href="sobre-mi.html">sobre-mi</a>
+        <a href="index.html#practicas">practicas</a>
+        <a href="contacto.html">contacto</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- BOTÓN DEL MENÚ LATERAL -->
+  <button class="sidebar-toggle" id="sidebar-toggle">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
+  </button>
+
+  <aside class="site-sidebar">
+    <div class="terminal-window" style="box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+      <div class="terminal-titlebar">
+        <span class="tb-dot r"></span><span class="tb-dot y"></span><span class="tb-dot g"></span>
+        <span>La SectASIR — Índice</span>
+      </div>
+      <nav class="sidebar-nav" id="sidebar-nav" style="padding: 20px;">
+      </nav>
+    </div>
+  </aside>
+
+  <!-- SECCIÓN PRINCIPAL -->
+  <section class="section" style="padding-top: 120px; padding-bottom: 60px;">
+    <div class="wrap">
+      
+      <!-- BOTÓN DE VOLVER -->
+      <a href="index.html" class="btn-back" style="display: inline-flex; align-items: center; gap: 8px; background: transparent; border: 1px solid #334155; color: #94a3b8; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-family: var(--mono, monospace); margin-bottom: 24px; transition: all 0.2s;" onmouseover="this.style.color='#f8fafc'; this.style.borderColor='#475569';" onmouseout="this.style.color='#94a3b8'; this.style.borderColor='#334155';">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        cd .. (volver a la portada)
+      </a>
+
+      <!-- VENTANA -->
+      <div class="terminal-window" style="width: 100%; max-width: none; box-shadow: 0 20px 40px rgba(0,0,0,0.4);">
+        
+        <div class="terminal-titlebar">
+          <span class="tb-dot r" title="Cerrar y volver"></span>
+          <span class="tb-dot y" style="pointer-events: none;"></span>
+          <span class="tb-dot g" style="pointer-events: none;"></span>
+          <span>cat mecanicas.md</span>
+        </div>
+        
+        <!-- CUERPO DEL TEXTO: Le añadimos el ID y lo ocultamos de base -->
+        <div id="mecanicas-content" class="terminal-body" style="line-height: 1.8; padding: 40px 60px; visibility: hidden;">
+          
+          <h1 style="color: #4ade80; margin-top: 0; margin-bottom: 30px; font-family: var(--mono, monospace);">Mecánicas de la Web</h1>
+          
+          <p style="margin-bottom: 40px; color: var(--text-bright, #e2e8f0); font-size: 1.05rem; text-align: justify; font-family: 'Inter', system-ui, sans-serif;">
+            Esta web no usa plantillas prediseñadas. Todo el motor visual está construido desde cero para ofrecer una experiencia única. Estas son algunas de las mecánicas que puedes encontrar:
+          </p>
+
+          <h3 style="color: #60a5fa; margin-top: 0; font-family: var(--mono, monospace);">1. Lectura inmersiva y navegación</h3>
+          <p style="color: #cbd5e1; margin-bottom: 30px; text-align: justify; font-family: 'Inter', system-ui, sans-serif;">
+            Cuando abres una práctica, el archivo hace un efecto de zoom suave para llevarte al texto. Fíjate en las tres bolitas de colores de la esquina superior de la ventana: la bolita roja cierra la práctica, y si usas la amarilla y la verde para ir a la práctica anterior o siguiente, la ventana girará en 3D como si estuvieras pasando la página de un libro. Por último, en los textos largos, verás un botón flotante abajo a la derecha que escanea el contenido y te crea un índice automático para saltar a donde quieras.
+          </p>
+
+          <h3 style="color: #60a5fa; margin-top: 30px; font-family: var(--mono, monospace);">2. Las carpetas mágicas</h3>
+          <p style="color: #cbd5e1; margin-bottom: 30px; text-align: justify; font-family: 'Inter', system-ui, sans-serif;">
+            Las carpetas de prácticas no son imágenes estáticas. Aparecen en cascada y, si pasas el ratón por encima, verás que se abren. Lo mejor es que, si tienen contenido, salen folios volando hacia arriba. Y un pequeño secreto: la cantidad de folios que ves asomar refleja exactamente el número real de prácticas que hay dentro. Si una carpeta está vacía, se queda gris y cerrada.
+          </p>
+
+          <h3 style="color: #60a5fa; margin-top: 30px; font-family: var(--mono, monospace);">3. Búsqueda y secretos</h3>
+          <p style="color: #cbd5e1; margin-bottom: 30px; text-align: justify; font-family: 'Inter', system-ui, sans-serif;">
+            Tienes un menú lateral tradicional, pero si pulsas <code style="background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; font-family: var(--mono, monospace); font-size: 0.9em;">Ctrl + K</code> (o el botón de la lupa) se abre un buscador avanzado. Este buscador tiene memoria: si usas las flechas arriba y abajo de tu teclado, recordará tus búsquedas anteriores. Además, esconde algún "huevo de pascua" si introduces comandos secretos.
+          </p>
+
+          <h3 style="color: #60a5fa; margin-top: 30px; font-family: var(--mono, monospace);">4. La terminal "viva"</h3>
+          <p style="color: #cbd5e1; margin-bottom: 30px; text-align: justify; font-family: 'Inter', system-ui, sans-serif;">
+            Fíjate en la ventana principal de inicio. No aparece de golpe, sino que entra deslizando suavemente y escribe los textos letra a letra, imitando la velocidad de una persona real tecleando. ¡Incluso espera a terminar de escribir para mostrarte las carpetas de abajo!
+          </p>
+          
+          <div style="margin-top: 50px; padding-top: 25px; border-top: 1px solid rgba(255,255,255,0.1); text-align: center;">
+            <a href="index.html" style="color: #c084fc; text-decoration: none; font-family: var(--mono, monospace); font-weight: bold; font-size: 0.95rem;">cd .. (Volver a la portada)</a>
+          </div>
+          
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <span style="color: #4ade80;">pedrooliver@asir</span>:<span style="color: #60a5fa;">~/la_sectasir</span> <span style="color: #c084fc;">(admin)</span>$ echo "La SectASIR — gracias por pasarte" — última actualización: junio 2026
+  </footer>
+
+  <script src="js/practicas-data.js"></script>
+  <script src="js/render.js"></script>
+
+  <!-- MOTOR DE ANIMACIÓN INTELIGENTE DE TECLEADO -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const container = document.getElementById('mecanicas-content');
+      if (!container) return;
+      
+      // 1. Guardamos todos los elementos (párrafos, títulos...) y vaciamos la caja
+      const children = Array.from(container.children);
+      container.innerHTML = '';
+      container.style.visibility = 'visible'; // Hacemos visible la caja vacía
+      
+      let currentIdx = 0;
+      
+      function typeNextElement() {
+        if (currentIdx >= children.length) {
+          // Cuando termina todo, añadimos el cursor parpadeante final típico de Bash
+          const cursorDiv = document.createElement('div');
+          cursorDiv.innerHTML = '<span class="blinking-cursor" style="display:inline-block; width:10px; height:1.2em; background:#4ade80; margin-top:20px;"></span>';
+          container.appendChild(cursorDiv);
+          return;
+        }
+        
+        const el = children[currentIdx];
+        const originalHTML = el.innerHTML;
+        el.innerHTML = '';
+        container.appendChild(el);
+        
+        let i = 0;
+        let currentHTML = '';
+        
+        function typeChar() {
+          if (i < originalHTML.length) {
+            
+            // Si encuentra una etiqueta HTML (ej. <span ...>), se la salta de golpe para no romperla
+            if (originalHTML.charAt(i) === '<') {
+              let tagEnd = originalHTML.indexOf('>', i);
+              if (tagEnd !== -1) {
+                currentHTML += originalHTML.substring(i, tagEnd + 1);
+                i = tagEnd + 1;
+              } else {
+                currentHTML += originalHTML.charAt(i);
+                i++;
+              }
+              typeChar(); // Pasa al siguiente caracter instantáneamente
+              return;
+            }
+
+            // Añade la letra actual
+            currentHTML += originalHTML.charAt(i);
+            i++;
+            
+            // Pinta el texto actual + el cursor verde
+            el.innerHTML = currentHTML + '<span class="blinking-cursor" style="display:inline-block; width:8px; height:1em; background:#4ade80; margin-left:4px; vertical-align: baseline;"></span>';
+            
+            // Velocidad inteligente: Títulos lentos (40ms), párrafos a toda pastilla (2 a 10ms aleatorio)
+            let speed = el.tagName.match(/^H[1-6]$/) ? 40 : (Math.random() * 8 + 2);
+            setTimeout(typeChar, speed);
+            
+          } else {
+            // Al terminar la frase, quitamos el cursor y pasamos al siguiente párrafo
+            el.innerHTML = currentHTML;
+            currentIdx++;
+            setTimeout(typeNextElement, 250); // Pausa de 1/4 de segundo para respirar
+          }
+        }
+        
+        // Arranca la función de tecleo
+        typeChar();
+      }
+      
+      // Empieza la magia medio segundo después de entrar en la web
+      setTimeout(typeNextElement, 500);
+    });
+  </script>
+
+</body>
+</html>
