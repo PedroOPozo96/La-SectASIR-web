@@ -147,8 +147,10 @@ nav .wrap{
   color: var(--text-dim);
   max-width: 520px;
   margin-bottom: 36px;
-}
-.terminal-window{
+  text-align: justify;        
+  hyphens: auto;              
+  -webkit-hyphens: auto;      
+}.terminal-window{
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: 8px;
