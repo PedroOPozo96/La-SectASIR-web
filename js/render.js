@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
       openDirectory(catPractica.toLowerCase()); 
     } else {
       // ESTAMOS EN LA PORTADA PRINCIPAL (INDEX)
-      // Disparamos la nueva animación de la terminal Hero
+      // Disparamos la nueva animación de la terminal Hero (Opción 2: Boot SSH)
       animateHeroTerminal();
       
       const promptEl = document.getElementById('path-prompt');
@@ -34,99 +34,71 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* ==========================================================================
-   NUEVO: ANIMACIÓN DE LA TERMINAL DE LA PORTADA (OPCIÓN 1 - TIPEO SECUENCIAL)
+   ANIMACIÓN DE LA TERMINAL DE LA PORTADA (OPCIÓN 2 - BOOT SSH RÁPIDO)
    ========================================================================== */
 function animateHeroTerminal() {
-  // Buscamos la terminal grande de la portada
   const heroTerminal = document.querySelector('.hero .terminal-body');
   if (!heroTerminal) return;
 
-  // Vaciamos el contenido inicial que hay en el HTML estático
-  heroTerminal.innerHTML = '';
-
-  // Construimos el diseño exacto de tu prompt usando tus variables CSS
+  // El prompt base igual al tuyo
   const promptHTML = `<span class="prompt">pedrooliver@asir:</span><span class="path">~/la_sectasir</span> <span style="color: #a78bfa;">(main)</span><span class="prompt">$</span> `;
 
-  // La secuencia exacta de comandos y respuestas de tu captura
-  const sequence = [
-    { type: 'cmd', text: 'whoami' },
-    { type: 'out', text: 'Futuro Administrador de Sistemas en Red\n' },
-    { type: 'cmd', text: 'cat sobre-mi.txt' },
-    { type: 'out', text: 'Soy Pedro Oliver Pozo, estudiante del IES Gonzalo Nazareno y Futuro Administrador de Sistemas y Redes. &nbsp;[ <a href="#" style="color: var(--celeste);">leer más →</a> ]\n' },
-    { type: 'cmd-infinite', text: 'Realizando Prácticas...' }
-  ];
-
-  let currentStep = 0;
-
-  function processNextStep() {
-    if (currentStep >= sequence.length) return;
+  // Generamos el HTML con las clases de animación y retrasos escalonados (cascada rápida)
+  const sequenceHTML = `
+    <div class="line boot-line" style="margin-bottom: 14px; animation-delay: 0.1s;">
+      ${promptHTML} <span class="cmd">whoami</span>
+    </div>
+    <div class="line boot-line" style="margin-bottom: 14px; color: var(--text-bright); line-height: 1.6; animation-delay: 0.25s;">
+      Futuro Administrador de Sistemas en Red
+    </div>
     
-    const step = sequence[currentStep];
-    const lineDiv = document.createElement('div');
-    lineDiv.className = 'line';
-    lineDiv.style.marginBottom = '14px';
-    heroTerminal.appendChild(lineDiv);
+    <div class="line boot-line" style="margin-bottom: 14px; animation-delay: 0.4s;">
+      ${promptHTML} <span class="cmd">cat sobre-mi.txt</span>
+    </div>
+    <div class="line boot-line" style="margin-bottom: 14px; color: var(--text-bright); line-height: 1.6; animation-delay: 0.55s;">
+      Soy Pedro Oliver Pozo, estudiante del IES Gonzalo Nazareno y Futuro Administrador de Sistemas y Redes. &nbsp;[ <a href="#" style="color: var(--celeste);">leer más →</a> ]
+    </div>
+    
+    <div class="line boot-line" style="margin-bottom: 14px; animation-delay: 0.7s;">
+      ${promptHTML} <span class="cmd">Realizando Prácticas...</span><span class="blinking-cursor"></span>
+    </div>
+  `;
 
-    if (step.type === 'cmd' || step.type === 'cmd-infinite') {
-      // Preparamos la línea con el prompt y el cursor
-      lineDiv.innerHTML = promptHTML + ' <span class="cmd typing-text"></span><span class="blinking-cursor"></span>';
-      const textEl = lineDiv.querySelector('.typing-text');
-      const cursorEl = lineDiv.querySelector('.blinking-cursor');
-      
-      let charIdx = 0;
-      function typeChar() {
-        if (charIdx < step.text.length) {
-          textEl.textContent += step.text.charAt(charIdx);
-          charIdx++;
-          // Velocidad aleatoria para que parezca una persona tecleando (entre 30ms y 110ms)
-          setTimeout(typeChar, Math.random() * 80 + 30); 
-        } else {
-          // Terminó de teclear la línea
-          if (step.type === 'cmd') {
-            cursorEl.style.display = 'none'; // Apagamos el cursor
-            currentStep++;
-            setTimeout(processNextStep, 250); // Simula el tiempo que tardas en pulsar 'Enter'
-          }
-          // Si es 'cmd-infinite', no avanza y se queda el cursor parpadeando eternamente
-        }
-      }
-      setTimeout(typeChar, 500); // Pausa inicial antes de empezar a escribir un comando
-
-    } else if (step.type === 'out') {
-      // El resultado de los comandos aparece de golpe, como en Linux
-      lineDiv.innerHTML = `<div style="color: var(--text-bright); line-height: 1.6;">${step.text}</div>`;
-      currentStep++;
-      setTimeout(processNextStep, 500); // Pausa de lectura antes del siguiente prompt
-    }
-  }
-
-  // Arrancamos la magia un segundito después de cargar la página
-  setTimeout(processNextStep, 600);
+  // Añadimos un pequeño retraso antes de "encender" la terminal para dar impacto
+  setTimeout(() => {
+    heroTerminal.innerHTML = sequenceHTML;
+  }, 200);
 }
 
-
 /* ==========================================================================
-   LÓGICA Y ESTILOS DEL EFECTO DE TIPEO GLOBAL
+   LÓGICA Y ESTILOS DEL EFECTO DE TIPEO Y BOOT
    ========================================================================== */
 function setupTypingStyles() {
   if (!document.getElementById('estilos-tipeo-terminal')) {
     const style = document.createElement('style');
     style.id = 'estilos-tipeo-terminal';
     style.textContent = `
+      /* Cursor parpadeante */
       .blinking-cursor {
         display: inline-block;
         width: 8px;
         height: 1.1em;
-        background-color: #4ade80; /* Verde terminal */
+        background-color: #4ade80; 
         margin-left: 4px;
         vertical-align: middle;
         animation: blink 1s step-start infinite;
       }
-      @keyframes blink {
-        50% { opacity: 0; }
+      @keyframes blink { 50% { opacity: 0; } }
+      .typing-text { white-space: pre-wrap; }
+
+      /* NUEVO: Animación para el efecto "Booting / SSH Login" */
+      @keyframes fastBootLine {
+        0% { opacity: 0; transform: translateY(-10px); }
+        100% { opacity: 1; transform: translateY(0); }
       }
-      .typing-text {
-        white-space: pre-wrap;
+      .boot-line {
+        opacity: 0; /* Oculto por defecto hasta que toque su turno */
+        animation: fastBootLine 0.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
       }
     `;
     document.head.appendChild(style);
@@ -161,6 +133,28 @@ function typeTextSimple(element, text, speed = 30) {
     }
   }
   type();
+}
+
+/* ==========================================================================
+   ANIMACIONES CSS 3D (DESDOBLEZ DE PÁGINA)
+   ========================================================================== */
+function setupTransitionStyles() {
+  if (!document.getElementById('estilos-transicion-practicas')) {
+    const styleT = document.createElement('style');
+    styleT.id = 'estilos-transicion-practicas';
+    styleT.textContent = `
+      @keyframes pageTurnNextOut { 0% { transform: perspective(2000px) rotateY(0deg); transform-origin: left center; opacity: 1; } 100% { transform: perspective(2000px) rotateY(-90deg); transform-origin: left center; opacity: 0; } }
+      @keyframes pageTurnPrevOut { 0% { transform: perspective(2000px) rotateY(0deg); transform-origin: right center; opacity: 1; } 100% { transform: perspective(2000px) rotateY(90deg); transform-origin: right center; opacity: 0; } }
+      .anim-page-next-out { animation: pageTurnNextOut 0.45s forwards cubic-bezier(0.4, 0, 0.2, 1); }
+      .anim-page-prev-out { animation: pageTurnPrevOut 0.45s forwards cubic-bezier(0.4, 0, 0.2, 1); }
+
+      @keyframes pageTurnNextIn { 0% { transform: perspective(2000px) rotateY(90deg); transform-origin: right center; opacity: 0; } 100% { transform: perspective(2000px) rotateY(0deg); transform-origin: right center; opacity: 1; } }
+      @keyframes pageTurnPrevIn { 0% { transform: perspective(2000px) rotateY(-90deg); transform-origin: left center; opacity: 0; } 100% { transform: perspective(2000px) rotateY(0deg); transform-origin: left center; opacity: 1; } }
+      .anim-page-next-in { animation: pageTurnNextIn 0.5s forwards cubic-bezier(0.2, 0.8, 0.2, 1); }
+      .anim-page-prev-in { animation: pageTurnPrevIn 0.5s forwards cubic-bezier(0.2, 0.8, 0.2, 1); }
+    `;
+    document.head.appendChild(styleT);
+  }
 }
 
 /* ==========================================================================
@@ -396,24 +390,6 @@ function renderGrid(filtro) {
 /* ==========================================================================
    LÓGICA DE LA PRÁCTICA INDIVIDUAL (PRACTICA.HTML) Y ANIMACIONES 3D
    ========================================================================== */
-function setupTransitionStyles() {
-  if (!document.getElementById('estilos-transicion-practicas')) {
-    const styleT = document.createElement('style');
-    styleT.id = 'estilos-transicion-practicas';
-    styleT.textContent = `
-      @keyframes pageTurnNextOut { 0% { transform: perspective(2000px) rotateY(0deg); transform-origin: left center; opacity: 1; } 100% { transform: perspective(2000px) rotateY(-90deg); transform-origin: left center; opacity: 0; } }
-      @keyframes pageTurnPrevOut { 0% { transform: perspective(2000px) rotateY(0deg); transform-origin: right center; opacity: 1; } 100% { transform: perspective(2000px) rotateY(90deg); transform-origin: right center; opacity: 0; } }
-      .anim-page-next-out { animation: pageTurnNextOut 0.45s forwards cubic-bezier(0.4, 0, 0.2, 1); }
-      .anim-page-prev-out { animation: pageTurnPrevOut 0.45s forwards cubic-bezier(0.4, 0, 0.2, 1); }
-      @keyframes pageTurnNextIn { 0% { transform: perspective(2000px) rotateY(90deg); transform-origin: right center; opacity: 0; } 100% { transform: perspective(2000px) rotateY(0deg); transform-origin: right center; opacity: 1; } }
-      @keyframes pageTurnPrevIn { 0% { transform: perspective(2000px) rotateY(-90deg); transform-origin: left center; opacity: 0; } 100% { transform: perspective(2000px) rotateY(0deg); transform-origin: left center; opacity: 1; } }
-      .anim-page-next-in { animation: pageTurnNextIn 0.5s forwards cubic-bezier(0.2, 0.8, 0.2, 1); }
-      .anim-page-prev-in { animation: pageTurnPrevIn 0.5s forwards cubic-bezier(0.2, 0.8, 0.2, 1); }
-    `;
-    document.head.appendChild(styleT);
-  }
-}
-
 function renderSinglePractica(id) {
   if (typeof PRACTICAS === 'undefined') return;
   const practica = PRACTICAS.find(p => p.id === id);
