@@ -42,7 +42,6 @@ document.addEventListener('DOMContentLoaded', () => {
           sectionPracticas.style.transform = 'translateY(0)';
           
           setTimeout(() => {
-            // CORREGIDO: Hemos quitado el # extra de aquí
             const prefix = `<span style="color: #4ade80;">pedrooliver@asir</span>:<span style="color: #60a5fa;">~/la_sectasir/practicas</span>$ `;
             
             // Tecleo ágil de ls -la
@@ -255,6 +254,12 @@ function setupTypingStyles() {
       }
       @keyframes blink { 50% { opacity: 0; } }
       .typing-text { white-space: pre-wrap; }
+      
+      /* ESTO ELIMINA EL # QUE VIENE DEL CSS ORIGINAL */
+      #path-prompt::before, .section-tag::before {
+        content: none !important;
+        display: none !important;
+      }
     `;
     document.head.appendChild(style);
   }
@@ -590,7 +595,7 @@ function renderSinglePractica(id) {
         style.textContent = `#btn-indice-interno { position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px; background-color: #1e293b; border: 1px solid #334155; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 999; box-shadow: 0 4px 12px rgba(0,0,0,0.5); color: #60a5fa; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); } #btn-indice-interno:hover { transform: scale(1.1); background-color: #0f172a; color: #93c5fd; } #btn-indice-interno.activo { transform: rotate(90deg); background-color: #0f172a; border-color: #60a5fa; color: #4ade80; } #panel-indice-interno { position: fixed; bottom: 95px; right: 30px; width: 320px; max-height: 65vh; background-color: #0f172a; border: 1px solid #334155; border-radius: 8px; z-index: 1000; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.6); transform-origin: bottom right; transform: scale(0); opacity: 0; pointer-events: none; transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.25s ease-in-out; } #panel-indice-interno.abierto { transform: scale(1); opacity: 1; pointer-events: auto; } .panel-header { display: flex; align-items: center; padding: 15px 20px; background-color: #1e293b; border-bottom: 1px solid #334155; border-radius: 8px 8px 0 0; } .dots-container { display: flex; gap: 8px; margin-right: 15px; } .dot { width: 12px; height: 12px; border-radius: 50%; } .dot.red { background-color: #ef4444; cursor: pointer; } .dot.yellow { background-color: #f59e0b; } .dot.green { background-color: #10b981; } .panel-title { color: #94a3b8; font-family: var(--mono, monospace); font-size: 0.9rem; } .panel-content { padding: 20px; overflow-y: auto; flex: 1; } .lista-indice-interno { list-style: none; padding: 0; margin: 0; } .item-indice-interno { margin-bottom: 12px; font-family: var(--mono, monospace); font-size: 0.85rem; } .link-indice-interno { color: #60a5fa; text-decoration: none; transition: color 0.2s; display: block; padding: 4px 0; } .link-indice-interno:hover { color: #4ade80; }`;
         document.head.appendChild(style);
       }
-      const btnToggle = document.createElement('div'); btnToggle.id = 'btn-indice-interno'; btnToggle.title = 'Abrir índice de la práctica'; btnToggle.innerHTML = `<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>`; document.body.appendChild(btnToggle);
+      const btnToggle = document.createElement('div'); btnToggle.id = 'btn-indice-interno'; btnToggle.title = 'Abrir índice de la práctica'; btnToggle.innerHTML = `<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3 13h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>`; document.body.appendChild(btnToggle);
       const panel = document.createElement('div'); panel.id = 'panel-indice-interno'; let enlacesHtml = '';
       titulos.forEach((titulo, index) => { if (!titulo.id) titulo.id = 'seccion-auto-' + index; enlacesHtml += `<li class="item-indice-interno"><a href="#${titulo.id}" class="link-indice-interno">📍 ${titulo.textContent}</a></li>`; });
       panel.innerHTML = `<div class="panel-header"><div class="dots-container"><div class="dot red" id="cerrar-indice-interno" title="Cerrar índice"></div><div class="dot yellow"></div><div class="dot green"></div></div><span class="panel-title">Índice Local</span></div><div class="panel-content"><ul class="lista-indice-interno">${enlacesHtml}</ul></div>`; document.body.appendChild(panel);
