@@ -42,7 +42,8 @@ document.addEventListener('DOMContentLoaded', () => {
           sectionPracticas.style.transform = 'translateY(0)';
           
           setTimeout(() => {
-            const prefix = `<span style="color: #64748b;">#</span> <span style="color: #4ade80;">pedrooliver@asir</span>:<span style="color: #60a5fa;">~/la_sectasir/practicas</span>$ `;
+            // CORREGIDO: Hemos quitado el # extra de aquí
+            const prefix = `<span style="color: #4ade80;">pedrooliver@asir</span>:<span style="color: #60a5fa;">~/la_sectasir/practicas</span>$ `;
             
             // Tecleo ágil de ls -la
             typeCommand(promptEl, prefix, 'ls -la', 80, () => {
@@ -96,7 +97,6 @@ function animateHeroTerminal(onComplete) {
     { type: 'cmd', text: 'whoami' },
     { type: 'out', text: 'Futuro Administrador de Sistemas en Red\n' },
     { type: 'cmd', text: 'cat sobre-mi.txt' },
-    // URL LIMPIA: Cambiado a href="/sobre-mi"
     { type: 'out', text: 'Soy Pedro Oliver Pozo, estudiante del IES Gonzalo Nazareno y Futuro Administrador de Sistemas y Redes. &nbsp;[ <a href="/sobre-mi" style="color: var(--celeste);">leer más →</a> ]\n' },
     { type: 'cmd-infinite', text: 'Realizando Prácticas...' }
   ];
@@ -392,14 +392,12 @@ function setupSearch() {
     const query = e.target.value.toLowerCase().trim();
     if (query === 'sqlplus sys as sysdba' || query === 'sqlplus / as sysdba') {
       closeSearch(); 
-      // URL LIMPIA
       window.location.href = '/?cat=gbdd#practicas';
       return;
     }
     if (query.length < 2) { searchResults.innerHTML = ''; return; }
     let html = '';
     
-    // URL LIMPIA ABSOLUTA DESDE LA RAÍZ
     const homePath = '/';
     const pathPrefix = '/practicas/';
     
@@ -412,7 +410,6 @@ function setupSearch() {
     matchesPrac.forEach(p => { 
       const extension = p.extension || '.pdf'; 
       const nombreArchivo = p.filename || p.id; 
-      // URL LIMPIA PARA PRÁCTICAS
       html += `<a href="${pathPrefix}practica?id=${p.id}" class="search-result-item"><svg class="search-result-icon" viewBox="0 0 24 24" fill="#cbd5e1"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg><div class="search-result-info"><span class="search-result-title">${p.titulo}</span><span class="search-result-path">~/${p.categoria}/${nombreArchivo}${extension}</span></div></a>`; 
     });
     
@@ -438,7 +435,6 @@ function renderSidebar() {
   const sidebarNav = document.getElementById('sidebar-nav');
   if (!sidebarNav || typeof PRACTICAS === 'undefined') return;
   
-  // URL LIMPIA ABSOLUTA
   const pathPrefix = '/practicas/';
   const homePath = '/';
   
@@ -453,7 +449,6 @@ function renderSidebar() {
       html += `<div style="color: #4ade80; margin-top: 16px; margin-bottom: 6px; font-family: var(--mono); font-size: 0.85rem; font-weight: 600;">cd /${nombreVisible[cat]}</div>`;
       categorias[cat].forEach(p => { 
         const nombreArchivo = p.filename || p.id; 
-        // URL LIMPIA
         html += `<div class="line" style="margin-bottom: 8px; padding-left: 12px;"><a href="${pathPrefix}practica?id=${p.id}" style="color: #cbd5e1; text-decoration: none; font-family: var(--mono); font-size: 0.85rem;" onmouseover="this.style.color='#f8fafc'" onmouseout="this.style.color='#cbd5e1'">cat ${nombreArchivo}.md</a></div>`; 
       });
     }
@@ -464,7 +459,6 @@ function renderSidebar() {
       html += `<div style="color: #4ade80; margin-top: 16px; margin-bottom: 6px; font-family: var(--mono); font-size: 0.85rem; font-weight: 600;">cd /${cat.toUpperCase()}</div>`;
       categorias[cat].forEach(p => { 
         const nombreArchivo = p.filename || p.id; 
-        // URL LIMPIA
         html += `<div class="line" style="margin-bottom: 8px; padding-left: 12px;"><a href="${pathPrefix}practica?id=${p.id}" style="color: #cbd5e1; text-decoration: none; font-family: var(--mono); font-size: 0.85rem;" onmouseover="this.style.color='#f8fafc'" onmouseout="this.style.color='#cbd5e1'">cat ${nombreArchivo}.md</a></div>`; 
       });
     }
@@ -500,7 +494,7 @@ function openDirectory(categoria) {
     const promptEl = document.getElementById('path-prompt');
     if(promptEl) {
       promptEl.textContent = '';
-      const prefix = `<span style="color: #64748b;">#</span> <span style="color: #4ade80;">pedrooliver@asir</span>:<span style="color: #60a5fa;">~/la_sectasir/practicas${dirName}</span>$ `;
+      const prefix = `<span style="color: #4ade80;">pedrooliver@asir</span>:<span style="color: #60a5fa;">~/la_sectasir/practicas${dirName}</span>$ `;
       typeCommand(promptEl, prefix, 'ls -la', 30); 
     }
     renderGrid(categoria);
@@ -519,7 +513,7 @@ function closeDirectory() {
   const promptEl = document.getElementById('path-prompt');
   if(promptEl) {
     promptEl.textContent = '';
-    const prefix = `<span style="color: #64748b;">#</span> <span style="color: #4ade80;">pedrooliver@asir</span>:<span style="color: #60a5fa;">~/la_sectasir/practicas</span>$ `;
+    const prefix = `<span style="color: #4ade80;">pedrooliver@asir</span>:<span style="color: #60a5fa;">~/la_sectasir/practicas</span>$ `;
     typeCommand(promptEl, prefix, 'ls -la', 30);
   }
   updateFolderIcons(); 
@@ -549,7 +543,6 @@ function renderGrid(filtro) {
     const nombreArchivo = p.filename || p.id; const extension = p.extension || '.pdf'; 
     const tagsHtml = p.tags ? p.tags.map(t => `<span>${t}</span>`).join('') : '';
     const labelAmigable = (typeof CATEGORIAS_LABEL !== 'undefined' && CATEGORIAS_LABEL[p.categoria]) ? CATEGORIAS_LABEL[p.categoria] : p.categoria;
-    // URL LIMPIA
     html += `<a href="/practicas/practica?id=${p.id}" class="file-item" onclick="openFileAnim(event, this.href)"><svg class="file-icon-svg" viewBox="0 0 24 24" width="64" height="64"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6z" fill="#e2e8f0"/><path d="M13 2v6h6L13 2z" fill="#cbd5e1"/><path d="M8 12h8v1H8zm0 3h8v1H8zm0 3h5v1H8z" fill="#94a3b8"/></svg><span class="file-name">${nombreArchivo}${extension}</span><div class="file-preview"><div class="preview-cat">${labelAmigable}</div><h4 class="preview-title">${p.titulo}</h4><div class="preview-tags">${tagsHtml}</div></div></a>`;
   });
   grid.innerHTML = html;
@@ -563,7 +556,6 @@ function renderSinglePractica(id) {
   const practica = PRACTICAS.find(p => p.id === id);
   if (!practica) {
     const container = document.querySelector('main') || document.body;
-    // URL LIMPIA PARA ERROR 404
     container.innerHTML = '<div style="text-align:center; padding: 100px 20px;"><h1 style="color:#ef4444;">Error 404</h1><p>El fichero solicitado no existe en el sistema.</p><a href="/" style="color:#60a5fa; text-decoration:none;">cd .. (volver al inicio)</a></div>';
     return;
   }
@@ -598,7 +590,7 @@ function renderSinglePractica(id) {
         style.textContent = `#btn-indice-interno { position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px; background-color: #1e293b; border: 1px solid #334155; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 999; box-shadow: 0 4px 12px rgba(0,0,0,0.5); color: #60a5fa; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); } #btn-indice-interno:hover { transform: scale(1.1); background-color: #0f172a; color: #93c5fd; } #btn-indice-interno.activo { transform: rotate(90deg); background-color: #0f172a; border-color: #60a5fa; color: #4ade80; } #panel-indice-interno { position: fixed; bottom: 95px; right: 30px; width: 320px; max-height: 65vh; background-color: #0f172a; border: 1px solid #334155; border-radius: 8px; z-index: 1000; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.6); transform-origin: bottom right; transform: scale(0); opacity: 0; pointer-events: none; transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.25s ease-in-out; } #panel-indice-interno.abierto { transform: scale(1); opacity: 1; pointer-events: auto; } .panel-header { display: flex; align-items: center; padding: 15px 20px; background-color: #1e293b; border-bottom: 1px solid #334155; border-radius: 8px 8px 0 0; } .dots-container { display: flex; gap: 8px; margin-right: 15px; } .dot { width: 12px; height: 12px; border-radius: 50%; } .dot.red { background-color: #ef4444; cursor: pointer; } .dot.yellow { background-color: #f59e0b; } .dot.green { background-color: #10b981; } .panel-title { color: #94a3b8; font-family: var(--mono, monospace); font-size: 0.9rem; } .panel-content { padding: 20px; overflow-y: auto; flex: 1; } .lista-indice-interno { list-style: none; padding: 0; margin: 0; } .item-indice-interno { margin-bottom: 12px; font-family: var(--mono, monospace); font-size: 0.85rem; } .link-indice-interno { color: #60a5fa; text-decoration: none; transition: color 0.2s; display: block; padding: 4px 0; } .link-indice-interno:hover { color: #4ade80; }`;
         document.head.appendChild(style);
       }
-      const btnToggle = document.createElement('div'); btnToggle.id = 'btn-indice-interno'; btnToggle.title = 'Abrir índice de la práctica'; btnToggle.innerHTML = `<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3 13h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>`; document.body.appendChild(btnToggle);
+      const btnToggle = document.createElement('div'); btnToggle.id = 'btn-indice-interno'; btnToggle.title = 'Abrir índice de la práctica'; btnToggle.innerHTML = `<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>`; document.body.appendChild(btnToggle);
       const panel = document.createElement('div'); panel.id = 'panel-indice-interno'; let enlacesHtml = '';
       titulos.forEach((titulo, index) => { if (!titulo.id) titulo.id = 'seccion-auto-' + index; enlacesHtml += `<li class="item-indice-interno"><a href="#${titulo.id}" class="link-indice-interno">📍 ${titulo.textContent}</a></li>`; });
       panel.innerHTML = `<div class="panel-header"><div class="dots-container"><div class="dot red" id="cerrar-indice-interno" title="Cerrar índice"></div><div class="dot yellow"></div><div class="dot green"></div></div><span class="panel-title">Índice Local</span></div><div class="panel-content"><ul class="lista-indice-interno">${enlacesHtml}</ul></div>`; document.body.appendChild(panel);
@@ -613,7 +605,6 @@ function renderSinglePractica(id) {
   if (tagsEl && practica.tags) { tagsEl.innerHTML = practica.tags.map(t => `<span class="stack-tag">${t}</span>`).join(''); }
 
   const safeCategory = practica.categoria ? practica.categoria.toLowerCase() : 'todas';
-  // URL LIMPIA ABSOLUTA
   const urlRetorno = `/?cat=${safeCategory}#practicas`;
   const terminalApp = document.getElementById('main-terminal');
   
@@ -641,7 +632,6 @@ function renderSinglePractica(id) {
     if (typeof window.limpiarIndiceFlotante === 'function') window.limpiarIndiceFlotante();
     const currentIndex = PRACTICAS.findIndex(p => p.id === id); let nextIndex = currentIndex + 1; if (nextIndex >= PRACTICAS.length) nextIndex = 0; 
     sessionStorage.setItem('pageTransition', 'next');
-    // Navegación con URL Limpia
     if (terminalApp) { terminalApp.classList.remove('maximize-animation', 'anim-page-next-in', 'anim-page-prev-in'); terminalApp.classList.add('anim-page-next-out'); setTimeout(() => { window.location.href = window.location.pathname + '?id=' + PRACTICAS[nextIndex].id; }, 350); } 
     else { window.location.href = window.location.pathname + '?id=' + PRACTICAS[nextIndex].id; }
   }
@@ -651,7 +641,6 @@ function renderSinglePractica(id) {
     if (typeof window.limpiarIndiceFlotante === 'function') window.limpiarIndiceFlotante();
     const currentIndex = PRACTICAS.findIndex(p => p.id === id); let prevIndex = currentIndex - 1; if (prevIndex < 0) prevIndex = PRACTICAS.length - 1; 
     sessionStorage.setItem('pageTransition', 'prev');
-    // Navegación con URL Limpia
     if (terminalApp) { terminalApp.classList.remove('maximize-animation', 'anim-page-next-in', 'anim-page-prev-in'); terminalApp.classList.add('anim-page-prev-out'); setTimeout(() => { window.location.href = window.location.pathname + '?id=' + PRACTICAS[prevIndex].id; }, 350); } 
     else { window.location.href = window.location.pathname + '?id=' + PRACTICAS[prevIndex].id; }
   }
@@ -677,7 +666,6 @@ function setupGenericCloseButtons() {
     closeBtn.style.cursor = 'pointer';
     const terminalApp = closeBtn.closest('.terminal-window');
     
-    // URL LIMPIA ABSOLUTA
     const homePath = '/';
 
     closeBtn.addEventListener('click', (e) => {
