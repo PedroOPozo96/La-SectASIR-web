@@ -282,7 +282,7 @@ function closeDirectory() {
 }
 
 /* ==========================================================================
-   ICONOS DE CARPETA (CALCULA FOLIOS DINÁMICOS INCLUSO POR CURSO)
+   ICONOS DE CARPETA (INTELIGENCIA PARA MOSTRAR CARPETAS O FOLIOS)
    ========================================================================== */
 function updateFolderIcons() {
   const folders = document.querySelectorAll('.folder-btn');
@@ -312,13 +312,17 @@ function updateFolderIcons() {
     btn.style.animationDelay = `${index * 0.08}s`;
 
     let count = 0;
+    let isCourseFolder = false;
+
     if (typeof PRACTICAS !== 'undefined') {
       if (category === 'todas') {
         count = PRACTICAS.length;
       } else if (category === 'curso-1') {
-        count = PRACTICAS.filter(p => p.categoria && ['gbdd', 'redes'].includes(p.categoria.toLowerCase())).length;
+        count = 2; // Las dos asignaturas de 1º
+        isCourseFolder = true;
       } else if (category === 'curso-2') {
-        count = PRACTICAS.filter(p => p.categoria && ['servicios', 'iaw', 'infraestructura', 'sad', 'abd', 'aso', 'proyecto'].includes(p.categoria.toLowerCase())).length;
+        count = 7; // Las asignaturas de 2º
+        isCourseFolder = true;
       } else {
         count = PRACTICAS.filter(p => p.categoria && p.categoria.toLowerCase() === category.toLowerCase()).length;
       }
@@ -330,14 +334,24 @@ function updateFolderIcons() {
       let papersHTML = '';
       
       for (let i = maxVisualPapers - 1; i >= 0; i--) {
-        papersHTML += `
-          <g class="folder-paper-hover" style="--depth: ${i}; transition-delay: ${0.03 * i}s;">
-            <rect x="4" y="2" width="16" height="14" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="0.5"/>
-            <rect x="7" y="5" width="8" height="1" fill="#cbd5e1"/>
-            <rect x="7" y="8" width="10" height="1" fill="#cbd5e1"/>
-            <rect x="7" y="11" width="6" height="1" fill="#cbd5e1"/>
-          </g>
-        `;
+        if (isCourseFolder) {
+          // Si es curso, hacemos volar carpetitas pequeñas
+          papersHTML += `
+            <g class="folder-paper-hover" style="--depth: ${i}; transition-delay: ${0.03 * i}s;">
+              <path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" fill="#93c5fd" transform="translate(5, 4) scale(0.6)"/>
+            </g>
+          `;
+        } else {
+          // Si es asignatura o ROOT, hacemos volar folios de papel
+          papersHTML += `
+            <g class="folder-paper-hover" style="--depth: ${i}; transition-delay: ${0.03 * i}s;">
+              <rect x="4" y="2" width="16" height="14" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="0.5"/>
+              <rect x="7" y="5" width="8" height="1" fill="#cbd5e1"/>
+              <rect x="7" y="8" width="10" height="1" fill="#cbd5e1"/>
+              <rect x="7" y="11" width="6" height="1" fill="#cbd5e1"/>
+            </g>
+          `;
+        }
       }
 
       btn.innerHTML = `
@@ -609,28 +623,64 @@ window.openFileAnim = function(event, url) {
   setTimeout(() => { window.location.href = url; }, 200);
 }
 
+/* ==========================================================================
+   VISUALIZACIÓN DE ARCHIVOS TIPO ESCRITORIO (NUEVO DISEÑO)
+   ========================================================================== */
 function renderGrid(filtro) {
   const grid = document.getElementById('practice-grid');
   if (!grid || typeof PRACTICAS === 'undefined') return;
   grid.innerHTML = ''; 
   const datosFiltrados = filtro === 'todas' ? PRACTICAS : PRACTICAS.filter(p => p.categoria && p.categoria.toLowerCase() === filtro.toLowerCase());
-  if (datosFiltrados.length === 0) { grid.innerHTML = '<div class="loading-state">El directorio está vacío...</div>'; return; }
-  grid.style.display = 'flex'; grid.style.flexWrap = 'wrap'; grid.style.gap = '20px';
-  let html = '';
   
-  const safeCatLabel = (typeof CATEGORIAS_LABEL !== 'undefined') ? CATEGORIAS_LABEL : {
-    'gbdd': 'Gestión de Bases de Datos', 'redes': 'Planificación y Admin. de Redes',
-    'servicios': 'Servicios de Red e Internet', 'iaw': 'Implantación de Aplicaciones Web',
-    'infraestructura': 'Infraestructura Virtual', 'sad': 'Seguridad y Alta Disponibilidad',
-    'abd': 'Administración de Bases de Datos', 'aso': 'Administración de Sistemas Operativos',
-    'proyecto': 'Proyecto Integrado'
-  };
+  if (datosFiltrados.length === 0) { 
+    grid.innerHTML = '<div class="loading-state">El directorio está vacío...</div>'; 
+    return; 
+  }
+  
+  // Añadimos un bloque de CSS para este nuevo diseño "Desktop"
+  if (!document.getElementById('estilos-archivos-grid')) {
+    const styleG = document.createElement('style');
+    styleG.id = 'estilos-archivos-grid';
+    styleG.textContent = `
+      .file-item-desktop {
+        display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+        width: 100px; text-decoration: none; gap: 10px; padding: 10px; border-radius: 8px;
+        transition: all 0.2s ease;
+      }
+      .file-item-desktop:hover { background: rgba(255,255,255,0.05); transform: translateY(-4px); }
+      .file-icon-svg { transition: transform 0.2s ease; }
+      .file-item-desktop:hover .file-icon-svg { transform: scale(1.1); }
+      .file-name-desktop {
+        color: #cbd5e1; font-family: var(--mono); font-size: 0.8rem; text-align: center;
+        word-wrap: break-word; word-break: break-word; line-height: 1.3; transition: color 0.2s;
+      }
+      .file-item-desktop:hover .file-name-desktop { color: #f8fafc; }
+    `;
+    document.head.appendChild(styleG);
+  }
+
+  // Reseteamos el grid a un formato flex compatible con los iconos de escritorio
+  grid.style.display = 'flex'; 
+  grid.style.flexWrap = 'wrap'; 
+  grid.style.gap = '24px';
+  
+  let html = '';
 
   datosFiltrados.forEach(p => {
-    const nombreArchivo = p.filename || p.id; const extension = p.extension || '.pdf'; 
-    const tagsHtml = p.tags ? p.tags.map(t => `<span>${t}</span>`).join('') : '';
-    const labelAmigable = safeCatLabel[p.categoria] ? safeCatLabel[p.categoria] : p.categoria;
-    html += `<a href="/practicas/practica?id=${p.id}" class="file-item" onclick="openFileAnim(event, this.href)"><svg class="file-icon-svg" viewBox="0 0 24 24" width="64" height="64"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" fill="#e2e8f0"/><path d="M13 2v6h6L13 2z" fill="#cbd5e1"/><path d="M8 12h8v1H8zm0 3h8v1H8zm0 3h5v1H8z" fill="#94a3b8"/></svg><span class="file-name">${nombreArchivo}${extension}</span><div class="file-preview"><div class="preview-cat">${labelAmigable}</div><h4 class="preview-title">${p.titulo}</h4><div class="preview-tags">${tagsHtml}</div></div></a>`;
+    const nombreArchivo = p.filename || p.id; 
+    const extension = p.extension || '.pdf'; 
+    
+    // Generamos el HTML exacto de tu captura (solo icono + texto)
+    html += `
+      <a href="/practicas/practica?id=${p.id}" class="file-item-desktop" onclick="openFileAnim(event, this.href)">
+        <svg class="file-icon-svg" viewBox="0 0 24 24" width="60" height="60">
+          <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6z" fill="#e2e8f0"/>
+          <path d="M13 2v6h6L13 2z" fill="#cbd5e1"/>
+          <path d="M8 12h8v1H8zm0 3h8v1H8zm0 3h5v1H8z" fill="#94a3b8"/>
+        </svg>
+        <span class="file-name-desktop">${nombreArchivo}${extension}</span>
+      </a>
+    `;
   });
   grid.innerHTML = html;
 }
