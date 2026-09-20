@@ -13,13 +13,11 @@
 
 <nav>
   <div class="wrap">
-    <!-- LIMPIO: / -->
     <a href="/" class="nav-brand">
       La <span class="brand-accent">SectASIR</span>
       <img src="img/favicon.svg" alt="Logo SectASIR" width="28" height="28" class="nav-logo">
     </a>
     <div class="nav-links">
-      <!-- LIMPIOS -->
       <a href="/sobre-mi">sobre-mi</a>
       <a href="/#practicas">practicas</a>
       <a href="/contacto">contacto</a>
@@ -52,7 +50,6 @@
     </p>
 
     <div style="margin-top: 15px; margin-bottom: 25px;">
-      <!-- LIMPIO: /mecanicas -->
       <a href="/mecanicas" style="display: inline-flex; align-items: center; gap: 8px; color: #60a5fa; text-decoration: none; font-family: var(--mono, monospace); font-size: 1rem; background: rgba(59, 130, 246, 0.1); padding: 8px 16px; border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.2); transition: all 0.2s;" onmouseover="this.style.background='rgba(59, 130, 246, 0.2)'; this.style.color='#93c5fd';" onmouseout="this.style.background='rgba(59, 130, 246, 0.1)'; this.style.color='#60a5fa';">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
           <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
@@ -73,7 +70,6 @@
         <div class="line"><span class="prompt" style="color: #4ade80;">pedrooliver@asir</span>:<span class="path" style="color: #60a5fa;">~/la_sectasir</span><span style="color: #c084fc;"> (main)</span>$ cat sobre-mi.txt</div>
         <div class="line out-val" style="white-space: normal; line-height: 1.5;">
           Soy Pedro Oliver Pozo, estudiante del IES Gonzalo Nazareno y Futuro Administrador de Sistemas y Redes. 
-          <!-- LIMPIO: /sobre-mi -->
           <a href="/sobre-mi" style="color: #60a5fa; text-decoration: none; font-weight: bold; margin-left: 8px;">[ leer más → ]</a>
         </div>
         <div class="line">&nbsp;</div>
@@ -82,7 +78,6 @@
     </div>
     
     <div class="hero-meta">
-      <!-- LIMPIO: /contacto -->
       <a href="/contacto" class="social-link">
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
         <span>email</span>
@@ -106,40 +101,79 @@
       <div class="section-tag" id="path-prompt" style="font-size: 15px; font-weight: 500; background: var(--bg-elev); display: inline-block; padding: 8px 16px; border-radius: 6px; border-left: 3px solid var(--accent); box-shadow: 0 4px 10px rgba(0,0,0,0.2);">pedrooliver@asir:~/la_sectasir/practicas$ ls -la</div>
     </div>
 
-    <div class="gui-folders" id="gui-folders">
+    <div class="gui-folders" id="view-root" style="display: flex; gap: 20px; flex-wrap: wrap;">
       <button class="folder-btn" data-target="todas">
         <svg viewBox="0 0 24 24" width="64" height="64" fill="#60a5fa"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
         <span>/ROOT</span>
       </button>
 
-      <button class="folder-btn" data-target="gbdd">
+      <button class="folder-btn" data-target="curso-1">
         <svg viewBox="0 0 24 24" width="64" height="64" fill="#60a5fa"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
-        <span>GBDD</span>
+        <span>1º ASIR</span>
       </button>
-      
-      <button class="folder-btn" data-target="redes">
+
+      <button class="folder-btn" data-target="curso-2">
         <svg viewBox="0 0 24 24" width="64" height="64" fill="#60a5fa"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
-        <span>REDES</span>
-      </button>
-      
-      <button class="folder-btn" data-target="servicios">
-        <svg viewBox="0 0 24 24" width="64" height="64" fill="#60a5fa"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
-        <span>SERVICIOS</span>
-      </button>
-      
-      <button class="folder-btn" data-target="iaw">
-        <svg viewBox="0 0 24 24" width="64" height="64" fill="#60a5fa"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
-        <span>IAW</span>
-      </button>
-      
-      <button class="folder-btn" data-target="infraestructura">
-        <svg viewBox="0 0 24 24" width="64" height="64" fill="#60a5fa"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
-        <span>IV</span>
+        <span>2º ASIR</span>
       </button>
     </div>
 
+    <div id="view-curso-1" style="display: none;">
+      <button class="btn-back btn-back-to-root" style="display: inline-flex; align-items: center; gap: 8px; background: transparent; border: 1px solid #334155; color: #94a3b8; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-family: var(--mono); margin-bottom: 24px; transition: all 0.2s;" onmouseover="this.style.color='#f8fafc'; this.style.borderColor='#475569';" onmouseout="this.style.color='#94a3b8'; this.style.borderColor='#334155';">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        cd .. (volver a /practicas)
+      </button>
+      <div class="gui-folders" style="display: flex; gap: 20px; flex-wrap: wrap;">
+        <button class="folder-btn" data-target="gbdd">
+          <svg viewBox="0 0 24 24" width="64" height="64" fill="#60a5fa"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
+          <span>GBDD</span>
+        </button>
+        <button class="folder-btn" data-target="redes">
+          <svg viewBox="0 0 24 24" width="64" height="64" fill="#60a5fa"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
+          <span>REDES</span>
+        </button>
+      </div>
+    </div>
+
+    <div id="view-curso-2" style="display: none;">
+      <button class="btn-back btn-back-to-root" style="display: inline-flex; align-items: center; gap: 8px; background: transparent; border: 1px solid #334155; color: #94a3b8; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-family: var(--mono); margin-bottom: 24px; transition: all 0.2s;" onmouseover="this.style.color='#f8fafc'; this.style.borderColor='#475569';" onmouseout="this.style.color='#94a3b8'; this.style.borderColor='#334155';">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        cd .. (volver a /practicas)
+      </button>
+      <div class="gui-folders" style="display: flex; gap: 20px; flex-wrap: wrap;">
+        <button class="folder-btn" data-target="servicios">
+          <svg viewBox="0 0 24 24" width="64" height="64" fill="#60a5fa"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
+          <span>SERVICIOS</span>
+        </button>
+        <button class="folder-btn" data-target="iaw">
+          <svg viewBox="0 0 24 24" width="64" height="64" fill="#60a5fa"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
+          <span>IAW</span>
+        </button>
+        <button class="folder-btn" data-target="infraestructura">
+          <svg viewBox="0 0 24 24" width="64" height="64" fill="#60a5fa"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
+          <span>IV</span>
+        </button>
+        <button class="folder-btn" data-target="sad">
+          <svg viewBox="0 0 24 24" width="64" height="64" fill="#60a5fa"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
+          <span>SAD</span>
+        </button>
+        <button class="folder-btn" data-target="abd">
+          <svg viewBox="0 0 24 24" width="64" height="64" fill="#60a5fa"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
+          <span>ABD</span>
+        </button>
+        <button class="folder-btn" data-target="aso">
+          <svg viewBox="0 0 24 24" width="64" height="64" fill="#60a5fa"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
+          <span>ASO</span>
+        </button>
+        <button class="folder-btn" data-target="proyecto">
+          <svg viewBox="0 0 24 24" width="64" height="64" fill="#60a5fa"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
+          <span>PROYECTO</span>
+        </button>
+      </div>
+    </div>
+
     <div id="files-view" style="display: none;">
-      <button id="btn-back" class="btn-back" style="display: inline-flex; align-items: center; gap: 8px; background: transparent; border: 1px solid #334155; color: #94a3b8; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-family: var(--mono); margin-bottom: 24px; transition: all 0.2s;">
+      <button id="btn-back" class="btn-back" style="display: inline-flex; align-items: center; gap: 8px; background: transparent; border: 1px solid #334155; color: #94a3b8; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-family: var(--mono); margin-bottom: 24px; transition: all 0.2s;" onmouseover="this.style.color='#f8fafc'; this.style.borderColor='#475569';" onmouseout="this.style.color='#94a3b8'; this.style.borderColor='#334155';">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
         cd .. (volver)
       </button>
@@ -157,9 +191,8 @@
       <h2 class="section-title">¿Hablamos?</h2>
       <p>Estoy buscando mis primeras prácticas o un puesto junior en sistemas. Si tienes algo que encaje, escríbeme.</p>
       <div class="contact-links">
-        <!-- LIMPIO: /contacto -->
         <a href="/contacto" class="contact-btn primary" style="display: inline-flex; align-items: center; gap: 8px;">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
           enviar email →
         </a>
         <a href="https://www.linkedin.com/in/pedro-oliver-pozo-18a953210/" target="_blank" rel="noopener" class="contact-btn social-link">

@@ -1,3 +1,5 @@
+let currentCourseContext = 'root'; // 'root', 'curso-1', o 'curso-2'
+
 document.addEventListener('DOMContentLoaded', () => {
   setupWindowButtonsStyles(); 
   setupTransitionStyles();    
@@ -18,39 +20,39 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (catPractica) {
       updateFolderIcons(); 
-      openDirectory(catPractica.toLowerCase()); 
+      if (catPractica.toLowerCase() === 'curso-1' || catPractica.toLowerCase() === '1asir') {
+        openCourse('curso-1');
+      } else if (catPractica.toLowerCase() === 'curso-2' || catPractica.toLowerCase() === '2asir') {
+        openCourse('curso-2');
+      } else {
+        openDirectory(catPractica.toLowerCase()); 
+      }
     } else {
       // =========================================================
-      // ESTAMOS EN LA PORTADA PRINCIPAL - COREOGRAFÍA RÁPIDA
+      // PORTADA PRINCIPAL - ARRANQUE ÁGIL
       // =========================================================
       const sectionPracticas = document.getElementById('practicas');
       const promptEl = document.getElementById('path-prompt');
-      const foldersContainer = document.getElementById('gui-folders');
+      const viewRoot = document.getElementById('view-root');
       
-      if (promptEl && foldersContainer && sectionPracticas) {
+      if (promptEl && viewRoot && sectionPracticas) {
         sectionPracticas.style.opacity = '0';
         sectionPracticas.style.transform = 'translateY(10px)';
         sectionPracticas.style.transition = 'opacity 0.4s ease-out, transform 0.4s ease-out';
-        foldersContainer.style.display = 'none';
+        viewRoot.style.display = 'none';
         promptEl.textContent = ''; 
 
-        // Arrancamos la terminal superior con tiempos ágiles
         animateHeroTerminal(() => {
-          
-          // Al terminar de escribir, la sección de prácticas aparece al instante
           sectionPracticas.style.opacity = '1';
           sectionPracticas.style.transform = 'translateY(0)';
           
           setTimeout(() => {
             const prefix = `<span style="color: #4ade80;">pedrooliver@asir</span>:<span style="color: #60a5fa;">~/la_sectasir/practicas</span>$ `;
-            
-            // Tecleo ágil de ls -la
             typeCommand(promptEl, prefix, 'ls -la', 80, () => {
-              foldersContainer.style.display = 'flex';
+              viewRoot.style.display = 'flex';
               updateFolderIcons();
             });
           }, 200); 
-          
         });
       } else {
         updateFolderIcons();
@@ -60,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* ==========================================================================
-   ANIMACIÓN DE LA TERMINAL DE LA PORTADA (ÁGIL Y DINÁMICA)
+   ANIMACIÓN DE LA TERMINAL DE LA PORTADA
    ========================================================================== */
 function animateHeroTerminal(onComplete) {
   const heroTerminal = document.querySelector('.hero .terminal-body');
@@ -77,13 +79,8 @@ function animateHeroTerminal(onComplete) {
         0% { opacity: 0; transform: translate(-50px, 40px); }
         100% { opacity: 1; transform: translate(0, 0); }
       }
-      .hero .terminal-window {
-        opacity: 0;
-        animation: slideInBottomLeft 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-      }
-      .hero .terminal-titlebar .tb-dot {
-        pointer-events: none !important;
-      }
+      .hero .terminal-window { opacity: 0; animation: slideInBottomLeft 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+      .hero .terminal-titlebar .tb-dot { pointer-events: none !important; }
       .hero { padding-bottom: 20px !important; }
       #practicas { padding-top: 10px !important; }
     `;
@@ -104,7 +101,6 @@ function animateHeroTerminal(onComplete) {
 
   function processNextStep() {
     if (currentStep >= sequence.length) return;
-    
     const step = sequence[currentStep];
     const lineDiv = document.createElement('div');
     lineDiv.className = 'line';
@@ -123,29 +119,170 @@ function animateHeroTerminal(onComplete) {
           charIdx++;
           setTimeout(typeChar, Math.random() * 20 + 15); 
         } else {
-          if (step.type === 'cmd') {
-            cursorEl.style.display = 'none'; 
-            currentStep++;
-            setTimeout(processNextStep, 100); 
-          } else if (step.type === 'cmd-infinite') {
-            if (onComplete) setTimeout(onComplete, 200);
-          }
+          if (step.type === 'cmd') { cursorEl.style.display = 'none'; currentStep++; setTimeout(processNextStep, 100); } 
+          else if (step.type === 'cmd-infinite') { if (onComplete) setTimeout(onComplete, 200); }
         }
       }
       setTimeout(typeChar, 150); 
-
     } else if (step.type === 'out') {
       lineDiv.innerHTML = `<div style="color: var(--text-bright); line-height: 1.6;">${step.text}</div>`;
       currentStep++;
       setTimeout(processNextStep, 150); 
     }
   }
-
   setTimeout(processNextStep, 500);
 }
 
 /* ==========================================================================
-   ICONOS DE CARPETA (MÚLTIPLES FOLIOS DINÁMICOS APILADOS)
+   SISTEMA DE NAVEGACIÓN JERÁRQUICA (CARPETAS ANIDADAS)
+   ========================================================================== */
+function setupNavigation() {
+  const folders = document.querySelectorAll('.folder-btn');
+  const btnBackFiles = document.getElementById('btn-back');
+  const btnsBackToRoot = document.querySelectorAll('.btn-back-to-root');
+
+  folders.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const botonClicado = e.target.closest('.folder-btn');
+      if (!botonClicado) return;
+      const target = botonClicado.getAttribute('data-target');
+      
+      if (target === 'curso-1' || target === 'curso-2') {
+        openCourse(target);
+      } else {
+        openDirectory(target);
+      }
+    });
+  });
+
+  if (btnBackFiles) {
+    btnBackFiles.addEventListener('click', closeDirectory);
+  }
+
+  btnsBackToRoot.forEach(btn => {
+    btn.addEventListener('click', closeToRoot);
+  });
+}
+
+function openCourse(courseId) {
+  currentCourseContext = courseId;
+  const viewRoot = document.getElementById('view-root');
+  const viewC1 = document.getElementById('view-curso-1');
+  const viewC2 = document.getElementById('view-curso-2');
+  const viewFiles = document.getElementById('files-view');
+
+  if (viewRoot) viewRoot.style.display = 'none';
+  if (viewFiles) viewFiles.style.display = 'none';
+
+  const dirName = courseId === 'curso-1' ? '1_asir' : '2_asir';
+  const targetView = courseId === 'curso-1' ? viewC1 : viewC2;
+
+  if (targetView) {
+    targetView.style.display = 'block';
+    targetView.classList.remove('folder-anim');
+    void targetView.offsetWidth;
+    targetView.classList.add('folder-anim');
+  }
+
+  const promptEl = document.getElementById('path-prompt');
+  if (promptEl) {
+    promptEl.textContent = '';
+    const prefix = `<span style="color: #4ade80;">pedrooliver@asir</span>:<span style="color: #60a5fa;">~/la_sectasir/practicas/${dirName}</span>$ `;
+    typeCommand(promptEl, prefix, 'ls -la', 30);
+  }
+
+  updateFolderIcons();
+  window.history.pushState({}, document.title, window.location.pathname + `?cat=${courseId}#practicas`);
+}
+
+function closeToRoot() {
+  currentCourseContext = 'root';
+  const viewRoot = document.getElementById('view-root');
+  const viewC1 = document.getElementById('view-curso-1');
+  const viewC2 = document.getElementById('view-curso-2');
+  const viewFiles = document.getElementById('files-view');
+
+  if (viewC1) viewC1.style.display = 'none';
+  if (viewC2) viewC2.style.display = 'none';
+  if (viewFiles) viewFiles.style.display = 'none';
+
+  if (viewRoot) {
+    viewRoot.style.display = 'flex';
+    viewRoot.classList.remove('folder-anim');
+    void viewRoot.offsetWidth;
+    viewRoot.classList.add('folder-anim');
+  }
+
+  const promptEl = document.getElementById('path-prompt');
+  if (promptEl) {
+    promptEl.textContent = '';
+    const prefix = `<span style="color: #4ade80;">pedrooliver@asir</span>:<span style="color: #60a5fa;">~/la_sectasir/practicas</span>$ `;
+    typeCommand(promptEl, prefix, 'ls -la', 30);
+  }
+
+  updateFolderIcons();
+  window.history.pushState({}, document.title, window.location.pathname + '#practicas');
+}
+
+function openDirectory(categoria) {
+  const viewRoot = document.getElementById('view-root');
+  const viewC1 = document.getElementById('view-curso-1');
+  const viewC2 = document.getElementById('view-curso-2');
+  const viewFiles = document.getElementById('files-view');
+  const btnBackFiles = document.getElementById('btn-back');
+
+  const cat1 = ['gbdd', 'redes'];
+  const cat2 = ['servicios', 'iaw', 'infraestructura', 'sad', 'abd', 'aso', 'proyecto'];
+
+  let coursePath = '';
+  if (cat1.includes(categoria.toLowerCase())) {
+    currentCourseContext = 'curso-1';
+    coursePath = '/1_asir';
+    if (btnBackFiles) btnBackFiles.innerHTML = `<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> cd .. (volver a 1_asir)`;
+  } else if (cat2.includes(categoria.toLowerCase())) {
+    currentCourseContext = 'curso-2';
+    coursePath = '/2_asir';
+    if (btnBackFiles) btnBackFiles.innerHTML = `<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> cd .. (volver a 2_asir)`;
+  } else {
+    currentCourseContext = 'root';
+    if (btnBackFiles) btnBackFiles.innerHTML = `<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> cd .. (volver a /practicas)`;
+  }
+
+  if (viewRoot) viewRoot.style.display = 'none';
+  if (viewC1) viewC1.style.display = 'none';
+  if (viewC2) viewC2.style.display = 'none';
+
+  if (viewFiles) {
+    viewFiles.style.display = 'block';
+    viewFiles.classList.remove('folder-anim');
+    void viewFiles.offsetWidth;
+    viewFiles.classList.add('folder-anim');
+  }
+
+  const dirName = categoria === 'todas' ? '' : `${coursePath}/${categoria.toLowerCase()}`;
+  const promptEl = document.getElementById('path-prompt');
+  if (promptEl) {
+    promptEl.textContent = '';
+    const prefix = `<span style="color: #4ade80;">pedrooliver@asir</span>:<span style="color: #60a5fa;">~/la_sectasir/practicas${dirName}</span>$ `;
+    typeCommand(promptEl, prefix, 'ls -la', 30);
+  }
+
+  renderGrid(categoria);
+  window.history.pushState({}, document.title, window.location.pathname + `?cat=${categoria}#practicas`);
+}
+
+function closeDirectory() {
+  if (currentCourseContext === 'curso-1') {
+    openCourse('curso-1');
+  } else if (currentCourseContext === 'curso-2') {
+    openCourse('curso-2');
+  } else {
+    closeToRoot();
+  }
+}
+
+/* ==========================================================================
+   ICONOS DE CARPETA (CALCULA FOLIOS DINÁMICOS INCLUSO POR CURSO)
    ========================================================================== */
 function updateFolderIcons() {
   const folders = document.querySelectorAll('.folder-btn');
@@ -154,32 +291,15 @@ function updateFolderIcons() {
     const style = document.createElement('style');
     style.id = 'estilos-anim-carpetas';
     style.textContent = `
-      @keyframes folderEntrance {
-        0% { opacity: 0; transform: translateY(15px) scale(0.95); }
-        100% { opacity: 1; transform: translateY(0) scale(1); }
-      }
-      .folder-btn {
-        opacity: 0; 
-        animation: folderEntrance 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-      }
+      @keyframes folderEntrance { 0% { opacity: 0; transform: translateY(15px) scale(0.95); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+      .folder-btn { opacity: 0; animation: folderEntrance 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
       .folder-closed-shape { opacity: 1; transition: opacity 0.2s ease; }
       .folder-open-shape { opacity: 0; transition: opacity 0.2s ease; }
-      .folder-paper-hover {
-        opacity: 0;
-        transform-origin: center bottom;
-        transform: translateY(0);
-        transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-      }
-      .folder-btn.has-practices:hover svg {
-        transform: scale(1.08) translateY(-4px);
-        filter: drop-shadow(0 8px 12px rgba(96, 165, 250, 0.3));
-      }
+      .folder-paper-hover { opacity: 0; transform-origin: center bottom; transform: translateY(0); transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
+      .folder-btn.has-practices:hover svg { transform: scale(1.08) translateY(-4px); filter: drop-shadow(0 8px 12px rgba(96, 165, 250, 0.3)); }
       .folder-btn.has-practices:hover .folder-closed-shape { opacity: 0; }
       .folder-btn.has-practices:hover .folder-open-shape { opacity: 1; }
-      .folder-btn.has-practices:hover .folder-paper-hover {
-        opacity: 1;
-        transform: translateY(calc(-11px - (var(--depth) * 3.5px))) scale(calc(1 - (var(--depth) * 0.05)));
-      }
+      .folder-btn.has-practices:hover .folder-paper-hover { opacity: 1; transform: translateY(calc(-11px - (var(--depth) * 3.5px))) scale(calc(1 - (var(--depth) * 0.05))); }
     `;
     document.head.appendChild(style);
   }
@@ -193,13 +313,19 @@ function updateFolderIcons() {
 
     let count = 0;
     if (typeof PRACTICAS !== 'undefined') {
-      if (category === 'todas') count = PRACTICAS.length;
-      else count = PRACTICAS.filter(p => p.categoria && p.categoria.toLowerCase() === category.toLowerCase()).length;
+      if (category === 'todas') {
+        count = PRACTICAS.length;
+      } else if (category === 'curso-1') {
+        count = PRACTICAS.filter(p => p.categoria && ['gbdd', 'redes'].includes(p.categoria.toLowerCase())).length;
+      } else if (category === 'curso-2') {
+        count = PRACTICAS.filter(p => p.categoria && ['servicios', 'iaw', 'infraestructura', 'sad', 'abd', 'aso', 'proyecto'].includes(p.categoria.toLowerCase())).length;
+      } else {
+        count = PRACTICAS.filter(p => p.categoria && p.categoria.toLowerCase() === category.toLowerCase()).length;
+      }
     }
 
     if (count > 0) {
       btn.classList.add('has-practices');
-      
       const maxVisualPapers = Math.min(count, 5);
       let papersHTML = '';
       
@@ -236,30 +362,17 @@ function updateFolderIcons() {
 }
 
 /* ==========================================================================
-   LÓGICA Y ESTILOS DEL EFECTO DE TIPEO
+   ESTILOS Y TECLEO
    ========================================================================== */
 function setupTypingStyles() {
   if (!document.getElementById('estilos-tipeo-terminal')) {
     const style = document.createElement('style');
     style.id = 'estilos-tipeo-terminal';
     style.textContent = `
-      .blinking-cursor {
-        display: inline-block;
-        width: 8px;
-        height: 1.1em;
-        background-color: #4ade80; 
-        margin-left: 4px;
-        vertical-align: middle;
-        animation: blink 1s step-start infinite;
-      }
+      .blinking-cursor { display: inline-block; width: 8px; height: 1.1em; background-color: #4ade80; margin-left: 4px; vertical-align: middle; animation: blink 1s step-start infinite; }
       @keyframes blink { 50% { opacity: 0; } }
       .typing-text { white-space: pre-wrap; }
-      
-      /* ESTO ELIMINA EL # QUE VIENE DEL CSS ORIGINAL */
-      #path-prompt::before, .section-tag::before {
-        content: none !important;
-        display: none !important;
-      }
+      #path-prompt::before, .section-tag::before { content: none !important; display: none !important; }
     `;
     document.head.appendChild(style);
   }
@@ -271,13 +384,8 @@ function typeCommand(element, prefixHTML, commandText, speed = 30, callback = nu
   const textContainer = element.querySelector('.typing-text');
   let i = 0;
   function type() {
-    if (i < commandText.length) {
-      textContainer.textContent += commandText.charAt(i);
-      i++;
-      element.typeTimeout = setTimeout(type, speed);
-    } else {
-      if (callback) callback(); 
-    }
+    if (i < commandText.length) { textContainer.textContent += commandText.charAt(i); i++; element.typeTimeout = setTimeout(type, speed); } 
+    else { if (callback) callback(); }
   }
   type();
 }
@@ -288,18 +396,11 @@ function typeTextSimple(element, text, speed = 20) {
   const textContainer = element.querySelector('.typing-text');
   let i = 0;
   function type() {
-    if (i < text.length) {
-      textContainer.textContent += text.charAt(i);
-      i++;
-      element.typeTimeout = setTimeout(type, speed);
-    }
+    if (i < text.length) { textContainer.textContent += text.charAt(i); i++; element.typeTimeout = setTimeout(type, speed); }
   }
   type();
 }
 
-/* ==========================================================================
-   ANIMACIONES CSS 3D (DESDOBLAMIENTO DE PÁGINA)
-   ========================================================================== */
 function setupTransitionStyles() {
   if (!document.getElementById('estilos-transicion-practicas')) {
     const styleT = document.createElement('style');
@@ -318,9 +419,6 @@ function setupTransitionStyles() {
   }
 }
 
-/* ==========================================================================
-   ESTILOS PARA LOS BOTONES DE LA VENTANA
-   ========================================================================== */
 function setupWindowButtonsStyles() {
   if (!document.getElementById('estilos-botones-ventana')) {
     const style = document.createElement('style');
@@ -341,7 +439,7 @@ function setupWindowButtonsStyles() {
 }
 
 /* ==========================================================================
-   LÓGICA DEL BUSCADOR (COMMAND PALETTE)
+   BUSCADOR (COMMAND PALETTE)
    ========================================================================== */
 function setupSearch() {
   const sidebarToggle = document.getElementById('sidebar-toggle');
@@ -396,27 +494,33 @@ function setupSearch() {
   searchInput.addEventListener('input', (e) => {
     const query = e.target.value.toLowerCase().trim();
     if (query === 'sqlplus sys as sysdba' || query === 'sqlplus / as sysdba') {
-      closeSearch(); 
-      window.location.href = '/?cat=gbdd#practicas';
-      return;
+      closeSearch(); window.location.href = '/?cat=gbdd#practicas'; return;
     }
     if (query.length < 2) { searchResults.innerHTML = ''; return; }
     let html = '';
-    
     const homePath = '/';
     const pathPrefix = '/practicas/';
     
-    const categoriasNombres = Object.keys(CATEGORIAS_LABEL);
-    const matchesCat = categoriasNombres.filter(c => c.toLowerCase().startsWith(query) || CATEGORIAS_LABEL[c].toLowerCase().includes(query));
-
-    matchesCat.forEach(cat => { html += `<a href="${homePath}?cat=${cat}#practicas" class="search-result-item" onclick="setTimeout(()=>window.location.reload(), 50)"><svg class="search-result-icon" viewBox="0 0 24 24"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" fill="#3b82f6"/></svg><div class="search-result-info"><span class="search-result-title">Directorio: ${CATEGORIAS_LABEL[cat]}</span><span class="search-result-path">cd ~/${cat}</span></div></a>`; });
-    const matchesPrac = PRACTICAS.filter(p => p.titulo.toLowerCase().includes(query) || (p.tags && p.tags.some(t => t.toLowerCase().includes(query))));
+    const safeCatLabel = (typeof CATEGORIAS_LABEL !== 'undefined') ? CATEGORIAS_LABEL : {
+      'gbdd': 'Gestión de Bases de Datos', 'redes': 'Planificación y Admin. de Redes',
+      'servicios': 'Servicios de Red e Internet', 'iaw': 'Implantación de Aplicaciones Web',
+      'infraestructura': 'Infraestructura Virtual', 'sad': 'Seguridad y Alta Disponibilidad',
+      'abd': 'Administración de Bases de Datos', 'aso': 'Administración de Sistemas Operativos',
+      'proyecto': 'Proyecto Integrado'
+    };
     
-    matchesPrac.forEach(p => { 
-      const extension = p.extension || '.pdf'; 
-      const nombreArchivo = p.filename || p.id; 
-      html += `<a href="${pathPrefix}practica?id=${p.id}" class="search-result-item"><svg class="search-result-icon" viewBox="0 0 24 24" fill="#cbd5e1"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg><div class="search-result-info"><span class="search-result-title">${p.titulo}</span><span class="search-result-path">~/${p.categoria}/${nombreArchivo}${extension}</span></div></a>`; 
-    });
+    const categoriasNombres = Object.keys(safeCatLabel);
+    const matchesCat = categoriasNombres.filter(c => c.toLowerCase().startsWith(query) || safeCatLabel[c].toLowerCase().includes(query));
+
+    matchesCat.forEach(cat => { html += `<a href="${homePath}?cat=${cat}#practicas" class="search-result-item" onclick="setTimeout(()=>window.location.reload(), 50)"><svg class="search-result-icon" viewBox="0 0 24 24"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" fill="#3b82f6"/></svg><div class="search-result-info"><span class="search-result-title">Directorio: ${safeCatLabel[cat]}</span><span class="search-result-path">cd ~/${cat}</span></div></a>`; });
+    
+    if (typeof PRACTICAS !== 'undefined') {
+      const matchesPrac = PRACTICAS.filter(p => p.titulo.toLowerCase().includes(query) || (p.tags && p.tags.some(t => t.toLowerCase().includes(query))));
+      matchesPrac.forEach(p => { 
+        const extension = p.extension || '.pdf'; const nombreArchivo = p.filename || p.id; 
+        html += `<a href="${pathPrefix}practica?id=${p.id}" class="search-result-item"><svg class="search-result-icon" viewBox="0 0 24 24" fill="#cbd5e1"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg><div class="search-result-info"><span class="search-result-title">${p.titulo}</span><span class="search-result-path">~/${p.categoria}/${nombreArchivo}${extension}</span></div></a>`; 
+      });
+    }
     
     if (html === '') html = '<div style="padding: 20px; color: #64748b; text-align: center; font-family: var(--mono);">0 coincidencias encontradas en el sistema.</div>';
     searchResults.innerHTML = html;
@@ -424,18 +528,8 @@ function setupSearch() {
 }
 
 /* ==========================================================================
-   LÓGICA DEL MENÚ LATERAL (ÍNDICE)
+   MENÚ LATERAL (AGRUPADO POR 1º ASIR Y 2º ASIR)
    ========================================================================== */
-function setupSidebar() {
-  const toggleBtn = document.getElementById('sidebar-toggle');
-  const sidebar = document.querySelector('.site-sidebar');
-  if (toggleBtn && sidebar) {
-    toggleBtn.addEventListener('click', () => { sidebar.classList.toggle('open'); sidebar.classList.toggle('active'); });
-    const closeSidebarBtn = sidebar.querySelector('.terminal-titlebar .tb-dot.r');
-    if (closeSidebarBtn) closeSidebarBtn.addEventListener('click', () => { sidebar.classList.remove('open'); sidebar.classList.remove('active'); });
-  }
-}
-
 function renderSidebar() {
   const sidebarNav = document.getElementById('sidebar-nav');
   if (!sidebarNav || typeof PRACTICAS === 'undefined') return;
@@ -444,24 +538,48 @@ function renderSidebar() {
   const homePath = '/';
   
   let html = `<div class="line" style="margin-bottom: 16px; border-bottom: 1px solid #1e293b; padding-bottom: 12px;"><a href="${homePath}" style="color: #60a5fa; text-decoration: none; font-family: var(--mono); font-size: 0.9rem; font-weight: bold;" onmouseover="this.style.color='#93c5fd'" onmouseout="this.style.color='#60a5fa'">cd ~/la_sectasir (inicio)</a></div>`;
+  
   const categorias = {};
   PRACTICAS.forEach(p => { const cat = p.categoria ? p.categoria.toLowerCase() : 'otras'; if (!categorias[cat]) categorias[cat] = []; categorias[cat].push(p); });
-  const ordenCategorias = ['gbdd', 'redes', 'servicios', 'iaw', 'infraestructura'];
-  const nombreVisible = { 'gbdd': 'GBDD', 'redes': 'REDES', 'servicios': 'SERVICIOS', 'iaw': 'IAW', 'infraestructura': 'IV', 'otras': 'OTRAS' };
-
-  ordenCategorias.forEach(cat => {
-    if (categorias[cat] && categorias[cat].length > 0) {
-      html += `<div style="color: #4ade80; margin-top: 16px; margin-bottom: 6px; font-family: var(--mono); font-size: 0.85rem; font-weight: 600;">cd /${nombreVisible[cat]}</div>`;
-      categorias[cat].forEach(p => { 
-        const nombreArchivo = p.filename || p.id; 
-        html += `<div class="line" style="margin-bottom: 8px; padding-left: 12px;"><a href="${pathPrefix}practica?id=${p.id}" style="color: #cbd5e1; text-decoration: none; font-family: var(--mono); font-size: 0.85rem;" onmouseover="this.style.color='#f8fafc'" onmouseout="this.style.color='#cbd5e1'">cat ${nombreArchivo}.md</a></div>`; 
-      });
-    }
-  });
   
+  const cat1ASIR = ['gbdd', 'redes'];
+  const cat2ASIR = ['servicios', 'iaw', 'infraestructura', 'sad', 'abd', 'aso', 'proyecto'];
+  const nombreVisible = { 'gbdd': 'GBDD', 'redes': 'REDES', 'servicios': 'SERVICIOS', 'iaw': 'IAW', 'infraestructura': 'IV', 'sad': 'SAD', 'abd': 'ABD', 'aso': 'ASO', 'proyecto': 'PROYECTO' };
+
+  let has1ASIR = cat1ASIR.some(cat => categorias[cat] && categorias[cat].length > 0);
+  if (has1ASIR) {
+    html += `<div style="color: #94a3b8; margin-top: 16px; margin-bottom: 8px; font-family: var(--mono); font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase;">-- 1º ASIR --</div>`;
+    cat1ASIR.forEach(cat => {
+      if (categorias[cat] && categorias[cat].length > 0) {
+        html += `<div style="color: #4ade80; margin-bottom: 6px; font-family: var(--mono); font-size: 0.85rem; font-weight: 600;">cd /${nombreVisible[cat]}</div>`;
+        categorias[cat].forEach(p => { 
+          const nombreArchivo = p.filename || p.id; 
+          html += `<div class="line" style="margin-bottom: 8px; padding-left: 12px;"><a href="${pathPrefix}practica?id=${p.id}" style="color: #cbd5e1; text-decoration: none; font-family: var(--mono); font-size: 0.85rem;" onmouseover="this.style.color='#f8fafc'" onmouseout="this.style.color='#cbd5e1'">cat ${nombreArchivo}.md</a></div>`; 
+        });
+      }
+    });
+  }
+
+  let has2ASIR = cat2ASIR.some(cat => categorias[cat] && categorias[cat].length > 0);
+  if (has2ASIR) {
+    html += `<div style="color: #94a3b8; margin-top: 20px; margin-bottom: 8px; font-family: var(--mono); font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase;">-- 2º ASIR --</div>`;
+    cat2ASIR.forEach(cat => {
+      if (categorias[cat] && categorias[cat].length > 0) {
+        html += `<div style="color: #4ade80; margin-bottom: 6px; font-family: var(--mono); font-size: 0.85rem; font-weight: 600;">cd /${nombreVisible[cat]}</div>`;
+        categorias[cat].forEach(p => { 
+          const nombreArchivo = p.filename || p.id; 
+          html += `<div class="line" style="margin-bottom: 8px; padding-left: 12px;"><a href="${pathPrefix}practica?id=${p.id}" style="color: #cbd5e1; text-decoration: none; font-family: var(--mono); font-size: 0.85rem;" onmouseover="this.style.color='#f8fafc'" onmouseout="this.style.color='#cbd5e1'">cat ${nombreArchivo}.md</a></div>`; 
+        });
+      }
+    });
+  }
+  
+  const allKnown = [...cat1ASIR, ...cat2ASIR];
+  let hasOther = false;
   for (const cat in categorias) {
-    if (!ordenCategorias.includes(cat)) {
-      html += `<div style="color: #4ade80; margin-top: 16px; margin-bottom: 6px; font-family: var(--mono); font-size: 0.85rem; font-weight: 600;">cd /${cat.toUpperCase()}</div>`;
+    if (!allKnown.includes(cat)) {
+      if (!hasOther) { html += `<div style="color: #94a3b8; margin-top: 20px; margin-bottom: 8px; font-family: var(--mono); font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase;">-- OTROS --</div>`; hasOther = true; }
+      html += `<div style="color: #4ade80; margin-bottom: 6px; font-family: var(--mono); font-size: 0.85rem; font-weight: 600;">cd /${cat.toUpperCase()}</div>`;
       categorias[cat].forEach(p => { 
         const nombreArchivo = p.filename || p.id; 
         html += `<div class="line" style="margin-bottom: 8px; padding-left: 12px;"><a href="${pathPrefix}practica?id=${p.id}" style="color: #cbd5e1; text-decoration: none; font-family: var(--mono); font-size: 0.85rem;" onmouseover="this.style.color='#f8fafc'" onmouseout="this.style.color='#cbd5e1'">cat ${nombreArchivo}.md</a></div>`; 
@@ -471,58 +589,14 @@ function renderSidebar() {
   sidebarNav.innerHTML = html;
 }
 
-function setupNavigation() {
-  const folders = document.querySelectorAll('.folder-btn');
-  const btnBack = document.getElementById('btn-back');
-  if (folders.length === 0) return;
-  folders.forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      const botonClicado = e.target.closest('.folder-btn');
-      if (!botonClicado) return;
-      openDirectory(botonClicado.getAttribute('data-target'));
-    });
-  });
-  if (btnBack) btnBack.addEventListener('click', closeDirectory);
-}
-
-function openDirectory(categoria) {
-  const foldersView = document.getElementById('gui-folders');
-  const filesView = document.getElementById('files-view');
-  if(foldersView && filesView) {
-    foldersView.style.display = 'none';
-    filesView.style.display = 'block';
-    filesView.classList.remove('folder-anim');
-    void filesView.offsetWidth; 
-    filesView.classList.add('folder-anim');
-    
-    const dirName = categoria === 'todas' ? '' : `/${categoria.toLowerCase()}`;
-    const promptEl = document.getElementById('path-prompt');
-    if(promptEl) {
-      promptEl.textContent = '';
-      const prefix = `<span style="color: #4ade80;">pedrooliver@asir</span>:<span style="color: #60a5fa;">~/la_sectasir/practicas${dirName}</span>$ `;
-      typeCommand(promptEl, prefix, 'ls -la', 30); 
-    }
-    renderGrid(categoria);
+function setupSidebar() {
+  const toggleBtn = document.getElementById('sidebar-toggle');
+  const sidebar = document.querySelector('.site-sidebar');
+  if (toggleBtn && sidebar) {
+    toggleBtn.addEventListener('click', () => { sidebar.classList.toggle('open'); sidebar.classList.toggle('active'); });
+    const closeSidebarBtn = sidebar.querySelector('.terminal-titlebar .tb-dot.r');
+    if (closeSidebarBtn) closeSidebarBtn.addEventListener('click', () => { sidebar.classList.remove('open'); sidebar.classList.remove('active'); });
   }
-}
-
-function closeDirectory() {
-  const foldersView = document.getElementById('gui-folders');
-  const filesView = document.getElementById('files-view');
-  filesView.style.display = 'none';
-  foldersView.style.display = 'flex';
-  foldersView.classList.remove('folder-anim');
-  void foldersView.offsetWidth; 
-  foldersView.classList.add('folder-anim');
-  
-  const promptEl = document.getElementById('path-prompt');
-  if(promptEl) {
-    promptEl.textContent = '';
-    const prefix = `<span style="color: #4ade80;">pedrooliver@asir</span>:<span style="color: #60a5fa;">~/la_sectasir/practicas</span>$ `;
-    typeCommand(promptEl, prefix, 'ls -la', 30);
-  }
-  updateFolderIcons(); 
-  window.history.pushState({}, document.title, window.location.pathname + '#practicas');
 }
 
 window.openFileAnim = function(event, url) {
@@ -544,17 +618,25 @@ function renderGrid(filtro) {
   grid.style.display = 'flex'; grid.style.flexWrap = 'wrap'; grid.style.gap = '20px';
   let html = '';
   
+  const safeCatLabel = (typeof CATEGORIAS_LABEL !== 'undefined') ? CATEGORIAS_LABEL : {
+    'gbdd': 'Gestión de Bases de Datos', 'redes': 'Planificación y Admin. de Redes',
+    'servicios': 'Servicios de Red e Internet', 'iaw': 'Implantación de Aplicaciones Web',
+    'infraestructura': 'Infraestructura Virtual', 'sad': 'Seguridad y Alta Disponibilidad',
+    'abd': 'Administración de Bases de Datos', 'aso': 'Administración de Sistemas Operativos',
+    'proyecto': 'Proyecto Integrado'
+  };
+
   datosFiltrados.forEach(p => {
     const nombreArchivo = p.filename || p.id; const extension = p.extension || '.pdf'; 
     const tagsHtml = p.tags ? p.tags.map(t => `<span>${t}</span>`).join('') : '';
-    const labelAmigable = (typeof CATEGORIAS_LABEL !== 'undefined' && CATEGORIAS_LABEL[p.categoria]) ? CATEGORIAS_LABEL[p.categoria] : p.categoria;
-    html += `<a href="/practicas/practica?id=${p.id}" class="file-item" onclick="openFileAnim(event, this.href)"><svg class="file-icon-svg" viewBox="0 0 24 24" width="64" height="64"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6z" fill="#e2e8f0"/><path d="M13 2v6h6L13 2z" fill="#cbd5e1"/><path d="M8 12h8v1H8zm0 3h8v1H8zm0 3h5v1H8z" fill="#94a3b8"/></svg><span class="file-name">${nombreArchivo}${extension}</span><div class="file-preview"><div class="preview-cat">${labelAmigable}</div><h4 class="preview-title">${p.titulo}</h4><div class="preview-tags">${tagsHtml}</div></div></a>`;
+    const labelAmigable = safeCatLabel[p.categoria] ? safeCatLabel[p.categoria] : p.categoria;
+    html += `<a href="/practicas/practica?id=${p.id}" class="file-item" onclick="openFileAnim(event, this.href)"><svg class="file-icon-svg" viewBox="0 0 24 24" width="64" height="64"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" fill="#e2e8f0"/><path d="M13 2v6h6L13 2z" fill="#cbd5e1"/><path d="M8 12h8v1H8zm0 3h8v1H8zm0 3h5v1H8z" fill="#94a3b8"/></svg><span class="file-name">${nombreArchivo}${extension}</span><div class="file-preview"><div class="preview-cat">${labelAmigable}</div><h4 class="preview-title">${p.titulo}</h4><div class="preview-tags">${tagsHtml}</div></div></a>`;
   });
   grid.innerHTML = html;
 }
 
 /* ==========================================================================
-   LÓGICA DE LA PRÁCTICA INDIVIDUAL (PRACTICA.HTML)
+   PRÁCTICA INDIVIDUAL (PRACTICA.HTML)
    ========================================================================== */
 function renderSinglePractica(id) {
   if (typeof PRACTICAS === 'undefined') return;
@@ -656,9 +738,6 @@ function renderSinglePractica(id) {
   if (btnBack) { btnBack.href = urlRetorno; btnBack.addEventListener('click', closePracticaAnim); }
 }
 
-/* ==========================================================================
-   BOTONES DE CIERRE GENÉRICOS (IGNORANDO LA PORTADA)
-   ========================================================================== */
 function setupGenericCloseButtons() {
   const params = new URLSearchParams(window.location.search);
   if (params.get('id')) return;
