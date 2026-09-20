@@ -518,182 +518,177 @@ sudo chown oracle:oinstall /opt/oracle/product/21c/dbhome_1/sqlplus/admin/glogin
     `
   },
 
-/**
-     * ============================================================
-     * 5. PRÁCTICA: LOS JUEGOS DEL HAMBRE (ENRUTAMIENTO, ACL, DHCP)
-     * ============================================================
-     */
-    {
-      id: "acl-dhcp-juegos-del-hambre",
-      titulo: "Los Juegos del Hambre: Enrutamiento, ACL y DHCP.",
-      categoria: "redes",
-      filename: "juegos-del-hambre",
-      extension: ".pdf",
-      resumen: "Simulación de una red con 5 routers y varios distritos enfrentados, resolviendo enrutamiento estático, ACL estándar y extendidas, DHCP y un servidor web restringido por ACL.",
-      tags: ["Cisco IOS", "GNS3", "ACL", "DHCP", "Routing estático", "Apache"],
-      fecha: "Julio 2025",
-      contenidoHTML: `
-        <img src="../img/redes11/portada.png" alt="Portada Los Juegos del Hambre" style="width: 100%; max-width: 800px; border-radius: 8px; border: 1px solid var(--border); margin: 0 auto 40px auto; display: block;">
+  /**
+   * ============================================================
+   * 5. PRÁCTICA: LOS JUEGOS DEL HAMBRE (ENRUTAMIENTO, ACL, DHCP)
+   * ============================================================
+   */
+  {
+    id: "acl-dhcp-juegos-del-hambre",
+    titulo: "Los Juegos del Hambre: Enrutamiento, ACL y DHCP.",
+    categoria: "redes",
+    filename: "juegos-del-hambre",
+    extension: ".pdf",
+    resumen: "Simulación de una red con 5 routers y varios distritos enfrentados, resolviendo enrutamiento estático, ACL estándar y extendidas, DHCP y un servidor web restringido por ACL.",
+    tags: ["Cisco IOS", "GNS3", "ACL", "DHCP", "Routing estático", "Apache"],
+    fecha: "Julio 2025",
+    contenidoHTML: `
+      <img src="../img/redes11/portada.png" alt="Portada Los Juegos del Hambre" style="width: 100%; max-width: 800px; border-radius: 8px; border: 1px solid var(--border); margin: 0 auto 40px auto; display: block;">
 
-        <audio autoplay style="display: none;">
-            <source src="../audio/sinsajo.mp3" type="audio/mpeg">
-        </audio>
+      <audio autoplay style="display: none;">
+          <source src="../audio/sinsajo.mp3" type="audio/mpeg">
+      </audio>
 
+      <h2>Objetivo</h2>
+      <p>Simular una red inspirada en <strong>Los Juegos del Hambre</strong>: cada "distrito" es una red distinta conectada mediante 5 routers, con personajes de la saga representando los hosts. La práctica cubre enrutamiento estático entre todas las redes, control de tráfico mediante ACL estándar y extendidas según las relaciones (y enemistades) entre personajes, un servidor DHCP, y un servidor web accesible solo para ciertos distritos.</p>
 
-        <h2>Objetivo</h2>
-        <p>Simular una red inspirada en <strong>Los Juegos del Hambre</strong>: cada "distrito" es una red distinta conectada mediante 5 routers, con personajes de la saga representando los hosts. La práctica cubre enrutamiento estático entre todas las redes, control de tráfico mediante ACL estándar y extendidas según las relaciones (y enemistades) entre personajes, un servidor DHCP, y un servidor web accesible solo para ciertos distritos.</p>
+      <h2 id="escenario">Escenario</h2>
 
-        <h2 id="escenario">Escenario</h2>
+      <div style="text-align: center; margin: 40px 0; font-family: var(--mono, monospace);">
+          <p style="color: #94a3b8; margin-bottom: 20px; font-size: 0.9rem;">> Esperando inicialización del entorno GNS3...</p>
+          
+          <button onclick="
+              const mapa = document.getElementById('gns3-escenario');
+              const btn = this;
+              const textoStatus = document.getElementById('gns3-status-text');
+              
+              if (mapa.style.maxHeight === '0px' || !mapa.style.maxHeight) {
+                  mapa.style.maxHeight = '1500px';
+                  mapa.style.opacity = '1';
+                  mapa.style.marginTop = '20px';
+                  btn.style.animation = 'none';
+                  btn.style.filter = 'brightness(0.6)';
+                  textoStatus.innerText = '> ENTORNO DE SIMULACIÓN ACTIVO. ENRUTAMIENTO OK.';
+                  textoStatus.style.color = '#4ade80';
+              } else {
+                  mapa.style.maxHeight = '0px';
+                  mapa.style.opacity = '0';
+                  mapa.style.marginTop = '0px';
+                  btn.style.animation = 'gns3-pulse 1.5s infinite';
+                  btn.style.filter = 'brightness(1)';
+                  textoStatus.innerText = '> Esperando inicialización del entorno GNS3...';
+                  textoStatus.style.color = '#94a3b8';
+              }
+          " style="
+              background: transparent;
+              border: none;
+              cursor: pointer;
+              border-radius: 50%;
+              padding: 0;
+              animation: gns3-pulse 1.5s infinite;
+              transition: all 0.3s ease;
+          ">
+              <img src="../img/redes11/gns3-logo.png" alt="Iniciar GNS3" width="100" style="border-radius: 50%;">
+          </button>
+          <p id="gns3-status-text" style="color: #94a3b8; margin-top: 15px; font-size: 0.85rem; transition: color 0.3s;">> RUN SIMULATION</p>
 
-        <div style="text-align: center; margin: 40px 0; font-family: var(--mono, monospace);">
-            <p style="color: #94a3b8; margin-bottom: 20px; font-size: 0.9rem;">> Esperando inicialización del entorno GNS3...</p>
-            
-            <button onclick="
-                const mapa = document.getElementById('gns3-escenario');
-                const btn = this;
-                const textoStatus = document.getElementById('gns3-status-text');
-                
-                if (mapa.style.maxHeight === '0px' || !mapa.style.maxHeight) {
-                    // ENCIENDE EL MAPA
-                    mapa.style.maxHeight = '1500px';
-                    mapa.style.opacity = '1';
-                    mapa.style.marginTop = '20px';
-                    btn.style.animation = 'none';
-                    btn.style.filter = 'brightness(0.6)';
-                    textoStatus.innerText = '> ENTORNO DE SIMULACIÓN ACTIVO. ENRUTAMIENTO OK.';
-                    textoStatus.style.color = '#4ade80';
-                } else {
-                    // APAGA EL MAPA
-                    mapa.style.maxHeight = '0px';
-                    mapa.style.opacity = '0';
-                    mapa.style.marginTop = '0px';
-                    btn.style.animation = 'gns3-pulse 1.5s infinite';
-                    btn.style.filter = 'brightness(1)';
-                    textoStatus.innerText = '> Esperando inicialización del entorno GNS3...';
-                    textoStatus.style.color = '#94a3b8';
-                }
-            " style="
-                background: transparent;
-                border: none;
-                cursor: pointer;
-                border-radius: 50%;
-                padding: 0;
-                animation: gns3-pulse 1.5s infinite;
-                transition: all 0.3s ease;
-            ">
-                <img src="../img/redes11/gns3-logo.png" alt="Iniciar GNS3" width="100" style="border-radius: 50%;">
-            </button>
-            <p id="gns3-status-text" style="color: #94a3b8; margin-top: 15px; font-size: 0.85rem; transition: color 0.3s;">> RUN SIMULATION</p>
+          <div id="gns3-escenario" style="
+              max-height: 0px;
+              opacity: 0;
+              overflow: hidden;
+              transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+              border: 1px solid #334155;
+              border-radius: 8px;
+              background-color: #0f172a;
+              padding: 0;
+              margin-top: 0px;
+              box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+          ">
+              <div style="background-color: #1e293b; padding: 10px 15px; text-align: left; border-bottom: 1px solid #334155; font-size: 0.8rem; color: #4ade80; display: flex; align-items: center; gap: 8px;">
+                  <div style="width: 10px; height: 10px; background-color: #4ade80; border-radius: 50%; box-shadow: 0 0 8px #4ade80;"></div>
+                  [GNS3 SERVER]: Topología cargada y enlaces operativos.
+              </div>
+              <img src="../img/redes11/p11-01-topologia.png" alt="Escenario GNS3" style="width: 100%; display: block; padding: 15px; box-sizing: border-box;">
+          </div>
+      </div>
 
-            <div id="gns3-escenario" style="
-                max-height: 0px;
-                opacity: 0;
-                overflow: hidden;
-                transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-                border: 1px solid #334155;
-                border-radius: 8px;
-                background-color: #0f172a;
-                padding: 0;
-                margin-top: 0px;
-                box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            ">
-                <div style="background-color: #1e293b; padding: 10px 15px; text-align: left; border-bottom: 1px solid #334155; font-size: 0.8rem; color: #4ade80; display: flex; align-items: center; gap: 8px;">
-                    <div style="width: 10px; height: 10px; background-color: #4ade80; border-radius: 50%; box-shadow: 0 0 8px #4ade80;"></div>
-                    [GNS3 SERVER]: Topología cargada y enlaces operativos.
-                </div>
-                
-                <img src="../img/redes11/p11-01-topologia.png" alt="Escenario GNS3" style="width: 100%; display: block; padding: 15px; box-sizing: border-box;">
-            </div>
-        </div>
+      <style>
+          @keyframes gns3-pulse {
+              0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.8); transform: scale(1); }
+              70% { box-shadow: 0 0 0 25px rgba(59, 130, 246, 0); transform: scale(1.05); }
+              100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); transform: scale(1); }
+          }
+      </style>
 
-        <style>
-            @keyframes gns3-pulse {
-                0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.8); transform: scale(1); }
-                70% { box-shadow: 0 0 0 25px rgba(59, 130, 246, 0); transform: scale(1.05); }
-                100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); transform: scale(1); }
-            }
-        </style>
+      <p>Cinco routers conectan los distintos distritos: el Distrito 1 ("Superpijos"), Distrito 2 ("Pijos"), Distrito 11 ("Pobres"), Distrito 12 ("Indigentes") y el Distrito 13, que alberga el servidor web. Cada distrito tiene sus propios hosts identificados con nombres de personajes de la saga.</p>
 
-        <p>Cinco routers conectan los distintos distritos: el Distrito 1 ("Superpijos"), Distrito 2 ("Pijos"), Distrito 11 ("Pobres"), Distrito 12 ("Indigentes") y el Distrito 13, que alberga el servidor web. Cada distrito tiene sus propios hosts identificados con nombres de personajes de la saga.</p>
+      <h3>Distrito 1 — Superpijos</h3>
+      <div style="margin-bottom: 40px; clear: both; width: 100%;">
+          <img src="../img/redes11/distrito-1.png" alt="Escudo Distrito 1" style="max-width: 400px; border-radius: 8px; border: 1px solid var(--border); display: block;">
+      </div>
+      <p><strong>Marvel</strong></p>
+      <img src="../img/redes11/marvel.png" alt="Marvel" style="max-width: 180px; border-radius: 8px; border: 1px solid var(--border); margin: 10px 0;">
+      <pre><code>NAME    : Marvel_P.O.P[1]
+IP/MASK : 10.0.1.2/24
+GATEWAY : 10.0.1.1</code></pre>
 
-        <h3>Distrito 1 — Superpijos</h3>
-  <div style="margin-bottom: 40px; clear: both; width: 100%;">
-      <img src="../img/redes11/distrito-1.png" alt="Escudo Distrito 1" style="max-width: 400px; border-radius: 8px; border: 1px solid var(--border); display: block;">
-  </div>
-        <p><strong>Marvel</strong></p>
-        <img src="../img/redes11/marvel.png" alt="Marvel" style="max-width: 180px; border-radius: 8px; border: 1px solid var(--border); margin: 10px 0;">
-        <pre><code>NAME    : Marvel_P.O.P[1]
-  IP/MASK : 10.0.1.2/24
-  GATEWAY : 10.0.1.1</code></pre>
+      <p><strong>Glimmer</strong></p>
+      <img src="../img/redes11/glimmer.png" alt="Glimmer" style="max-width: 180px; border-radius: 8px; border: 1px solid var(--border); margin: 10px 0;">
+      <pre><code>NAME    : GlimmerP.O.P[1]
+IP/MASK : 10.0.1.3/24
+GATEWAY : 10.0.1.1</code></pre>
 
-        <p><strong>Glimmer</strong></p>
-        <img src="../img/redes11/glimmer.png" alt="Glimmer" style="max-width: 180px; border-radius: 8px; border: 1px solid var(--border); margin: 10px 0;">
-        <pre><code>NAME    : GlimmerP.O.P[1]
-  IP/MASK : 10.0.1.3/24
-  GATEWAY : 10.0.1.1</code></pre>
+      <h3>Distrito 2 — Pijos</h3>
+      <div style="margin-bottom: 40px; clear: both; width: 100%;">
+          <img src="../img/redes11/distrito-2.png" alt="Escudo Distrito 2" style="max-width: 400px; border-radius: 8px; border: 1px solid var(--border); display: block;">
+      </div>
+      <p><strong>Cato</strong></p>
+      <img src="../img/redes11/cato.png" alt="Cato" style="max-width: 180px; border-radius: 8px; border: 1px solid var(--border); margin: 10px 0;">
+      <pre><code>NAME    : Cato_P.O.P[1]
+IP/MASK : 10.0.2.2/24
+GATEWAY : 10.0.2.1</code></pre>
 
-        <h3>Distrito 2 — Pijos</h3>
-  <div style="margin-bottom: 40px; clear: both; width: 100%;">
-      <img src="../img/redes11/distrito-2.png" alt="Escudo Distrito 2" style="max-width: 400px; border-radius: 8px; border: 1px solid var(--border); display: block;">
-  </div>
-        <p><strong>Cato</strong></p>
-        <img src="../img/redes11/cato.png" alt="Cato" style="max-width: 180px; border-radius: 8px; border: 1px solid var(--border); margin: 10px 0;">
-        <pre><code>NAME    : Cato_P.O.P[1]
-  IP/MASK : 10.0.2.2/24
-  GATEWAY : 10.0.2.1</code></pre>
+      <p><strong>Clove</strong></p>
+      <img src="../img/redes11/clove.png" alt="Clove" style="max-width: 180px; border-radius: 8px; border: 1px solid var(--border); margin: 10px 0;">
+      <pre><code>Clover_P.O.P> sh ip
+NAME    : Clover_P.O.P[1]
+IP/MASK : 10.0.2.3/24
+GATEWAY : 10.0.2.1</code></pre>
 
-        <p><strong>Clove</strong></p>
-        <img src="../img/redes11/clove.png" alt="Clove" style="max-width: 180px; border-radius: 8px; border: 1px solid var(--border); margin: 10px 0;">
-        <pre><code>Clover_P.O.P> sh ip
-  NAME    : Clover_P.O.P[1]
-  IP/MASK : 10.0.2.3/24
-  GATEWAY : 10.0.2.1</code></pre>
+      <h3>Distrito 11 — Pobres</h3>
+      <div style="margin-bottom: 40px; clear: both; width: 100%;">
+          <img src="../img/redes11/distrito-11.png" alt="Escudo Distrito 11" style="max-width: 400px; border-radius: 8px; border: 1px solid var(--border); display: block;">
+      </div>
 
-        <h3>Distrito 11 — Pobres</h3>
-  <div style="margin-bottom: 40px; clear: both; width: 100%;">
-      <img src="../img/redes11/distrito-11.png" alt="Escudo Distrito 11" style="max-width: 400px; border-radius: 8px; border: 1px solid var(--border); display: block;">
-  </div>
+      <p><strong>Thresh</strong></p>
+      <img src="../img/redes11/thresh.png" alt="Thresh" style="max-width: 180px; border-radius: 8px; border: 1px solid var(--border); margin: 10px 0;">
+      <pre><code>Thresh_P.O.P> sh ip
+NAME    : Thresh_P.O.P[1]
+IP/MASK : 10.0.11.2/24
+GATEWAY : 10.0.11.1</code></pre>
 
-        <p><strong>Thresh</strong></p>
-        <img src="../img/redes11/thresh.png" alt="Thresh" style="max-width: 180px; border-radius: 8px; border: 1px solid var(--border); margin: 10px 0;">
-        <pre><code>Thresh_P.O.P> sh ip
-  NAME    : Thresh_P.O.P[1]
-  IP/MASK : 10.0.11.2/24
-  GATEWAY : 10.0.11.1</code></pre>
+      <p><strong>Rue</strong></p>
+      <img src="../img/redes11/rue.png" alt="Rue" style="max-width: 180px; border-radius: 8px; border: 1px solid var(--border); margin: 10px 0;">
+      <pre><code>Rue_P.O.P> sh ip
+NAME    : Rue_P.O.P[1]
+IP/MASK : 10.0.11.3/24
+GATEWAY : 10.0.11.1</code></pre>
 
-        <p><strong>Rue</strong></p>
-        <img src="../img/redes11/rue.png" alt="Rue" style="max-width: 180px; border-radius: 8px; border: 1px solid var(--border); margin: 10px 0;">
-        <pre><code>Rue_P.O.P> sh ip
-  NAME    : Rue_P.O.P[1]
-  IP/MASK : 10.0.11.3/24
-  GATEWAY : 10.0.11.1</code></pre>
+      <h3>Distrito 12 — Indigentes</h3>
+      <div style="margin-bottom: 40px; clear: both; width: 100%;">
+          <img src="../img/redes11/distrito-12.png" alt="Escudo Distrito 12" style="max-width: 400px; border-radius: 8px; border: 1px solid var(--border); display: block;">
+      </div>
+      <p><strong>Peeta</strong></p>
+      <img src="../img/redes11/peeta.png" alt="Peeta" style="max-width: 180px; border-radius: 8px; border: 1px solid var(--border); margin: 10px 0;">
+      <pre><code>Peeta_P.O.P> sh ip
+NAME    : Peeta_P.O.P[1]
+IP/MASK : 10.0.12.2/24
+GATEWAY : 10.0.12.1</code></pre>
 
-        <h3>Distrito 12 — Indigentes</h3>
-  <div style="margin-bottom: 40px; clear: both; width: 100%;">
-      <img src="../img/redes11/distrito-12.png" alt="Escudo Distrito 12" style="max-width: 400px; border-radius: 8px; border: 1px solid var(--border); display: block;">
-  </div>
-        <p><strong>Peeta</strong></p>
-        <img src="../img/redes11/peeta.png" alt="Peeta" style="max-width: 180px; border-radius: 8px; border: 1px solid var(--border); margin: 10px 0;">
-        <pre><code>Peeta_P.O.P> sh ip
-  NAME    : Peeta_P.O.P[1]
-  IP/MASK : 10.0.12.2/24
-  GATEWAY : 10.0.12.1</code></pre>
+      <p><strong>Katniss</strong></p>
+      <img src="../img/redes11/katniss.png" alt="Katniss" style="max-width: 180px; border-radius: 8px; border: 1px solid var(--border); margin: 10px 0;">
+      <pre><code>KatnisPOP> sh ip
+NAME    : KatnisPOP[1]
+IP/MASK : 10.0.12.3/24
+GATEWAY : 10.0.12.1</code></pre>
 
-        <p><strong>Katniss</strong></p>
-        <img src="../img/redes11/katniss.png" alt="Katniss" style="max-width: 180px; border-radius: 8px; border: 1px solid var(--border); margin: 10px 0;">
-        <pre><code>KatnisPOP> sh ip
-  NAME    : KatnisPOP[1]
-  IP/MASK : 10.0.12.3/24
-  GATEWAY : 10.0.12.1</code></pre>
+      <h3>Distrito 13 — Servidor Web</h3>
+      <p>Para instalar el servidor se conecta el Distrito 13 a la nube NAT, se habilita el servicio DHCP y se reinicia. Después se instala Apache con <code>apt install apache2</code>, aunque no se usará hasta el último ejercicio de la práctica.</p>
 
-        <h3>Distrito 13 — Servidor Web</h3>
-        <p>Para instalar el servidor se conecta el Distrito 13 a la nube NAT, se habilita el servicio DHCP y se reinicia. Después se instala Apache con <code>apt install apache2</code>, aunque no se usará hasta el último ejercicio de la práctica.</p>
+      <h2>Preparación del Escenario: Asignación de IPs en Routers</h2>
+      <p>Antes de empezar con el enrutamiento, es fundamental levantar las interfaces físicas y asignarles su direccionamiento correspondiente en los routers Cisco de la topología. Aquí se muestra la configuración y comprobación del estado de las interfaces de los cinco routers:</p>
 
-
-        <h2>Preparación del Escenario: Asignación de IPs en Routers</h2>
-        <p>Antes de empezar con el enrutamiento, es fundamental levantar las interfaces físicas y asignarles su direccionamiento correspondiente en los routers Cisco de la topología. Aquí se muestra la configuración y comprobación del estado de las interfaces de los cinco routers:</p>
-
-        <pre><code><span class="prompt">R1-POP#</span> sh ip int br
+      <pre><code><span class="prompt">R1-POP#</span> sh ip int br
 Interface              IP-Address      OK? Method Status
 FastEthernet0/0        10.0.1.1        YES NVRAM  up
 FastEthernet0/1        172.23.0.1      YES NVRAM  up
@@ -727,10 +722,10 @@ FastEthernet1/0        192.168.1.1     YES manual up
 FastEthernet1/1        192.168.2.1     YES manual up
 FastEthernet2/0        10.0.13.1       YES manual up</code></pre>
 
-<h2>Ejercicio 1 — Enrutamiento estático</h2>
-        <p>Cada uno de los 5 routers necesita una tabla de enrutamiento que le permita alcanzar todas las redes del escenario, no solo las que tiene conectadas directamente. Se configuraron rutas estáticas en cada router apuntando a las redes de destino a través del siguiente salto correspondiente, incluyendo una ruta por defecto (<code>0.0.0.0 0.0.0.0</code>) hacia el R5 central, que actúa como puerta de enlace de último recurso.</p>
+      <h2>Ejercicio 1 — Enrutamiento estático</h2>
+      <p>Cada uno de los 5 routers necesita una tabla de enrutamiento que le permita alcanzar todas las redes del escenario, no solo las que tiene conectadas directamente. Se configuraron rutas estáticas en cada router apuntando a las redes de destino a través del siguiente salto correspondiente, incluyendo una ruta por defecto (<code>0.0.0.0 0.0.0.0</code>) hacia el R5 central, que actúa como puerta de enlace de último recurso.</p>
 
-        <pre><code><span class="prompt">R1-POP(config)#</span> ip route 10.0.11.0 255.255.255.0 172.23.0.2
+      <pre><code><span class="prompt">R1-POP(config)#</span> ip route 10.0.11.0 255.255.255.0 172.23.0.2
 <span class="prompt">R1-POP(config)#</span> ip route 0.0.0.0 0.0.0.0 192.168.1.1
 
 <span class="prompt">R2-POP(config)#</span> ip route 10.0.1.0 255.255.255.0 172.23.0.1
@@ -749,109 +744,208 @@ FastEthernet2/0        10.0.13.1       YES manual up</code></pre>
 <span class="prompt">R5-POP(config)#</span> ip route 10.0.11.0 255.255.255.0 192.168.11.2
 <span class="prompt">R5-POP(config)#</span> ip route 10.0.12.0 255.255.255.0 192.168.12.2</code></pre>
 
-        <div class="detail-callout"><strong>Comprobación:</strong> tras configurar las 5 tablas de enrutamiento, se verificó la comunicación completa entre todos los distritos mediante <code>ping</code> desde un host de cada red hacia el resto, confirmando que el tráfico llega correctamente a través de los saltos intermedios.</div>
+      <div class="detail-callout"><strong>Comprobación:</strong> tras configurar las 5 tablas de enrutamiento, se verificó la comunicación completa entre todos los distritos mediante <code>ping</code> desde un host de cada red hacia el resto, confirmando que el tráfico llega correctamente a través de los saltos intermedios.</div>
 
-        <img src="../img/redes11/p11-02-enrutamiento.png" alt="Confirmación de conectividad" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+      <img src="../img/redes11/p11-02-enrutamiento.png" alt="Confirmación de conectividad" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+   
+      <h2>Ejercicio 2 — ACL estándar según las relaciones entre distritos</h2>
+
+      <h3>2.1 — Los Superpijos cortan toda comunicación</h3>
+      <p>El Distrito 1 deja de hablarse con el resto. Se creó una ACL estándar que deniega el tráfico originado en su red, aplicada como filtro de <strong>salida</strong> en las dos interfaces de su router de borde:</p>
+      <pre><code>R1-POP(config)#access-list 1 deny 10.0.1.0 0.0.0.255
+R1-POP(config)#int f0/1
+R1-POP(config-if)#ip access-group 1 out
+R1-POP(config-if)#int f1/0
+R1-POP(config-if)#ip access-group 1 out</code></pre>
+      <p>Aplicarla como <strong>OUT</strong> en lugar de <strong>IN</strong> evita un conflicto que sí apareció en un intento anterior de esta misma práctica, cuando el servidor DHCP del mismo distrito dejaba de funcionar al bloquear el tráfico de entrada en su propia interfaz.</p>
+      
+      <div class="detail-callout"><strong>Comprobación:</strong> Al hacer ping desde Marvel (Distrito 1) hacia los distritos 2, 11 y 12, el R1 bloquea el tráfico, devolviendo el mensaje de interrupción administrativa en todos los casos.</div>
+      
+      <img src="../img/redes11/tu-captura-pings-marvel.png" alt="Comprobación de pings desde Marvel" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+
+      <h3>2.2 — Indigentes y Pobres, aislados del resto</h3>
+      <p>Una segunda ACL estándar deniega todo el tráfico (<code>deny any</code>) en las dos interfaces de salida del router que conecta ambos distritos, dejando que se comuniquen entre ellos pero no con nadie más.</p>
+      <pre><code>R4-POP(config)#access-list 1 deny any
+R4-POP(config)#int f1/0
+R4-POP(config-if)#ip access-group 1 out
+R4-POP(config)#int f1/1
+R4-POP(config-if)#ip access-group 1 out</code></pre>
+
+      <div class="detail-callout"><strong>Comprobación:</strong> Katniss (Distrito 12) puede hacer ping a Thresh (Distrito 11) exitosamente, demostrando que la comunicación interna funciona. Sin embargo, al intentar salir hacia Cato (Distrito 2) o Marvel (Distrito 1), el R4 interrumpe la comunicación correctamente.</div>
+      
+      <img src="../img/redes11/tu-captura-pings-katniss.png" alt="Comprobación de pings desde Katniss" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+
+      <h3>2.3 — Pobres y Pijos, aliados a través de un único camino</h3>
+      <p>Sin necesidad de ACL adicionales: dado que ambos distritos solo tienen un camino de comunicación posible (a través del router central R5), la topología por sí sola ya garantiza esa relación sin tener que forzarla con reglas extra.</p>
      
-     
-<h2>Ejercicio 2 — ACL estándar según las relaciones entre distritos</h2>
+      <h2>Ejercicio 3 — Servidor DHCP</h2>
+      <p>El router del Distrito 1 se configuró como servidor DHCP, repartiendo automáticamente direcciones IP a los hosts de su red y reservando la primera dirección para el propio router:</p>
+      <pre><code>R1-POP(config)#ip dhcp excluded-address 10.0.1.1
+R1-POP(config)#ip dhcp pool superpijo
+R1-POP(dhcp-config)#network 10.0.1.0 255.255.255.0
+R1-POP(dhcp-config)#default-router 10.0.1.1</code></pre>
+      <p>Al solicitar IP desde los hosts del distrito 1 con el comando <code>dhcp</code> o <code>ip dhcp</code>, cada máquina recibe correctamente su dirección dentro del rango esperado junto con la puerta de enlace.</p>
 
-        <h3>2.1 — Los Superpijos cortan toda comunicación</h3>
-        <p>El Distrito 1 deja de hablarse con el resto. Se creó una ACL estándar que deniega el tráfico originado en su red, aplicada como filtro de <strong>salida</strong> en las dos interfaces de su router de borde:</p>
-        <pre><code>R1-POP(config)#access-list 1 deny 10.0.1.0 0.0.0.255
-  R1-POP(config)#int f0/1
-  R1-POP(config-if)#ip access-group 1 out
-  R1-POP(config-if)#int f1/0
-  R1-POP(config-if)#ip access-group 1 out</code></pre>
-        <p>Aplicarla como <strong>OUT</strong> en lugar de <strong>IN</strong> evita un conflicto que sí apareció en un intento anterior de esta misma práctica, cuando el servidor DHCP del mismo distrito dejaba de funcionar al bloquear el tráfico de entrada en su propia interfaz.</p>
-        
-        <div class="detail-callout"><strong>Comprobación:</strong> Al hacer ping desde Marvel (Distrito 1) hacia los distritos 2, 11 y 12, el R1 bloquea el tráfico, devolviendo el mensaje de interrupción administrativa en todos los casos.</div>
-        
-        <img src="../img/redes11/tu-captura-pings-marvel.png" alt="Comprobación de pings desde Marvel" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+      <img src="../img/redes11/p11-04-dhcp.png" alt="Asignación DHCP correcta en uno de los hosts" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+      <img src="../img/redes11/p11-04-dhcp-2.png" alt="Asignación DHCP correcta en uno de los hosts" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
 
-        <h3>2.2 — Indigentes y Pobres, aislados del resto</h3>
-        <p>Una segunda ACL estándar deniega todo el tráfico (<code>deny any</code>) en las dos interfaces de salida del router que conecta ambos distritos, dejando que se comuniquen entre ellos pero no con nadie más.</p>
-        <pre><code>R4-POP(config)#access-list 1 deny any
-  R4-POP(config)#int f1/0
-  R4-POP(config-if)#ip access-group 1 out
-  R4-POP(config)#int f1/1
-  R4-POP(config-if)#ip access-group 1 out</code></pre>
+      <h2>Ejercicio 4 — ACL extendidas entre personajes concretos</h2>
+      <p>Antes de continuar fue necesario eliminar la ACL del ejercicio 2.2 con <code>no access-list 1 deny any</code>, ya que el mismo router se reutiliza para reglas más específicas a nivel de host.</p>
 
-        <div class="detail-callout"><strong>Comprobación:</strong> Katniss (Distrito 12) puede hacer ping a Thresh (Distrito 11) exitosamente, demostrando que la comunicación interna funciona. Sin embargo, al intentar salir hacia Cato (Distrito 2) o Marvel (Distrito 1), el R4 interrumpe la comunicación correctamente.</div>
-        
-        <img src="../img/redes11/tu-captura-pings-katniss.png" alt="Comprobación de pings desde Katniss" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+      <h3>4.1 — Alianzas cruzadas entre distritos</h3>
+      <p>Dos personajes de distritos distintos forman pareja y deben poder hablarse exclusivamente entre ellos, sin que eso abra la comunicación a los demás miembros de sus respectivos distritos. Se resolvió con una única ACL extendida con una regla <code>permit</code> por cada pareja autorizada, aplicada de entrada en la interfaz correspondiente:</p>
+      <pre><code>R4-POP(config)#access-list 101 permit ip 10.0.12.2 0.0.0.0 10.0.2.3 0.0.0.0
+R4-POP(config)#access-list 101 permit ip 10.0.12.3 0.0.0.0 10.0.2.2 0.0.0.0
+R4-POP(config)#int f0/0
+R4-POP(config-if)#ip access-group 101 in</code></pre>
+      <div class="detail-callout"><strong>Nota sobre interpretación:</strong> el enunciado admitía una segunda lectura — permitir la comunicación entre los cuatro implicados sin restricción cruzada, lo que habría bastado con eliminar la ACL del ejercicio 2 sin añadir nada nuevo. Se optó por la interpretación más restrictiva (cada uno solo con su pareja) por ser la que más se ajustaba al enunciado.</div>
 
-        <h3>2.3 — Pobres y Pijos, aliados a través de un único camino</h3>
-        <p>Sin necesidad de ACL adicionales: dado que ambos distritos solo tienen un camino de comunicación posible (a través del router central R5), la topología por sí sola ya garantiza esa relación sin tener que forzarla con reglas extra.</p>
-       
-       
-        <h2>Ejercicio 3 — Servidor DHCP</h2>
-        <p>El router del Distrito 1 se configuró como servidor DHCP, repartiendo automáticamente direcciones IP a los hosts de su red y reservando la primera dirección para el propio router:</p>
-        <pre><code>R1-POP(config)#ip dhcp excluded-address 10.0.1.1
-  R1-POP(config)#ip dhcp pool superpijo
-  R1-POP(dhcp-config)#network 10.0.1.0 255.255.255.0
-  R1-POP(dhcp-config)#default-router 10.0.1.1</code></pre>
-        <p>Al solicitar IP desde los hosts del distrito 1 con el comando <code>dhcp</code> o <code>ip dhcp</code>, cada máquina recibe correctamente su dirección dentro del rango esperado junto con la puerta de enlace.</p>
+      <div class="detail-callout"><strong>Comprobación:</strong> Verificamos mediante ping que Peeta recibe respuesta de Clove pero es bloqueado al intentar llegar a Cato. De igual forma, Katniss puede comunicarse con Cato pero su tráfico hacia Clove es interrumpido administrativamente.</div>
+      
+      <img src="../img/redes11/tu-captura-alianzas.png" alt="Comprobación de comunicación cruzada Peeta-Clove y Katniss-Cato" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+      <img src="../img/redes11/tu-captura-alianzas-2.png" alt="Comprobación de comunicación cruzada Peeta-Clove y Katniss-Cato" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
 
-        <img src="../img/redes11/p11-04-dhcp.png" alt="Asignación DHCP correcta en uno de los hosts" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
-        <img src="../img/redes11/p11-04-dhcp-2.png" alt="Asignación DHCP correcta en uno de los hosts" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+      <h3>4.3 y 4.4 — Enemistades puntuales entre dos personajes</h3>
+      <p>Para una pareja de personajes que deja de hablarse, sin afectar al resto de su distrito, la solución es una ACL extendida con una regla <code>deny</code> específica para esos dos hosts seguida de un <code>permit ip any any</code> que preserva el resto del tráfico:</p>
+      
+      <p><strong>Bloqueo entre Katniss y Rue (Aplicado en el R4):</strong></p>
+      <pre><code>R4-POP(config)#access-list 102 deny ip 10.0.12.3 0.0.0.0 10.0.11.3 0.0.0.0
+R4-POP(config)#access-list 102 permit ip any any
+R4-POP(config)#int f0/0
+R4-POP(config-if)#ip access-group 102 in</code></pre>
+
+      <p>El mismo patrón se repitió en el router R2 para una segunda pareja enfrentada (Thresh y Cato), configurando la ACL correspondiente en su interfaz para asegurar que solo esos dos hosts concretos pierden comunicación entre sí.</p>
+
+      <p><strong>Bloqueo entre Thresh y Cato (Aplicado en el R2):</strong></p>
+      <pre><code>R2-POP(config)#access-list 101 deny ip 10.0.11.2 0.0.0.0 10.0.2.2 0.0.0.0
+R2-POP(config)#access-list 101 permit ip any any
+R2-POP(config)#int f0/0
+R2-POP(config-if)#ip access-group 101 in</code></pre>
+
+      <div class="detail-callout"><strong>Comprobación:</strong> Demostramos que Katniss no puede alcanzar a Rue, pero sí a Thresh. Igualmente comprobamos que la comunicación entre Thresh y Cato ha sido denegada correctamente por la ACL del R2, mientras que el resto de su distrito sigue intacto.</div>
+
+      <img src="../img/redes11/tu-captura-enemistades.png" alt="Comprobación de bloqueo de comunicación Katniss-Rue y Thresh-Cato" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+
+      <p>Por último, verificamos en los routers que las reglas de la ACL extendida se han aplicado correctamente:</p>
+      <img src="../img/redes11/p11-05-acl-extendida.png" alt="ACL extendida verificada con sh ip access-list" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">        
+      
+      <h2>Ejercicio 5 — Servidor web restringido por ACL</h2>
+      <p>El Distrito 13 alberga un servidor Apache, accesible únicamente desde los distritos 11 y 12 a través del puerto 80. Se configuró una ACL extendida de tipo TCP limitada a ese puerto:</p>
+      <pre><code>R5-POP(config)#access-list 101 permit tcp 10.0.13.2 0.0.0.0 10.0.11.0 0.0.0.0 eq 80
+R5-POP(config)#access-list 101 permit tcp 10.0.13.2 0.0.0.0 10.0.12.0 0.0.0.0 eq 80
+R5-POP(config)#int f1/0
+R5-POP(config-if)#ip access-group 101 out</code></pre>
+      <p>Tras sustituir un host de cada distrito autorizado por una máquina con interfaz gráfica y navegador, se accedió correctamente a la página del servidor desde ambos distritos escribiendo la IP del Distrito 13 en el navegador.</p>
+
+      <img src="../img/redes11/p11-06-servidor-web.png" alt="Acceso al servidor web del Distrito 13" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+
+      <h2>Conclusiones</h2>
+      <p>Esta práctica combina en un solo escenario los tres pilares de control de tráfico en redes Cisco: enrutamiento estático, ACL estándar (por red completa) y ACL extendidas (por host y puerto concreto). Lo más interesante fue decidir <strong>dónde</strong> aplicar cada ACL y en qué sentido (<code>in</code> vs <code>out</code>): la misma regla de filtrado puede generar resultados muy distintos, e incluso bloquear servicios como el DHCP, según la interfaz y el sentido en que se aplique.</p>
+    `
+  },
 
 
-<h2>Ejercicio 4 — ACL extendidas entre personajes concretos</h2>
-        <p>Antes de continuar fue necesario eliminar la ACL del ejercicio 2.2 con <code>no access-list 1 deny any</code>, ya que el mismo router se reutiliza para reglas más específicas a nivel de host.</p>
+  /**
+   * ============================================================
+   * 6. PRÁCTICA PROTOCOLO HTTP
+   * ============================================================
+   */
 
-        <h3>4.1 — Alianzas cruzadas entre distritos</h3>
-        <p>Dos personajes de distritos distintos forman pareja y deben poder hablarse exclusivamente entre ellos, sin que eso abra la comunicación a los demás miembros de sus respectivos distritos. Se resolvió con una única ACL extendida con una regla <code>permit</code> por cada pareja autorizada, aplicada de entrada en la interfaz correspondiente:</p>
-        <pre><code>R4-POP(config)#access-list 101 permit ip 10.0.12.2 0.0.0.0 10.0.2.3 0.0.0.0
-  R4-POP(config)#access-list 101 permit ip 10.0.12.3 0.0.0.0 10.0.2.2 0.0.0.0
-  R4-POP(config)#int f0/0
-  R4-POP(config-if)#ip access-group 101 in</code></pre>
-        <div class="detail-callout"><strong>Nota sobre interpretación:</strong> el enunciado admitía una segunda lectura — permitir la comunicación entre los cuatro implicados sin restricción cruzada, lo que habría bastado con eliminar la ACL del ejercicio 2 sin añadir nada nuevo. Se optó por la interpretación más restrictiva (cada uno solo con su pareja) por ser la que más se ajustaba al enunciado.</div>
 
-        <div class="detail-callout"><strong>Comprobación:</strong> Verificamos mediante ping que Peeta recibe respuesta de Clove pero es bloqueado al intentar llegar a Cato. De igual forma, Katniss puede comunicarse con Cato pero su tráfico hacia Clove es interrumpido administrativamente.</div>
-        
-        <img src="../img/redes11/tu-captura-alianzas.png" alt="Comprobación de comunicación cruzada Peeta-Clove y Katniss-Cato" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
-        <img src="../img/redes11/tu-captura-alianzas-2.png" alt="Comprobación de comunicación cruzada Peeta-Clove y Katniss-Cato" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
 
-        <h3>4.3 y 4.4 — Enemistades puntuales entre dos personajes</h3>
-        <p>Para una pareja de personajes que deja de hablarse, sin afectar al resto de su distrito, la solución es una ACL extendida con una regla <code>deny</code> específica para esos dos hosts seguida de un <code>permit ip any any</code> que preserva el resto del tráfico:</p>
-        
-        <p><strong>Bloqueo entre Katniss y Rue (Aplicado en el R4):</strong></p>
-        <pre><code>R4-POP(config)#access-list 102 deny ip 10.0.12.3 0.0.0.0 10.0.11.3 0.0.0.0
-  R4-POP(config)#access-list 102 permit ip any any
-  R4-POP(config)#int f0/0
-  R4-POP(config-if)#ip access-group 102 in</code></pre>
 
-        <p>El mismo patrón se repitió en el router R2 para una segunda pareja enfrentada (Thresh y Cato), configurando la ACL correspondiente en su interfaz para asegurar que solo esos dos hosts concretos pierden comunicación entre sí.</p>
+  {
+    id: "protocolo-http",
+    titulo: "Práctica de Protocolo HTTP e Infraestructura Web",
+    categoria: "servicios",
+    filename: "practica-http",
+    extension: ".md",
+    fecha: "Noviembre 2025",
+    tags: ["Nginx", "HAProxy", "Docker", "LXC", "Proxy Inverso"],
+    contenidoHTML: `
+      <h2>1. Introducción</h2>
+      <p>Esta práctica implementa una infraestructura HTTP completa que incluye:</p>
+      <ul>
+        <li>Servidor web con aplicaciones Docker</li>
+        <li>Sistema de autenticación básica y documentos protegidos</li>
+        <li>Balanceador de carga HAProxy</li>
+        <li>Proxy inverso Nginx con virtual hosts</li>
+      </ul>
 
-        <p><strong>Bloqueo entre Thresh y Cato (Aplicado en el R2):</strong></p>
-        <pre><code>R2-POP(config)#access-list 101 deny ip 10.0.11.2 0.0.0.0 10.0.2.2 0.0.0.0
-  R2-POP(config)#access-list 101 permit ip any any
-  R2-POP(config)#int f0/0
-  R2-POP(config-if)#ip access-group 101 in</code></pre>
+      <h2>2. Arquitectura de Red y Servidores</h2>
+      <p>El escenario (Escenario 2) aloja todos los servidores en la misma red local mediante un Bridge <code>lxcbr1</code> (192.168.150.0/24) sobre un host Debian con virtualización mixta (KVM/libvirt y LXC).</p>
+      
+      <div style="overflow-x: auto; margin-bottom: 20px;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+          <thead>
+            <tr style="border-bottom: 1px solid #334155; color: #60a5fa;">
+              <th style="padding: 8px;">Servidor</th>
+              <th style="padding: 8px;">IP</th>
+              <th style="padding: 8px;">Tecnología</th>
+              <th style="padding: 8px;">Rol</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom: 1px solid #1e293b;">
+              <td style="padding: 8px; color: #cbd5e1;">proxy</td>
+              <td style="padding: 8px; color: #4ade80;">192.168.150.10</td>
+              <td style="padding: 8px; color: #cbd5e1;">LXC + Nginx</td>
+              <td style="padding: 8px; color: #cbd5e1;">Proxy inverso</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #1e293b;">
+              <td style="padding: 8px; color: #cbd5e1;">servidor-web</td>
+              <td style="padding: 8px; color: #4ade80;">192.168.150.20</td>
+              <td style="padding: 8px; color: #cbd5e1;">VM + Nginx + Docker</td>
+              <td style="padding: 8px; color: #cbd5e1;">Servidor web principal</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #1e293b;">
+              <td style="padding: 8px; color: #cbd5e1;">balanceador</td>
+              <td style="padding: 8px; color: #4ade80;">192.168.150.30</td>
+              <td style="padding: 8px; color: #cbd5e1;">LXC + HAProxy 3.0</td>
+              <td style="padding: 8px; color: #cbd5e1;">Balanceador de carga</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #1e293b;">
+              <td style="padding: 8px; color: #cbd5e1;">backend1</td>
+              <td style="padding: 8px; color: #4ade80;">192.168.150.40</td>
+              <td style="padding: 8px; color: #cbd5e1;">LXC + Nginx + PHP 8.4</td>
+              <td style="padding: 8px; color: #cbd5e1;">Servidor backend 1</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px; color: #cbd5e1;">backend2</td>
+              <td style="padding: 8px; color: #4ade80;">192.168.150.50</td>
+              <td style="padding: 8px; color: #cbd5e1;">LXC + Nginx + PHP 8.4</td>
+              <td style="padding: 8px; color: #cbd5e1;">Servidor backend 2</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-        <div class="detail-callout"><strong>Comprobación:</strong> Demostramos que Katniss no puede alcanzar a Rue, pero sí a Thresh. Igualmente comprobamos que la comunicación entre Thresh y Cato ha sido denegada correctamente por la ACL del R2, mientras que el resto de su distrito sigue intacto.</div>
+      <h2>3. Despliegue de Aplicaciones (Docker)</h2>
+      <p>En el <code>servidor-web</code> se han desplegado dos aplicaciones contenedorizadas utilizando Docker:</p>
+<pre style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 6px; border: 1px solid #334155; overflow-x: auto;"><code style="color: #e2e8f0; font-family: var(--mono); font-size: 0.9em;"># Despliegue de JuiceShop (Puerto 3000)
+sudo docker run -d --name juice-shop --restart always -p 3000:3000 bkimminich/juice-shop
 
-        <img src="../img/redes11/tu-captura-enemistades.png" alt="Comprobación de bloqueo de comunicación Katniss-Rue y Thresh-Cato" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+# Despliegue del Juego 2048 (Puerto 8080)
+sudo docker run -d --name juego-2048 --restart always -p 8080:80 josedom24/2048:v1</code></pre>
 
-        <p>Por último, verificamos en los routers que las reglas de la ACL extendida se han aplicado correctamente:</p>
-        <img src="../img/redes11/p11-05-acl-extendida.png" alt="ACL extendida verificada con sh ip access-list" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">        
-        
-        <h2>Ejercicio 5 — Servidor web restringido por ACL</h2>
-        <p>El Distrito 13 alberga un servidor Apache, accesible únicamente desde los distritos 11 y 12 a través del puerto 80. Se configuró una ACL extendida de tipo TCP limitada a ese puerto:</p>
-        <pre><code>R5-POP(config)#access-list 101 permit tcp 10.0.13.2 0.0.0.0 10.0.11.0 0.0.0.0 eq 80
-  R5-POP(config)#access-list 101 permit tcp 10.0.13.2 0.0.0.0 10.0.12.0 0.0.0.0 eq 80
-  R5-POP(config)#int f1/0
-  R5-POP(config-if)#ip access-group 101 out</code></pre>
-        <p>Tras sustituir un host de cada distrito autorizado por una máquina con interfaz gráfica y navegador, se accedió correctamente a la página del servidor desde ambos distritos escribiendo la IP del Distrito 13 en el navegador.</p>
+      <h2>4. Balanceo de Carga con HAProxy</h2>
+      <p>Se ha configurado HAProxy para distribuir el tráfico HTTP mediante el algoritmo <strong>roundrobin</strong> hacia los dos backends que sirven una aplicación PHP personalizada. Las comprobaciones de estado (health checks) garantizan la alta disponibilidad.</p>
+<pre style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 6px; border: 1px solid #334155; overflow-x: auto;"><code style="color: #e2e8f0; font-family: var(--mono); font-size: 0.9em;"># Verificación del balanceo de carga mediante múltiples peticiones
+for i in {1..10}; do curl -s http://app.pedro.org | grep "Servidor:"; done</code></pre>
 
-        <img src="../img/redes11/p11-06-servidor-web.png" alt="Acceso al servidor web del Distrito 13" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin: 15px 0;">
+      <h2>5. Gestión de Dominios y Proxy Inverso</h2>
+      <p>El nodo Proxy Inverso (Nginx) expone los servicios unificando el acceso mediante dominios locales:</p>
+      <ul>
+        <li><code>nas.pedro.org</code>: Redirige a <code>/documentos</code> (Área protegida por htpasswd).</li>
+        <li><code>www.pedro.org</code>: Aloja la web estática principal y rutea <code>/shop/</code> y <code>/game/</code> hacia los contenedores Docker.</li>
+        <li><code>app.pedro.org</code>: Envía el tráfico al balanceador HAProxy para servir la aplicación PHP en alta disponibilidad.</li>
+      </ul>
 
-        <h2>Conclusiones</h2>
-        <p>Esta práctica combina en un solo escenario los tres pilares de control de tráfico en redes Cisco: enrutamiento estático, ACL estándar (por red completa) y ACL extendidas (por host y puerto concreto). Lo más interesante fue decidir <strong>dónde</strong> aplicar cada ACL y en qué sentido (<code>in</code> vs <code>out</code>): la misma regla de filtrado puede generar resultados muy distintos, e incluso bloquear servicios como el DHCP, según la interfaz y el sentido en que se aplique.</p>
-      `
-    }    
-  ]; 
+      <h2>6. Conclusiones</h2>
+      <p>La infraestructura cumple con todos los objetivos planteados: desde la resolución de dominios en un entorno aislado hasta la coexistencia de servicios estáticos, dinámicos (PHP-FPM) y contenedorizados, todo orquestado detrás de proxies inversos y balanceadores de carga.</p>
+    `
+  }
+]; 
 
 /**
  * ============================================================
