@@ -174,7 +174,7 @@
     });
   </script>
 
-  <!-- SCRIPT DE ANIMACIÓN DE DESPLIEGUE DESDE LA IZQUIERDA -->
+      <!-- SCRIPT DE ANIMACIÓN DINÁMICA ORIGEN-DESTINO -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const mecanicasWindow = document.getElementById('mecanicas-window');
@@ -182,52 +182,58 @@
       const btnBackFooter = document.getElementById('btn-back-footer');
       const btnClose = mecanicasWindow ? mecanicasWindow.querySelector('.tb-dot.r') : null;
 
-      // 1. Inyectamos los estilos de animación CSS de vuelo desde el botón original
-      if (!document.getElementById('slide-mecanicas-styles')) {
+      if (mecanicasWindow) {
+        // 1. Obtenemos el centro real de la ventana donde debe colocarse
+        const rect = mecanicasWindow.getBoundingClientRect();
+        const winCenterX = rect.left + rect.width / 2;
+        const winCenterY = rect.top + rect.height / 2;
+
+        // 2. Leemos la posición exacta del botón guardada por index.html
+        const btnX = parseFloat(sessionStorage.getItem('btnX')) || (window.innerWidth * 0.2);
+        const btnY = parseFloat(sessionStorage.getItem('btnY')) || (window.innerHeight * 0.4);
+
+        // 3. Calculamos la distancia exacta de vuelo
+        const startX = btnX - winCenterX;
+        const startY = btnY - winCenterY;
+
+        // 4. Inyectamos la animación dinámica con esas medidas exactas
         const style = document.createElement('style');
         style.id = 'slide-mecanicas-styles';
         style.textContent = `
           @keyframes flyFromFile {
-            0% { opacity: 0; transform: translate(-40vw, -30vh) scale(0.05); }
+            0% { opacity: 0; transform: translate(${startX}px, ${startY}px) scale(0.05); }
             100% { opacity: 1; transform: translate(0, 0) scale(1); }
           }
           @keyframes flyToFile {
             0% { opacity: 1; transform: translate(0, 0) scale(1); }
-            100% { opacity: 0; transform: translate(-40vw, -30vh) scale(0.05); }
+            100% { opacity: 0; transform: translate(${startX}px, ${startY}px) scale(0.05); }
           }
-          .anim-fly-in { animation: flyFromFile 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
-          .anim-fly-out { animation: flyToFile 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+          .anim-fly-in { animation: flyFromFile 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; transform-origin: center; }
+          .anim-fly-out { animation: flyToFile 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards; transform-origin: center; }
         `;
         document.head.appendChild(style);
+
+        // Activamos entrada
+        mecanicasWindow.classList.add('anim-fly-in');
       }
 
-      // 2. Ejecutar animación de entrada al cargar
-      if (mecanicasWindow) mecanicasWindow.classList.add('anim-fly-in');
-
-      // 3. Función para salir con animación
+      // 5. Función de salida: aplica la animación invertida
       function cerrarMecanicasAnimado(e) {
         e.preventDefault();
         if (mecanicasWindow) {
           mecanicasWindow.classList.remove('anim-fly-in');
           mecanicasWindow.classList.add('anim-fly-out');
-          // Esperamos a que acabe la animación (400ms) para volver al index
-          setTimeout(() => { window.location.href = '/'; }, 350);
+          setTimeout(() => { window.location.href = '/'; }, 330);
         } else {
           window.location.href = '/';
         }
       }
 
-      // 4. Asignar la función a los botones de cierre
+      // Asignamos la función de cerrar a todos los botones
       if (btnBack) btnBack.addEventListener('click', cerrarMecanicasAnimado);
       if (btnBackFooter) btnBackFooter.addEventListener('click', cerrarMecanicasAnimado);
-      if (btnClose) {
-        btnClose.addEventListener('click', (e) => {
-          e.stopPropagation(); 
-          cerrarMecanicasAnimado(e);
-        });
-      }
+      if (btnClose) btnClose.addEventListener('click', (e) => { e.stopPropagation(); cerrarMecanicasAnimado(e); });
     });
   </script>
-
 </body>
 </html>
