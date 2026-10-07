@@ -46,13 +46,13 @@
   <section class="section" style="padding-top: 120px; padding-bottom: 60px;">
     <div class="wrap">
       
-      <!-- BOTÓN DE VOLVER (Añadido id="btn-back-mecanicas") -->
+      <!-- BOTÓN DE VOLVER -->
       <a href="/" id="btn-back-mecanicas" class="btn-back" style="display: inline-flex; align-items: center; gap: 8px; background: transparent; border: 1px solid #334155; color: #94a3b8; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-family: var(--mono, monospace); margin-bottom: 24px; transition: all 0.2s;" onmouseover="this.style.color='#f8fafc'; this.style.borderColor='#475569';" onmouseout="this.style.color='#94a3b8'; this.style.borderColor='#334155';">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
         cd .. (volver a la portada)
       </a>
 
-      <!-- VENTANA PRINCIPAL (Añadido id="mecanicas-window") -->
+      <!-- VENTANA PRINCIPAL -->
       <div id="mecanicas-window" class="terminal-window" style="width: 100%; max-width: none; box-shadow: 0 20px 40px rgba(0,0,0,0.4);">
         
         <div class="terminal-titlebar">
@@ -174,7 +174,7 @@
     });
   </script>
 
-  <!-- SCRIPT DE ANIMACIÓN DE ENTRADA Y SALIDA (ZOOM) -->
+  <!-- SCRIPT DE ANIMACIÓN DE DESPLIEGUE DESDE LA IZQUIERDA -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const mecanicasWindow = document.getElementById('mecanicas-window');
@@ -182,35 +182,36 @@
       const btnBackFooter = document.getElementById('btn-back-footer');
       const btnClose = mecanicasWindow ? mecanicasWindow.querySelector('.tb-dot.r') : null;
 
-      // 1. Inyectamos los estilos de animación CSS si no existen
-      if (!document.getElementById('zoom-mecanicas-styles')) {
+      // 1. Inyectamos los estilos de animación CSS de vuelo desde el botón original
+      if (!document.getElementById('slide-mecanicas-styles')) {
         const style = document.createElement('style');
-        style.id = 'zoom-mecanicas-styles';
+        style.id = 'slide-mecanicas-styles';
         style.textContent = `
-          @keyframes zoomInMecanicas {
-            0% { opacity: 0; transform: scale(0.95); }
-            100% { opacity: 1; transform: scale(1); }
+          @keyframes flyFromFile {
+            0% { opacity: 0; transform: translate(-40vw, -30vh) scale(0.05); }
+            100% { opacity: 1; transform: translate(0, 0) scale(1); }
           }
-          @keyframes zoomOutMecanicas {
-            0% { opacity: 1; transform: scale(1); }
-            100% { opacity: 0; transform: scale(0.95); }
+          @keyframes flyToFile {
+            0% { opacity: 1; transform: translate(0, 0) scale(1); }
+            100% { opacity: 0; transform: translate(-40vw, -30vh) scale(0.05); }
           }
-          .anim-zoom-in { animation: zoomInMecanicas 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
-          .anim-zoom-out { animation: zoomOutMecanicas 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+          .anim-fly-in { animation: flyFromFile 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+          .anim-fly-out { animation: flyToFile 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
         `;
         document.head.appendChild(style);
       }
 
       // 2. Ejecutar animación de entrada al cargar
-      if (mecanicasWindow) mecanicasWindow.classList.add('anim-zoom-in');
+      if (mecanicasWindow) mecanicasWindow.classList.add('anim-fly-in');
 
       // 3. Función para salir con animación
       function cerrarMecanicasAnimado(e) {
         e.preventDefault();
         if (mecanicasWindow) {
-          mecanicasWindow.classList.remove('anim-zoom-in');
-          mecanicasWindow.classList.add('anim-zoom-out');
-          setTimeout(() => { window.location.href = '/'; }, 250);
+          mecanicasWindow.classList.remove('anim-fly-in');
+          mecanicasWindow.classList.add('anim-fly-out');
+          // Esperamos a que acabe la animación (400ms) para volver al index
+          setTimeout(() => { window.location.href = '/'; }, 350);
         } else {
           window.location.href = '/';
         }
@@ -221,7 +222,7 @@
       if (btnBackFooter) btnBackFooter.addEventListener('click', cerrarMecanicasAnimado);
       if (btnClose) {
         btnClose.addEventListener('click', (e) => {
-          e.stopPropagation(); // Evita conflictos con funciones globales
+          e.stopPropagation(); 
           cerrarMecanicasAnimado(e);
         });
       }
