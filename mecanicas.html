@@ -11,7 +11,6 @@
 </head>
 <body>
 
-  <!-- MENÚ DE NAVEGACIÓN SUPERIOR -->
   <nav>
     <div class="wrap">
       <a href="/" class="nav-brand">
@@ -26,7 +25,6 @@
     </div>
   </nav>
 
-  <!-- BOTÓN DEL MENÚ LATERAL -->
   <button class="sidebar-toggle" id="sidebar-toggle">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
   </button>
@@ -42,18 +40,15 @@
     </div>
   </aside>
 
-  <!-- SECCIÓN PRINCIPAL -->
   <section class="section" style="padding-top: 120px; padding-bottom: 60px;">
     <div class="wrap">
       
-      <!-- BOTÓN DE VOLVER -->
-      <a href="/" id="btn-back-mecanicas" class="btn-back" style="display: inline-flex; align-items: center; gap: 8px; background: transparent; border: 1px solid #334155; color: #94a3b8; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-family: var(--mono, monospace); margin-bottom: 24px; transition: all 0.2s;" onmouseover="this.style.color='#f8fafc'; this.style.borderColor='#475569';" onmouseout="this.style.color='#94a3b8'; this.style.borderColor='#334155';">
+      <a href="/" onclick="closeFileAnim(event, this.href)" class="btn-back" style="display: inline-flex; align-items: center; gap: 8px; background: transparent; border: 1px solid #334155; color: #94a3b8; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-family: var(--mono, monospace); margin-bottom: 24px; transition: all 0.2s;" onmouseover="this.style.color='#f8fafc'; this.style.borderColor='#475569';" onmouseout="this.style.color='#94a3b8'; this.style.borderColor='#334155';">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
         cd .. (volver a la portada)
       </a>
 
-      <!-- VENTANA PRINCIPAL -->
-      <div id="mecanicas-window" class="terminal-window" style="width: 100%; max-width: none; box-shadow: 0 20px 40px rgba(0,0,0,0.4);">
+      <div class="terminal-window" style="width: 100%; max-width: none; box-shadow: 0 20px 40px rgba(0,0,0,0.4);">
         
         <div class="terminal-titlebar">
           <span class="tb-dot r" title="Cerrar y volver"></span>
@@ -72,7 +67,7 @@
 
           <h3 style="color: #60a5fa; margin-top: 0; font-family: var(--mono, monospace);">1. Lectura inmersiva y navegación</h3>
           <p style="color: #cbd5e1; margin-bottom: 30px; text-align: justify; font-family: 'Inter', system-ui, sans-serif;">
-            Cuando abres una práctica, el archivo hace un efecto de zoom suave para llevarte al texto. Fíjate en las tres bolitas de colores de la esquina superior de la ventana: la bolita roja cierra la práctica, y si usas la amarilla y la verde para ir a la práctica anterior o siguiente, la ventana girará en 3D como si estuvieras pasando la página de un libro. Por último, en los textos largos, verás un botón flotante abajo a la derecha que escanea el contenido y te crea un índice automático para saltar a donde quieras.
+            Cuando abres una práctica, la pantalla despliega un efecto circular inmersivo. Fíjate en las tres bolitas de colores de la esquina superior de la ventana: la bolita roja cierra la práctica, y si usas la amarilla y la verde para ir a la práctica anterior o siguiente, la ventana girará en 3D como si estuvieras pasando la página de un libro.
           </p>
 
           <h3 style="color: #60a5fa; margin-top: 30px; font-family: var(--mono, monospace);">2. Las carpetas mágicas</h3>
@@ -84,14 +79,9 @@
           <p style="color: #cbd5e1; margin-bottom: 30px; text-align: justify; font-family: 'Inter', system-ui, sans-serif;">
             Tienes un menú lateral tradicional, pero si pulsas <code style="background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; font-family: var(--mono, monospace); font-size: 0.9em;">Ctrl + K</code> (o el botón de la lupa) se abre un buscador avanzado. Este buscador tiene memoria: si usas las flechas arriba y abajo de tu teclado, recordará tus búsquedas anteriores. Además, esconde algún "huevo de pascua" si introduces comandos secretos.
           </p>
-
-          <h3 style="color: #60a5fa; margin-top: 30px; font-family: var(--mono, monospace);">4. La terminal "viva"</h3>
-          <p style="color: #cbd5e1; margin-bottom: 30px; text-align: justify; font-family: 'Inter', system-ui, sans-serif;">
-            Fíjate en la ventana principal de inicio. No aparece de golpe, sino que entra deslizando suavemente y escribe los textos letra a letra, imitando la velocidad de una persona real tecleando. ¡Incluso espera a terminar de escribir para mostrarte las carpetas de abajo!
-          </p>
           
           <div style="margin-top: 50px; padding-top: 25px; border-top: 1px solid rgba(255,255,255,0.1); text-align: center;">
-            <a href="/" id="btn-back-footer" style="color: #c084fc; text-decoration: none; font-family: var(--mono, monospace); font-weight: bold; font-size: 0.95rem;">cd .. (Volver a la portada)</a>
+            <a href="/" onclick="closeFileAnim(event, this.href)" style="color: #c084fc; text-decoration: none; font-family: var(--mono, monospace); font-weight: bold; font-size: 0.95rem;">cd .. (Volver a la portada)</a>
           </div>
           
         </div>
@@ -100,7 +90,6 @@
     </div>
   </section>
 
-  <!-- FOOTER -->
   <footer>
     <span style="color: #4ade80;">pedrooliver@asir</span>:<span style="color: #60a5fa;">~/la_sectasir</span> <span style="color: #c084fc;">(admin)</span>$ echo "La SectASIR — gracias por pasarte" — última actualización: junio 2026
   </footer>
@@ -108,7 +97,6 @@
   <script src="js/practicas-data.js"></script>
   <script src="js/render.js"></script>
 
-  <!-- MOTOR DE ANIMACIÓN INTELIGENTE DE TECLEADO -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const container = document.getElementById('mecanicas-content');
@@ -141,99 +129,27 @@
             
             if (originalHTML.charAt(i) === '<') {
               let tagEnd = originalHTML.indexOf('>', i);
-              if (tagEnd !== -1) {
-                currentHTML += originalHTML.substring(i, tagEnd + 1);
-                i = tagEnd + 1;
-              } else {
-                currentHTML += originalHTML.charAt(i);
-                i++;
-              }
-              typeChar(); 
-              return;
+              if (tagEnd !== -1) { currentHTML += originalHTML.substring(i, tagEnd + 1); i = tagEnd + 1; } 
+              else { currentHTML += originalHTML.charAt(i); i++; }
+              typeChar(); return;
             }
 
-            currentHTML += originalHTML.charAt(i);
-            i++;
-            
+            currentHTML += originalHTML.charAt(i); i++;
             el.innerHTML = currentHTML + '<span class="blinking-cursor" style="display:inline-block; width:8px; height:1em; background:#4ade80; margin-left:4px; vertical-align: baseline;"></span>';
             
             let speed = el.tagName.match(/^H[1-6]$/) ? 40 : (Math.random() * 8 + 2);
             setTimeout(typeChar, speed);
-            
           } else {
             el.innerHTML = currentHTML;
             currentIdx++;
             setTimeout(typeNextElement, 250); 
           }
         }
-        
         typeChar();
       }
-      
       setTimeout(typeNextElement, 500);
     });
   </script>
 
-      <!-- SCRIPT DE ANIMACIÓN DINÁMICA ORIGEN-DESTINO -->
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const mecanicasWindow = document.getElementById('mecanicas-window');
-      const btnBack = document.getElementById('btn-back-mecanicas');
-      const btnBackFooter = document.getElementById('btn-back-footer');
-      const btnClose = mecanicasWindow ? mecanicasWindow.querySelector('.tb-dot.r') : null;
-
-      if (mecanicasWindow) {
-        // 1. Obtenemos el centro real de la ventana donde debe colocarse
-        const rect = mecanicasWindow.getBoundingClientRect();
-        const winCenterX = rect.left + rect.width / 2;
-        const winCenterY = rect.top + rect.height / 2;
-
-        // 2. Leemos la posición exacta del botón guardada por index.html
-        const btnX = parseFloat(sessionStorage.getItem('btnX')) || (window.innerWidth * 0.2);
-        const btnY = parseFloat(sessionStorage.getItem('btnY')) || (window.innerHeight * 0.4);
-
-        // 3. Calculamos la distancia exacta de vuelo
-        const startX = btnX - winCenterX;
-        const startY = btnY - winCenterY;
-
-        // 4. Inyectamos la animación dinámica con esas medidas exactas
-        const style = document.createElement('style');
-        style.id = 'slide-mecanicas-styles';
-        style.textContent = `
-          @keyframes flyFromFile {
-            0% { opacity: 0; transform: translate(${startX}px, ${startY}px) scale(0.05); }
-            100% { opacity: 1; transform: translate(0, 0) scale(1); }
-          }
-          @keyframes flyToFile {
-            0% { opacity: 1; transform: translate(0, 0) scale(1); }
-            100% { opacity: 0; transform: translate(${startX}px, ${startY}px) scale(0.05); }
-          }
-          .anim-fly-in { animation: flyFromFile 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; transform-origin: center; }
-          .anim-fly-out { animation: flyToFile 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards; transform-origin: center; }
-        `;
-        document.head.appendChild(style);
-
-        // Activamos entrada
-        mecanicasWindow.classList.add('anim-fly-in');
-      }
-
-      // 5. Función de salida: aplica la animación invertida
-      function cerrarMecanicasAnimado(e) {
-        e.preventDefault();
-        if (mecanicasWindow) {
-          mecanicasWindow.classList.remove('anim-fly-in');
-          mecanicasWindow.classList.add('anim-fly-out');
-          setTimeout(() => { window.location.href = '/'; }, 330);
-        } else {
-          window.location.href = '/';
-        }
-      }
-
-      // Asignamos la función de cerrar a todos los botones
-      if (btnBack) btnBack.addEventListener('click', cerrarMecanicasAnimado);
-      if (btnBackFooter) btnBackFooter.addEventListener('click', cerrarMecanicasAnimado);
-      if (btnClose) btnClose.addEventListener('click', (e) => { e.stopPropagation(); cerrarMecanicasAnimado(e); });
-    });
-  </script>
 </body>
 </html>

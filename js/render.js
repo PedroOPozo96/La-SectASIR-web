@@ -9,6 +9,31 @@ document.addEventListener('DOMContentLoaded', () => {
   setupSearch(); 
   setupGenericCloseButtons(); 
 
+  // ========================================================
+  // ANIMACIÓN CIRCULAR DE ENTRADA (REVEAL)
+  // ========================================================
+  if (sessionStorage.getItem('doCircTransition') === 'true') {
+    sessionStorage.removeItem('doCircTransition');
+    const x = sessionStorage.getItem('circX') || window.innerWidth / 2;
+    const y = sessionStorage.getItem('circY') || window.innerHeight / 2;
+    
+    const overlay = document.createElement('div');
+    overlay.className = 'circular-overlay expand'; // Nace expandido tapando todo
+    overlay.style.left = x + 'px';
+    overlay.style.top = y + 'px';
+    document.body.appendChild(overlay);
+
+    // Encogemos el círculo hacia el punto original
+    requestAnimationFrame(() => {
+        setTimeout(() => {
+            overlay.classList.remove('expand');
+            setTimeout(() => {
+                if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+            }, 600);
+        }, 30);
+    });
+  }
+
   const urlParams = new URLSearchParams(window.location.search);
   const idPractica = urlParams.get('id');
   const catPractica = urlParams.get('cat'); 
@@ -28,9 +53,6 @@ document.addEventListener('DOMContentLoaded', () => {
         openDirectory(catPractica.toLowerCase()); 
       }
     } else {
-      // =========================================================
-      // PORTADA PRINCIPAL - ARRANQUE ÁGIL
-      // =========================================================
       const sectionPracticas = document.getElementById('practicas');
       const promptEl = document.getElementById('path-prompt');
       const viewRoot = document.getElementById('view-root');
@@ -60,6 +82,78 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 });
+
+/* ==========================================================================
+   TRANSICIONES CIRCULARES (REVEAL EFECTO LUPA)
+   ========================================================================== */
+if (!document.getElementById('estilos-circulares')) {
+  const styleC = document.createElement('style');
+  styleC.id = 'estilos-circulares';
+  styleC.textContent = `
+    .circular-overlay {
+      position: fixed;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: #0f172a; /* Fondo oscuro de la terminal */
+      transform: translate(-50%, -50%) scale(0);
+      z-index: 999999;
+      pointer-events: none;
+      transition: transform 0.5s cubic-bezier(0.7, 0, 0.3, 1);
+    }
+    .circular-overlay.expand {
+      transform: translate(-50%, -50%) scale(100);
+    }
+  `;
+  document.head.appendChild(styleC);
+}
+
+window.openFileAnim = function(event, url) {
+  if (event) event.preventDefault();
+  const rect = event.currentTarget.getBoundingClientRect();
+  const x = rect.left + rect.width / 2;
+  const y = rect.top + rect.height / 2;
+
+  sessionStorage.setItem('circX', x);
+  sessionStorage.setItem('circY', y);
+  sessionStorage.setItem('doCircTransition', 'true');
+
+  const overlay = document.createElement('div');
+  overlay.className = 'circular-overlay';
+  overlay.style.left = x + 'px';
+  overlay.style.top = y + 'px';
+  document.body.appendChild(overlay);
+
+  if (event) event.currentTarget.style.opacity = '0'; // Escondemos el icono pulsado
+
+  requestAnimationFrame(() => {
+    overlay.classList.add('expand');
+  });
+
+  setTimeout(() => { window.location.href = url; }, 450);
+};
+
+window.closeFileAnim = function(event, url) {
+  if (event) event.preventDefault();
+  // Leer coordenadas del icono original guardadas
+  const x = sessionStorage.getItem('circX') || window.innerWidth / 2;
+  const y = sessionStorage.getItem('circY') || window.innerHeight / 2;
+  
+  sessionStorage.setItem('doCircTransition', 'true');
+
+  const overlay = document.createElement('div');
+  overlay.className = 'circular-overlay';
+  overlay.style.left = x + 'px';
+  overlay.style.top = y + 'px';
+  document.body.appendChild(overlay);
+
+  requestAnimationFrame(() => {
+    overlay.classList.add('expand');
+  });
+
+  setTimeout(() => { window.location.href = url || '/'; }, 450);
+};
+
 
 /* ==========================================================================
    ANIMACIÓN DE LA TERMINAL DE LA PORTADA
@@ -134,7 +228,7 @@ function animateHeroTerminal(onComplete) {
 }
 
 /* ==========================================================================
-   SISTEMA DE NAVEGACIÓN JERÁRQUICA (CARPETAS ANIDADAS)
+   SISTEMA DE NAVEGACIÓN JERÁRQUICA
    ========================================================================== */
 function setupNavigation() {
   const folders = document.querySelectorAll('.folder-btn');
@@ -155,13 +249,8 @@ function setupNavigation() {
     });
   });
 
-  if (btnBackFiles) {
-    btnBackFiles.addEventListener('click', closeDirectory);
-  }
-
-  btnsBackToRoot.forEach(btn => {
-    btn.addEventListener('click', closeToRoot);
-  });
+  if (btnBackFiles) btnBackFiles.addEventListener('click', closeDirectory);
+  btnsBackToRoot.forEach(btn => btn.addEventListener('click', closeToRoot));
 }
 
 function openCourse(courseId) {
@@ -236,12 +325,10 @@ function openDirectory(categoria) {
 
   let coursePath = '';
   if (cat1.includes(categoria.toLowerCase())) {
-    currentCourseContext = 'curso-1';
-    coursePath = '/1_asir';
+    currentCourseContext = 'curso-1'; coursePath = '/1_asir';
     if (btnBackFiles) btnBackFiles.innerHTML = `<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> cd .. (volver a 1_asir)`;
   } else if (cat2.includes(categoria.toLowerCase())) {
-    currentCourseContext = 'curso-2';
-    coursePath = '/2_asir';
+    currentCourseContext = 'curso-2'; coursePath = '/2_asir';
     if (btnBackFiles) btnBackFiles.innerHTML = `<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> cd .. (volver a 2_asir)`;
   } else {
     currentCourseContext = 'root';
@@ -272,17 +359,13 @@ function openDirectory(categoria) {
 }
 
 function closeDirectory() {
-  if (currentCourseContext === 'curso-1') {
-    openCourse('curso-1');
-  } else if (currentCourseContext === 'curso-2') {
-    openCourse('curso-2');
-  } else {
-    closeToRoot();
-  }
+  if (currentCourseContext === 'curso-1') openCourse('curso-1');
+  else if (currentCourseContext === 'curso-2') openCourse('curso-2');
+  else closeToRoot();
 }
 
 /* ==========================================================================
-   ICONOS DE CARPETA (INTELIGENCIA PARA MOSTRAR CARPETAS O FOLIOS)
+   ICONOS DE CARPETA
    ========================================================================== */
 function updateFolderIcons() {
   const folders = document.querySelectorAll('.folder-btn');
@@ -308,24 +391,14 @@ function updateFolderIcons() {
     const category = btn.getAttribute('data-target');
     const spanElement = btn.querySelector('span');
     const spanText = spanElement ? spanElement.innerText : category;
-    
     btn.style.animationDelay = `${index * 0.08}s`;
 
-    let count = 0;
-    let isCourseFolder = false;
-
+    let count = 0; let isCourseFolder = false;
     if (typeof PRACTICAS !== 'undefined') {
-      if (category === 'todas') {
-        count = PRACTICAS.length;
-      } else if (category === 'curso-1') {
-        count = 2; // Las dos asignaturas de 1º
-        isCourseFolder = true;
-      } else if (category === 'curso-2') {
-        count = 7; // Las asignaturas de 2º
-        isCourseFolder = true;
-      } else {
-        count = PRACTICAS.filter(p => p.categoria && p.categoria.toLowerCase() === category.toLowerCase()).length;
-      }
+      if (category === 'todas') count = PRACTICAS.length;
+      else if (category === 'curso-1') { count = 2; isCourseFolder = true; }
+      else if (category === 'curso-2') { count = 7; isCourseFolder = true; }
+      else count = PRACTICAS.filter(p => p.categoria && p.categoria.toLowerCase() === category.toLowerCase()).length;
     }
 
     if (count > 0) {
@@ -335,22 +408,9 @@ function updateFolderIcons() {
       
       for (let i = maxVisualPapers - 1; i >= 0; i--) {
         if (isCourseFolder) {
-          // Si es curso, hacemos volar carpetitas pequeñas
-          papersHTML += `
-            <g class="folder-paper-hover" style="--depth: ${i}; transition-delay: ${0.03 * i}s;">
-              <path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" fill="#93c5fd" transform="translate(5, 4) scale(0.6)"/>
-            </g>
-          `;
+          papersHTML += `<g class="folder-paper-hover" style="--depth: ${i}; transition-delay: ${0.03 * i}s;"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" fill="#93c5fd" transform="translate(5, 4) scale(0.6)"/></g>`;
         } else {
-          // Si es asignatura o ROOT, hacemos volar folios de papel
-          papersHTML += `
-            <g class="folder-paper-hover" style="--depth: ${i}; transition-delay: ${0.03 * i}s;">
-              <rect x="4" y="2" width="16" height="14" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="0.5"/>
-              <rect x="7" y="5" width="8" height="1" fill="#cbd5e1"/>
-              <rect x="7" y="8" width="10" height="1" fill="#cbd5e1"/>
-              <rect x="7" y="11" width="6" height="1" fill="#cbd5e1"/>
-            </g>
-          `;
+          papersHTML += `<g class="folder-paper-hover" style="--depth: ${i}; transition-delay: ${0.03 * i}s;"><rect x="4" y="2" width="16" height="14" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="0.5"/><rect x="7" y="5" width="8" height="1" fill="#cbd5e1"/><rect x="7" y="8" width="10" height="1" fill="#cbd5e1"/><rect x="7" y="11" width="6" height="1" fill="#cbd5e1"/></g>`;
         }
       }
 
@@ -365,12 +425,7 @@ function updateFolderIcons() {
       `;
     } else {
       btn.classList.remove('has-practices');
-      btn.innerHTML = `
-        <svg viewBox="0 0 24 24" width="64" height="64" fill="#475569" style="overflow: visible;">
-          <path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/>
-        </svg>
-        <span style="color: #64748b; margin-top: 8px;">${spanText}</span>
-      `;
+      btn.innerHTML = `<svg viewBox="0 0 24 24" width="64" height="64" fill="#475569" style="overflow: visible;"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg><span style="color: #64748b; margin-top: 8px;">${spanText}</span>`;
     }
   });
 }
@@ -382,12 +437,7 @@ function setupTypingStyles() {
   if (!document.getElementById('estilos-tipeo-terminal')) {
     const style = document.createElement('style');
     style.id = 'estilos-tipeo-terminal';
-    style.textContent = `
-      .blinking-cursor { display: inline-block; width: 8px; height: 1.1em; background-color: #4ade80; margin-left: 4px; vertical-align: middle; animation: blink 1s step-start infinite; }
-      @keyframes blink { 50% { opacity: 0; } }
-      .typing-text { white-space: pre-wrap; }
-      #path-prompt::before, .section-tag::before { content: none !important; display: none !important; }
-    `;
+    style.textContent = `.blinking-cursor { display: inline-block; width: 8px; height: 1.1em; background-color: #4ade80; margin-left: 4px; vertical-align: middle; animation: blink 1s step-start infinite; } @keyframes blink { 50% { opacity: 0; } } .typing-text { white-space: pre-wrap; } #path-prompt::before, .section-tag::before { content: none !important; display: none !important; }`;
     document.head.appendChild(style);
   }
 }
@@ -397,10 +447,7 @@ function typeCommand(element, prefixHTML, commandText, speed = 30, callback = nu
   element.innerHTML = prefixHTML + '<span class="typing-text"></span><span class="blinking-cursor"></span>';
   const textContainer = element.querySelector('.typing-text');
   let i = 0;
-  function type() {
-    if (i < commandText.length) { textContainer.textContent += commandText.charAt(i); i++; element.typeTimeout = setTimeout(type, speed); } 
-    else { if (callback) callback(); }
-  }
+  function type() { if (i < commandText.length) { textContainer.textContent += commandText.charAt(i); i++; element.typeTimeout = setTimeout(type, speed); } else { if (callback) callback(); } }
   type();
 }
 
@@ -409,74 +456,39 @@ function typeTextSimple(element, text, speed = 20) {
   element.innerHTML = '<span class="typing-text"></span><span class="blinking-cursor" style="width:6px; height:0.9em; background-color: currentColor;"></span>';
   const textContainer = element.querySelector('.typing-text');
   let i = 0;
-  function type() {
-    if (i < text.length) { textContainer.textContent += text.charAt(i); i++; element.typeTimeout = setTimeout(type, speed); }
-  }
+  function type() { if (i < text.length) { textContainer.textContent += text.charAt(i); i++; element.typeTimeout = setTimeout(type, speed); } }
   type();
 }
 
-function setupTransitionStyles() {
-  if (!document.getElementById('estilos-transicion-practicas')) {
-    const styleT = document.createElement('style');
-    styleT.id = 'estilos-transicion-practicas';
-    styleT.textContent = `
-      @keyframes pageTurnNextOut { 0% { transform: perspective(2000px) rotateY(0deg); transform-origin: left center; opacity: 1; } 100% { transform: perspective(2000px) rotateY(-90deg); transform-origin: left center; opacity: 0; } }
-      @keyframes pageTurnPrevOut { 0% { transform: perspective(2000px) rotateY(0deg); transform-origin: right center; opacity: 1; } 100% { transform: perspective(2000px) rotateY(90deg); transform-origin: right center; opacity: 0; } }
-      .anim-page-next-out { animation: pageTurnNextOut 0.35s forwards cubic-bezier(0.4, 0, 0.2, 1); }
-      .anim-page-prev-out { animation: pageTurnPrevOut 0.35s forwards cubic-bezier(0.4, 0, 0.2, 1); }
-      @keyframes pageTurnNextIn { 0% { transform: perspective(2000px) rotateY(90deg); transform-origin: right center; opacity: 0; } 100% { transform: perspective(2000px) rotateY(0deg); transform-origin: right center; opacity: 1; } }
-      @keyframes pageTurnPrevIn { 0% { transform: perspective(2000px) rotateY(-90deg); transform-origin: left center; opacity: 0; } 100% { transform: perspective(2000px) rotateY(0deg); transform-origin: left center; opacity: 1; } }
-      .anim-page-next-in { animation: pageTurnNextIn 0.35s forwards cubic-bezier(0.2, 0.8, 0.2, 1); }
-      .anim-page-prev-in { animation: pageTurnPrevIn 0.35s forwards cubic-bezier(0.2, 0.8, 0.2, 1); }
-    `;
-    document.head.appendChild(styleT);
-  }
-}
+function setupTransitionStyles() { }
 
 function setupWindowButtonsStyles() {
   if (!document.getElementById('estilos-botones-ventana')) {
     const style = document.createElement('style');
     style.id = 'estilos-botones-ventana';
-    style.textContent = `
-      .terminal-titlebar .tb-dot, .panel-header .dot { display: flex !important; align-items: center; justify-content: center; transition: transform 0.2s cubic-bezier(0.25, 0.8, 0.25, 1); position: relative; }
-      @keyframes gentle-pulse { 0% { box-shadow: 0 0 0 0 rgba(255,255,255,0.4); } 70% { box-shadow: 0 0 0 4px rgba(255,255,255,0); } 100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); } }
-      .terminal-titlebar .tb-dot.y, .panel-header .dot.yellow, .terminal-titlebar .tb-dot.g, .panel-header .dot.green { animation: gentle-pulse 2s infinite ease-in-out; }
-      .terminal-titlebar .tb-dot::after, .panel-header .dot::after { opacity: 0.65; color: rgba(0, 0, 0, 0.8); font-size: 8px; font-weight: 900; font-family: system-ui, -apple-system, sans-serif; transition: opacity 0.2s ease, font-size 0.2s ease; position: absolute; pointer-events: none; }
-      .terminal-titlebar .tb-dot:hover::after, .panel-header .dot:hover::after { opacity: 1; font-size: 9px; }
-      .tb-dot.r::after, .dot.red::after { content: '✕'; font-size: 8px; }
-      .tb-dot.y::after, .dot.yellow::after { content: '◄'; font-size: 7px; margin-right: 1px; }
-      .tb-dot.g::after, .dot.green::after { content: '►'; font-size: 7px; margin-left: 1px; }
-      .terminal-titlebar .tb-dot:hover, .panel-header .dot:hover { transform: scale(1.3) !important; filter: brightness(1.2); z-index: 10; animation: none; }
-    `;
+    style.textContent = `.terminal-titlebar .tb-dot, .panel-header .dot { display: flex !important; align-items: center; justify-content: center; transition: transform 0.2s cubic-bezier(0.25, 0.8, 0.25, 1); position: relative; } @keyframes gentle-pulse { 0% { box-shadow: 0 0 0 0 rgba(255,255,255,0.4); } 70% { box-shadow: 0 0 0 4px rgba(255,255,255,0); } 100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); } } .terminal-titlebar .tb-dot.y, .panel-header .dot.yellow, .terminal-titlebar .tb-dot.g, .panel-header .dot.green { animation: gentle-pulse 2s infinite ease-in-out; } .terminal-titlebar .tb-dot::after, .panel-header .dot::after { opacity: 0.65; color: rgba(0, 0, 0, 0.8); font-size: 8px; font-weight: 900; font-family: system-ui, -apple-system, sans-serif; transition: opacity 0.2s ease, font-size 0.2s ease; position: absolute; pointer-events: none; } .terminal-titlebar .tb-dot:hover::after, .panel-header .dot:hover::after { opacity: 1; font-size: 9px; } .tb-dot.r::after, .dot.red::after { content: '✕'; font-size: 8px; } .tb-dot.y::after, .dot.yellow::after { content: '◄'; font-size: 7px; margin-right: 1px; } .tb-dot.g::after, .dot.green::after { content: '►'; font-size: 7px; margin-left: 1px; } .terminal-titlebar .tb-dot:hover, .panel-header .dot:hover { transform: scale(1.3) !important; filter: brightness(1.2); z-index: 10; animation: none; }`;
     document.head.appendChild(style);
   }
 }
 
 /* ==========================================================================
-   BUSCADOR (COMMAND PALETTE)
+   BUSCADOR
    ========================================================================== */
 function setupSearch() {
   const sidebarToggle = document.getElementById('sidebar-toggle');
   if (sidebarToggle && !document.getElementById('search-toggle')) {
     const searchBtn = document.createElement('div');
-    searchBtn.id = 'search-toggle';
-    searchBtn.title = "Buscar fichero (Ctrl+K)";
+    searchBtn.id = 'search-toggle'; searchBtn.title = "Buscar fichero (Ctrl+K)";
     searchBtn.innerHTML = `<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>`;
     sidebarToggle.parentNode.insertBefore(searchBtn, sidebarToggle);
   }
   if (!document.getElementById('search-modal')) {
-    const modal = document.createElement('div');
-    modal.id = 'search-modal';
-    modal.className = 'search-modal';
+    const modal = document.createElement('div'); modal.id = 'search-modal'; modal.className = 'search-modal';
     modal.innerHTML = `<div class="search-container"><div class="search-header"><span style="color: #4ade80;">pedrooliver@asir</span>:<span style="color: #60a5fa;">~</span>$ find . -name<input type="text" id="search-input" placeholder='"termino_a_buscar"...' autocomplete="off"></div><div id="search-results" class="search-results"></div></div>`;
     document.body.appendChild(modal);
   }
-  const searchModal = document.getElementById('search-modal');
-  const searchInput = document.getElementById('search-input');
-  const searchResults = document.getElementById('search-results');
-  const searchToggle = document.getElementById('search-toggle');
-  let searchHistory = JSON.parse(localStorage.getItem('bash_history')) || [];
-  let historyIndex = searchHistory.length;
+  const searchModal = document.getElementById('search-modal'); const searchInput = document.getElementById('search-input'); const searchResults = document.getElementById('search-results'); const searchToggle = document.getElementById('search-toggle');
+  let searchHistory = JSON.parse(localStorage.getItem('bash_history')) || []; let historyIndex = searchHistory.length;
 
   const openSearch = () => { searchModal.classList.add('active'); searchInput.value = ''; searchResults.innerHTML = ''; historyIndex = searchHistory.length; setTimeout(() => searchInput.focus(), 100); };
   const closeSearch = () => { searchModal.classList.remove('active'); searchInput.blur(); };
@@ -490,16 +502,9 @@ function setupSearch() {
 
   searchInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
-      e.preventDefault();
-      const val = searchInput.value.trim();
-      if (val && searchHistory[searchHistory.length - 1] !== val) {
-        searchHistory.push(val);
-        if (searchHistory.length > 50) searchHistory.shift();
-        localStorage.setItem('bash_history', JSON.stringify(searchHistory));
-      }
-      historyIndex = searchHistory.length;
-      const firstResult = searchResults.querySelector('a');
-      if (firstResult) firstResult.click();
+      e.preventDefault(); const val = searchInput.value.trim();
+      if (val && searchHistory[searchHistory.length - 1] !== val) { searchHistory.push(val); if (searchHistory.length > 50) searchHistory.shift(); localStorage.setItem('bash_history', JSON.stringify(searchHistory)); }
+      historyIndex = searchHistory.length; const firstResult = searchResults.querySelector('a'); if (firstResult) firstResult.click();
     } 
     else if (e.key === 'ArrowUp') { e.preventDefault(); if (searchHistory.length > 0 && historyIndex > 0) { historyIndex--; searchInput.value = searchHistory[historyIndex]; searchInput.dispatchEvent(new Event('input')); } } 
     else if (e.key === 'ArrowDown') { e.preventDefault(); if (historyIndex < searchHistory.length - 1) { historyIndex++; searchInput.value = searchHistory[historyIndex]; searchInput.dispatchEvent(new Event('input')); } else if (historyIndex === searchHistory.length - 1) { historyIndex++; searchInput.value = ''; searchInput.dispatchEvent(new Event('input')); } }
@@ -507,22 +512,9 @@ function setupSearch() {
 
   searchInput.addEventListener('input', (e) => {
     const query = e.target.value.toLowerCase().trim();
-    if (query === 'sqlplus sys as sysdba' || query === 'sqlplus / as sysdba') {
-      closeSearch(); window.location.href = '/?cat=gbdd#practicas'; return;
-    }
     if (query.length < 2) { searchResults.innerHTML = ''; return; }
-    let html = '';
-    const homePath = '/';
-    const pathPrefix = '/practicas/';
-    
-    const safeCatLabel = (typeof CATEGORIAS_LABEL !== 'undefined') ? CATEGORIAS_LABEL : {
-      'gbdd': 'Gestión de Bases de Datos', 'redes': 'Planificación y Admin. de Redes',
-      'servicios': 'Servicios de Red e Internet', 'iaw': 'Implantación de Aplicaciones Web',
-      'infraestructura': 'Infraestructura Virtual', 'sad': 'Seguridad y Alta Disponibilidad',
-      'abd': 'Administración de Bases de Datos', 'aso': 'Administración de Sistemas Operativos',
-      'proyecto': 'Proyecto Integrado'
-    };
-    
+    let html = ''; const homePath = '/'; const pathPrefix = '/practicas/';
+    const safeCatLabel = (typeof CATEGORIAS_LABEL !== 'undefined') ? CATEGORIAS_LABEL : { 'gbdd': 'Gestión de Bases de Datos', 'redes': 'Planificación y Admin. de Redes', 'servicios': 'Servicios de Red e Internet', 'iaw': 'Implantación de Aplicaciones Web', 'infraestructura': 'Infraestructura Virtual', 'sad': 'Seguridad y Alta Disponibilidad', 'abd': 'Administración de Bases de Datos', 'aso': 'Administración de Sistemas Operativos', 'proyecto': 'Proyecto Integrado' };
     const categoriasNombres = Object.keys(safeCatLabel);
     const matchesCat = categoriasNombres.filter(c => c.toLowerCase().startsWith(query) || safeCatLabel[c].toLowerCase().includes(query));
 
@@ -530,10 +522,7 @@ function setupSearch() {
     
     if (typeof PRACTICAS !== 'undefined') {
       const matchesPrac = PRACTICAS.filter(p => p.titulo.toLowerCase().includes(query) || (p.tags && p.tags.some(t => t.toLowerCase().includes(query))));
-      matchesPrac.forEach(p => { 
-        const extension = p.extension || '.pdf'; const nombreArchivo = p.filename || p.id; 
-        html += `<a href="${pathPrefix}practica?id=${p.id}" class="search-result-item"><svg class="search-result-icon" viewBox="0 0 24 24" fill="#cbd5e1"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg><div class="search-result-info"><span class="search-result-title">${p.titulo}</span><span class="search-result-path">~/${p.categoria}/${nombreArchivo}${extension}</span></div></a>`; 
-      });
+      matchesPrac.forEach(p => { const extension = p.extension || '.pdf'; const nombreArchivo = p.filename || p.id; html += `<a href="${pathPrefix}practica?id=${p.id}" class="search-result-item"><svg class="search-result-icon" viewBox="0 0 24 24" fill="#cbd5e1"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg><div class="search-result-info"><span class="search-result-title">${p.titulo}</span><span class="search-result-path">~/${p.categoria}/${nombreArchivo}${extension}</span></div></a>`; });
     }
     
     if (html === '') html = '<div style="padding: 20px; color: #64748b; text-align: center; font-family: var(--mono);">0 coincidencias encontradas en el sistema.</div>';
@@ -542,70 +531,31 @@ function setupSearch() {
 }
 
 /* ==========================================================================
-   MENÚ LATERAL (AGRUPADO POR 1º ASIR Y 2º ASIR)
+   MENÚ LATERAL
    ========================================================================== */
 function renderSidebar() {
   const sidebarNav = document.getElementById('sidebar-nav');
   if (!sidebarNav || typeof PRACTICAS === 'undefined') return;
-  
-  const pathPrefix = '/practicas/';
-  const homePath = '/';
-  
+  const pathPrefix = '/practicas/'; const homePath = '/';
   let html = `<div class="line" style="margin-bottom: 16px; border-bottom: 1px solid #1e293b; padding-bottom: 12px;"><a href="${homePath}" style="color: #60a5fa; text-decoration: none; font-family: var(--mono); font-size: 0.9rem; font-weight: bold;" onmouseover="this.style.color='#93c5fd'" onmouseout="this.style.color='#60a5fa'">cd ~/la_sectasir (inicio)</a></div>`;
-  
   const categorias = {};
   PRACTICAS.forEach(p => { const cat = p.categoria ? p.categoria.toLowerCase() : 'otras'; if (!categorias[cat]) categorias[cat] = []; categorias[cat].push(p); });
-  
-  const cat1ASIR = ['gbdd', 'redes'];
-  const cat2ASIR = ['servicios', 'iaw', 'infraestructura', 'sad', 'abd', 'aso', 'proyecto'];
-  const nombreVisible = { 'gbdd': 'GBDD', 'redes': 'REDES', 'servicios': 'SERVICIOS', 'iaw': 'IAW', 'infraestructura': 'IV', 'sad': 'SAD', 'abd': 'ABD', 'aso': 'ASO', 'proyecto': 'PROYECTO' };
+  const cat1ASIR = ['gbdd', 'redes']; const cat2ASIR = ['servicios', 'iaw', 'infraestructura', 'sad', 'abd', 'aso', 'proyecto']; const nombreVisible = { 'gbdd': 'GBDD', 'redes': 'REDES', 'servicios': 'SERVICIOS', 'iaw': 'IAW', 'infraestructura': 'IV', 'sad': 'SAD', 'abd': 'ABD', 'aso': 'ASO', 'proyecto': 'PROYECTO' };
 
-  let has1ASIR = cat1ASIR.some(cat => categorias[cat] && categorias[cat].length > 0);
-  if (has1ASIR) {
+  if (cat1ASIR.some(cat => categorias[cat] && categorias[cat].length > 0)) {
     html += `<div style="color: #94a3b8; margin-top: 16px; margin-bottom: 8px; font-family: var(--mono); font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase;">-- 1º ASIR --</div>`;
-    cat1ASIR.forEach(cat => {
-      if (categorias[cat] && categorias[cat].length > 0) {
-        html += `<div style="color: #4ade80; margin-bottom: 6px; font-family: var(--mono); font-size: 0.85rem; font-weight: 600;">cd /${nombreVisible[cat]}</div>`;
-        categorias[cat].forEach(p => { 
-          const nombreArchivo = p.filename || p.id; 
-          html += `<div class="line" style="margin-bottom: 8px; padding-left: 12px;"><a href="${pathPrefix}practica?id=${p.id}" style="color: #cbd5e1; text-decoration: none; font-family: var(--mono); font-size: 0.85rem;" onmouseover="this.style.color='#f8fafc'" onmouseout="this.style.color='#cbd5e1'">cat ${nombreArchivo}.md</a></div>`; 
-        });
-      }
-    });
+    cat1ASIR.forEach(cat => { if (categorias[cat] && categorias[cat].length > 0) { html += `<div style="color: #4ade80; margin-bottom: 6px; font-family: var(--mono); font-size: 0.85rem; font-weight: 600;">cd /${nombreVisible[cat]}</div>`; categorias[cat].forEach(p => { const nombreArchivo = p.filename || p.id; html += `<div class="line" style="margin-bottom: 8px; padding-left: 12px;"><a href="${pathPrefix}practica?id=${p.id}" style="color: #cbd5e1; text-decoration: none; font-family: var(--mono); font-size: 0.85rem;" onmouseover="this.style.color='#f8fafc'" onmouseout="this.style.color='#cbd5e1'">cat ${nombreArchivo}.md</a></div>`; }); } });
   }
 
-  let has2ASIR = cat2ASIR.some(cat => categorias[cat] && categorias[cat].length > 0);
-  if (has2ASIR) {
+  if (cat2ASIR.some(cat => categorias[cat] && categorias[cat].length > 0)) {
     html += `<div style="color: #94a3b8; margin-top: 20px; margin-bottom: 8px; font-family: var(--mono); font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase;">-- 2º ASIR --</div>`;
-    cat2ASIR.forEach(cat => {
-      if (categorias[cat] && categorias[cat].length > 0) {
-        html += `<div style="color: #4ade80; margin-bottom: 6px; font-family: var(--mono); font-size: 0.85rem; font-weight: 600;">cd /${nombreVisible[cat]}</div>`;
-        categorias[cat].forEach(p => { 
-          const nombreArchivo = p.filename || p.id; 
-          html += `<div class="line" style="margin-bottom: 8px; padding-left: 12px;"><a href="${pathPrefix}practica?id=${p.id}" style="color: #cbd5e1; text-decoration: none; font-family: var(--mono); font-size: 0.85rem;" onmouseover="this.style.color='#f8fafc'" onmouseout="this.style.color='#cbd5e1'">cat ${nombreArchivo}.md</a></div>`; 
-        });
-      }
-    });
-  }
-  
-  const allKnown = [...cat1ASIR, ...cat2ASIR];
-  let hasOther = false;
-  for (const cat in categorias) {
-    if (!allKnown.includes(cat)) {
-      if (!hasOther) { html += `<div style="color: #94a3b8; margin-top: 20px; margin-bottom: 8px; font-family: var(--mono); font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase;">-- OTROS --</div>`; hasOther = true; }
-      html += `<div style="color: #4ade80; margin-bottom: 6px; font-family: var(--mono); font-size: 0.85rem; font-weight: 600;">cd /${cat.toUpperCase()}</div>`;
-      categorias[cat].forEach(p => { 
-        const nombreArchivo = p.filename || p.id; 
-        html += `<div class="line" style="margin-bottom: 8px; padding-left: 12px;"><a href="${pathPrefix}practica?id=${p.id}" style="color: #cbd5e1; text-decoration: none; font-family: var(--mono); font-size: 0.85rem;" onmouseover="this.style.color='#f8fafc'" onmouseout="this.style.color='#cbd5e1'">cat ${nombreArchivo}.md</a></div>`; 
-      });
-    }
+    cat2ASIR.forEach(cat => { if (categorias[cat] && categorias[cat].length > 0) { html += `<div style="color: #4ade80; margin-bottom: 6px; font-family: var(--mono); font-size: 0.85rem; font-weight: 600;">cd /${nombreVisible[cat]}</div>`; categorias[cat].forEach(p => { const nombreArchivo = p.filename || p.id; html += `<div class="line" style="margin-bottom: 8px; padding-left: 12px;"><a href="${pathPrefix}practica?id=${p.id}" style="color: #cbd5e1; text-decoration: none; font-family: var(--mono); font-size: 0.85rem;" onmouseover="this.style.color='#f8fafc'" onmouseout="this.style.color='#cbd5e1'">cat ${nombreArchivo}.md</a></div>`; }); } });
   }
   sidebarNav.innerHTML = html;
 }
 
 function setupSidebar() {
-  const toggleBtn = document.getElementById('sidebar-toggle');
-  const sidebar = document.querySelector('.site-sidebar');
+  const toggleBtn = document.getElementById('sidebar-toggle'); const sidebar = document.querySelector('.site-sidebar');
   if (toggleBtn && sidebar) {
     toggleBtn.addEventListener('click', () => { sidebar.classList.toggle('open'); sidebar.classList.toggle('active'); });
     const closeSidebarBtn = sidebar.querySelector('.terminal-titlebar .tb-dot.r');
@@ -613,18 +563,8 @@ function setupSidebar() {
   }
 }
 
-window.openFileAnim = function(event, url) {
-  event.preventDefault();
-  const fileElement = event.currentTarget;
-  fileElement.style.transform = 'scale(1.5)';
-  fileElement.style.opacity = '0';
-  fileElement.style.pointerEvents = 'none';
-  fileElement.style.transition = 'all 0.2s ease-in-out';
-  setTimeout(() => { window.location.href = url; }, 200);
-}
-
 /* ==========================================================================
-   VISUALIZACIÓN DE ARCHIVOS TIPO ESCRITORIO (NUEVO DISEÑO)
+   VISUALIZACIÓN DE ARCHIVOS TIPO ESCRITORIO
    ========================================================================== */
 function renderGrid(filtro) {
   const grid = document.getElementById('practice-grid');
@@ -632,45 +572,19 @@ function renderGrid(filtro) {
   grid.innerHTML = ''; 
   const datosFiltrados = filtro === 'todas' ? PRACTICAS : PRACTICAS.filter(p => p.categoria && p.categoria.toLowerCase() === filtro.toLowerCase());
   
-  if (datosFiltrados.length === 0) { 
-    grid.innerHTML = '<div class="loading-state">El directorio está vacío...</div>'; 
-    return; 
-  }
+  if (datosFiltrados.length === 0) { grid.innerHTML = '<div class="loading-state">El directorio está vacío...</div>'; return; }
   
-  // Añadimos un bloque de CSS para este nuevo diseño "Desktop"
   if (!document.getElementById('estilos-archivos-grid')) {
-    const styleG = document.createElement('style');
-    styleG.id = 'estilos-archivos-grid';
-    styleG.textContent = `
-      .file-item-desktop {
-        display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
-        width: 100px; text-decoration: none; gap: 10px; padding: 10px; border-radius: 8px;
-        transition: all 0.2s ease;
-      }
-      .file-item-desktop:hover { background: rgba(255,255,255,0.05); transform: translateY(-4px); }
-      .file-icon-svg { transition: transform 0.2s ease; }
-      .file-item-desktop:hover .file-icon-svg { transform: scale(1.1); }
-      .file-name-desktop {
-        color: #cbd5e1; font-family: var(--mono); font-size: 0.8rem; text-align: center;
-        word-wrap: break-word; word-break: break-word; line-height: 1.3; transition: color 0.2s;
-      }
-      .file-item-desktop:hover .file-name-desktop { color: #f8fafc; }
-    `;
+    const styleG = document.createElement('style'); styleG.id = 'estilos-archivos-grid';
+    styleG.textContent = `.file-item-desktop { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; width: 100px; text-decoration: none; gap: 10px; padding: 10px; border-radius: 8px; transition: all 0.2s ease; } .file-item-desktop:hover { background: rgba(255,255,255,0.05); transform: translateY(-4px); } .file-icon-svg { transition: transform 0.2s ease; } .file-item-desktop:hover .file-icon-svg { transform: scale(1.1); } .file-name-desktop { color: #cbd5e1; font-family: var(--mono); font-size: 0.8rem; text-align: center; word-wrap: break-word; word-break: break-word; line-height: 1.3; transition: color 0.2s; } .file-item-desktop:hover .file-name-desktop { color: #f8fafc; }`;
     document.head.appendChild(styleG);
   }
 
-  // Reseteamos el grid a un formato flex compatible con los iconos de escritorio
-  grid.style.display = 'flex'; 
-  grid.style.flexWrap = 'wrap'; 
-  grid.style.gap = '24px';
-  
+  grid.style.display = 'flex'; grid.style.flexWrap = 'wrap'; grid.style.gap = '24px';
   let html = '';
 
   datosFiltrados.forEach(p => {
-    const nombreArchivo = p.filename || p.id; 
-    const extension = p.extension || '.pdf'; 
-    
-    // Generamos el HTML exacto de tu captura (solo icono + texto)
+    const nombreArchivo = p.filename || p.id; const extension = p.extension || '.pdf'; 
     html += `
       <a href="/practicas/practica?id=${p.id}" class="file-item-desktop" onclick="openFileAnim(event, this.href)">
         <svg class="file-icon-svg" viewBox="0 0 24 24" width="60" height="60">
@@ -686,7 +600,7 @@ function renderGrid(filtro) {
 }
 
 /* ==========================================================================
-   PRÁCTICA INDIVIDUAL (PRACTICA.HTML)
+   PRÁCTICA INDIVIDUAL
    ========================================================================== */
 function renderSinglePractica(id) {
   if (typeof PRACTICAS === 'undefined') return;
@@ -698,93 +612,30 @@ function renderSinglePractica(id) {
   }
 
   document.title = practica.titulo + " — La SectASIR";
-
-  const tituloEl = document.getElementById('practica-titulo');
-  const contenidoEl = document.getElementById('practica-contenido');
-  const fechaEl = document.getElementById('practica-fecha');
-  const tagsEl = document.getElementById('practica-tags');
+  const tituloEl = document.getElementById('practica-titulo'); const contenidoEl = document.getElementById('practica-contenido'); const fechaEl = document.getElementById('practica-fecha'); const tagsEl = document.getElementById('practica-tags');
 
   if (tituloEl) typeTextSimple(tituloEl, practica.titulo, 20);
   if (contenidoEl) contenidoEl.innerHTML = practica.contenidoHTML;
 
-  const nombreReal = practica.filename || practica.id;
-  const extensionReal = practica.extension || '.md';
-  const terminalTitlebars = document.querySelectorAll('.terminal-titlebar');
-  
-  terminalTitlebars.forEach(tb => {
-    const spans = tb.querySelectorAll('span, div');
-    spans.forEach(span => {
-      if (span.textContent.toLowerCase().includes('cat ')) { typeTextSimple(span, `cat ${nombreReal}${extensionReal}`, 30); }
-    });
-  });
-
-  if (contenidoEl) {
-    const titulos = contenidoEl.querySelectorAll('h2');
-    if (titulos.length > 0) {
-      if (!document.getElementById('estilos-indice-flotante')) {
-        const style = document.createElement('style');
-        style.id = 'estilos-indice-flotante';
-        style.textContent = `#btn-indice-interno { position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px; background-color: #1e293b; border: 1px solid #334155; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 999; box-shadow: 0 4px 12px rgba(0,0,0,0.5); color: #60a5fa; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); } #btn-indice-interno:hover { transform: scale(1.1); background-color: #0f172a; color: #93c5fd; } #btn-indice-interno.activo { transform: rotate(90deg); background-color: #0f172a; border-color: #60a5fa; color: #4ade80; } #panel-indice-interno { position: fixed; bottom: 95px; right: 30px; width: 320px; max-height: 65vh; background-color: #0f172a; border: 1px solid #334155; border-radius: 8px; z-index: 1000; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.6); transform-origin: bottom right; transform: scale(0); opacity: 0; pointer-events: none; transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.25s ease-in-out; } #panel-indice-interno.abierto { transform: scale(1); opacity: 1; pointer-events: auto; } .panel-header { display: flex; align-items: center; padding: 15px 20px; background-color: #1e293b; border-bottom: 1px solid #334155; border-radius: 8px 8px 0 0; } .dots-container { display: flex; gap: 8px; margin-right: 15px; } .dot { width: 12px; height: 12px; border-radius: 50%; } .dot.red { background-color: #ef4444; cursor: pointer; } .dot.yellow { background-color: #f59e0b; } .dot.green { background-color: #10b981; } .panel-title { color: #94a3b8; font-family: var(--mono, monospace); font-size: 0.9rem; } .panel-content { padding: 20px; overflow-y: auto; flex: 1; } .lista-indice-interno { list-style: none; padding: 0; margin: 0; } .item-indice-interno { margin-bottom: 12px; font-family: var(--mono, monospace); font-size: 0.85rem; } .link-indice-interno { color: #60a5fa; text-decoration: none; transition: color 0.2s; display: block; padding: 4px 0; } .link-indice-interno:hover { color: #4ade80; }`;
-        document.head.appendChild(style);
-      }
-      const btnToggle = document.createElement('div'); btnToggle.id = 'btn-indice-interno'; btnToggle.title = 'Abrir índice de la práctica'; btnToggle.innerHTML = `<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3 13h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>`; document.body.appendChild(btnToggle);
-      const panel = document.createElement('div'); panel.id = 'panel-indice-interno'; let enlacesHtml = '';
-      titulos.forEach((titulo, index) => { if (!titulo.id) titulo.id = 'seccion-auto-' + index; enlacesHtml += `<li class="item-indice-interno"><a href="#${titulo.id}" class="link-indice-interno">📍 ${titulo.textContent}</a></li>`; });
-      panel.innerHTML = `<div class="panel-header"><div class="dots-container"><div class="dot red" id="cerrar-indice-interno" title="Cerrar índice"></div><div class="dot yellow"></div><div class="dot green"></div></div><span class="panel-title">Índice Local</span></div><div class="panel-content"><ul class="lista-indice-interno">${enlacesHtml}</ul></div>`; document.body.appendChild(panel);
-      btnToggle.addEventListener('click', () => { panel.classList.toggle('abierto'); btnToggle.classList.toggle('activo'); });
-      document.getElementById('cerrar-indice-interno').addEventListener('click', () => { panel.classList.remove('abierto'); btnToggle.classList.remove('activo'); });
-      panel.querySelectorAll('.link-indice-interno').forEach(enlace => { enlace.addEventListener('click', () => { panel.classList.remove('abierto'); btnToggle.classList.remove('activo'); }); });
-      window.limpiarIndiceFlotante = () => { if (btnToggle.parentNode) btnToggle.parentNode.removeChild(btnToggle); if (panel.parentNode) panel.parentNode.removeChild(panel); };
-    }
-  }
+  const nombreReal = practica.filename || practica.id; const extensionReal = practica.extension || '.md';
+  document.querySelectorAll('.terminal-titlebar').forEach(tb => { tb.querySelectorAll('span, div').forEach(span => { if (span.textContent.toLowerCase().includes('cat ')) { typeTextSimple(span, `cat ${nombreReal}${extensionReal}`, 30); } }); });
 
   if (fechaEl && practica.fecha) fechaEl.innerHTML = practica.fecha;
-  if (tagsEl && practica.tags) { tagsEl.innerHTML = practica.tags.map(t => `<span class="stack-tag">${t}</span>`).join(''); }
+  if (tagsEl && practica.tags) tagsEl.innerHTML = practica.tags.map(t => `<span class="stack-tag">${t}</span>`).join('');
 
   const safeCategory = practica.categoria ? practica.categoria.toLowerCase() : 'todas';
   const urlRetorno = `/?cat=${safeCategory}#practicas`;
-  const terminalApp = document.getElementById('main-terminal');
   
   const closeBtns = document.querySelectorAll('#close-terminal-btn, .terminal-window .tb-dot.r, .terminal-window .dot.red, .terminal-titlebar .tb-dot.r, .terminal-titlebar .dot.red');
-  const yellowBtns = document.querySelectorAll('.terminal-titlebar .tb-dot.y, .terminal-titlebar .dot.yellow');
-  const greenBtns = document.querySelectorAll('.terminal-titlebar .tb-dot.g, .terminal-titlebar .dot.green');
   const btnBack = document.getElementById('btn-back-to-folder');
   
-  if (terminalApp) {
-    const transitionState = sessionStorage.getItem('pageTransition');
-    if (transitionState === 'next') { terminalApp.classList.add('anim-page-next-in'); sessionStorage.removeItem('pageTransition'); } 
-    else if (transitionState === 'prev') { terminalApp.classList.add('anim-page-prev-in'); sessionStorage.removeItem('pageTransition'); } 
-    else { terminalApp.classList.add('maximize-animation'); }
-  }
-
   function closePracticaAnim(e) {
     if(e) e.preventDefault();
     if (typeof window.limpiarIndiceFlotante === 'function') window.limpiarIndiceFlotante();
-    if (terminalApp) { terminalApp.classList.remove('maximize-animation', 'anim-page-next-in', 'anim-page-prev-in'); terminalApp.classList.add('shrink-back-animation'); setTimeout(() => { window.location.href = urlRetorno; }, 250); } 
-    else { window.location.href = urlRetorno; }
-  }
-
-  function nextPracticaAnim(e) {
-    if(e) e.preventDefault();
-    if (typeof window.limpiarIndiceFlotante === 'function') window.limpiarIndiceFlotante();
-    const currentIndex = PRACTICAS.findIndex(p => p.id === id); let nextIndex = currentIndex + 1; if (nextIndex >= PRACTICAS.length) nextIndex = 0; 
-    sessionStorage.setItem('pageTransition', 'next');
-    if (terminalApp) { terminalApp.classList.remove('maximize-animation', 'anim-page-next-in', 'anim-page-prev-in'); terminalApp.classList.add('anim-page-next-out'); setTimeout(() => { window.location.href = window.location.pathname + '?id=' + PRACTICAS[nextIndex].id; }, 350); } 
-    else { window.location.href = window.location.pathname + '?id=' + PRACTICAS[nextIndex].id; }
-  }
-
-  function prevPracticaAnim(e) {
-    if(e) e.preventDefault();
-    if (typeof window.limpiarIndiceFlotante === 'function') window.limpiarIndiceFlotante();
-    const currentIndex = PRACTICAS.findIndex(p => p.id === id); let prevIndex = currentIndex - 1; if (prevIndex < 0) prevIndex = PRACTICAS.length - 1; 
-    sessionStorage.setItem('pageTransition', 'prev');
-    if (terminalApp) { terminalApp.classList.remove('maximize-animation', 'anim-page-next-in', 'anim-page-prev-in'); terminalApp.classList.add('anim-page-prev-out'); setTimeout(() => { window.location.href = window.location.pathname + '?id=' + PRACTICAS[prevIndex].id; }, 350); } 
-    else { window.location.href = window.location.pathname + '?id=' + PRACTICAS[prevIndex].id; }
+    window.closeFileAnim(e, urlRetorno); // Usa el nuevo efecto circular al cerrar
   }
 
   if (closeBtns.length > 0) closeBtns.forEach(btn => { btn.title = "Cerrar práctica"; btn.style.cursor = 'pointer'; btn.addEventListener('click', closePracticaAnim); });
-  if (yellowBtns.length > 0) yellowBtns.forEach(btn => { btn.title = "Práctica anterior"; btn.style.cursor = 'pointer'; btn.addEventListener('click', prevPracticaAnim); });
-  if (greenBtns.length > 0) greenBtns.forEach(btn => { btn.title = "Rápido/Siguiente"; btn.style.cursor = 'pointer'; btn.addEventListener('click', nextPracticaAnim); });
   if (btnBack) { btnBack.href = urlRetorno; btnBack.addEventListener('click', closePracticaAnim); }
 }
 
@@ -792,20 +643,16 @@ function setupGenericCloseButtons() {
   const params = new URLSearchParams(window.location.search);
   if (params.get('id')) return;
   const genericCloseBtns = document.querySelectorAll('#close-terminal-btn, .terminal-window .tb-dot.r, .terminal-titlebar .tb-dot.r, .terminal-window .dot.red');
+  const homePath = '/';
   
   genericCloseBtns.forEach(closeBtn => {
     if (closeBtn.closest('.hero')) return;
     if (closeBtn.dataset.closeBound) return;
     closeBtn.dataset.closeBound = 'true';
     closeBtn.style.cursor = 'pointer';
-    const terminalApp = closeBtn.closest('.terminal-window');
-    
-    const homePath = '/';
-
     closeBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      if (terminalApp) { terminalApp.classList.add('shrink-back-animation'); setTimeout(() => { window.location.href = homePath; }, 250); } 
-      else { window.location.href = homePath; }
+      window.closeFileAnim(e, homePath); // Usa el nuevo efecto circular al cerrar
     });
   });
 }
