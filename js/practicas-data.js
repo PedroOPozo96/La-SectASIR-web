@@ -844,108 +844,72 @@ R5-POP(config-if)#ip access-group 101 out</code></pre>
     `
   },
 
-
   /**
    * ============================================================
-   * 6. PRÁCTICA PROTOCOLO HTTP
+   * 6. PRÁCTICA: DESPLIEGUE DJANGO
    * ============================================================
    */
-
-
-
-
   {
-    id: "protocolo-http",
-    titulo: "Práctica de Protocolo HTTP e Infraestructura Web",
-    categoria: "servicios",
-    filename: "practica-http",
+    id: "django-dev-prod-completo",
+    titulo: "Despliegue Integral de Django: De Desarrollo a Producción",
+    categoria: "iaw",
+    filename: "deploy-django",
     extension: ".md",
-    fecha: "Noviembre 2025",
-    tags: ["Nginx", "HAProxy", "Docker", "LXC", "Proxy Inverso"],
+    fecha: "Octubre 2026",
+    tags: ["Django", "Python", "Apache2", "uWSGI", "Nginx", "MariaDB", "SSL"],
+    resumen: "Documentación completa del ciclo de vida de una aplicación Django: desde la configuración inicial en desarrollo con SQLite y Apache2, hasta su migración a un VPS en producción utilizando uWSGI, proxy inverso con Nginx, MariaDB y certificados HTTPS.",
     contenidoHTML: `
-      <h2>1. Introducción</h2>
-      <p>Esta práctica implementa una infraestructura HTTP completa que incluye:</p>
+      <h2 style="color: #4ade80;">PARTE 1: Entorno de Desarrollo (Apache2 y SQLite)</h2>
+      <p>El proyecto se inicializa clonando el repositorio y aislando las dependencias mediante la creación de un entorno virtual con <code>python3 -m venv venv</code> y su posterior activación con <code>source venv/bin/activate</code>. Las librerías necesarias se instalan utilizando <code>pip install -r requirements.txt</code>.</p>
+
+      <h3>Base de Datos Local</h3>
       <ul>
-        <li>Servidor web con aplicaciones Docker</li>
-        <li>Sistema de autenticación básica y documentos protegidos</li>
-        <li>Balanceador de carga HAProxy</li>
-        <li>Proxy inverso Nginx con virtual hosts</li>
+        <li>El entorno de desarrollo utiliza el motor SQLite por defecto, generando el archivo local <code>db.sqlite3</code>.</li>
+        <li>Las tablas iniciales se estructuran ejecutando el comando <code>python3 manage.py migrate</code>.</li>
+        <li>Para gestionar la aplicación, se crea un perfil de administrador mediante <code>python3 manage.py createsuperuser</code>.</li>
       </ul>
 
-      <h2>2. Arquitectura de Red y Servidores</h2>
-      <p>El escenario (Escenario 2) aloja todos los servidores en la misma red local mediante un Bridge <code>lxcbr1</code> (192.168.150.0/24) sobre un host Debian con virtualización mixta (KVM/libvirt y LXC).</p>
-      
-      <div style="overflow-x: auto; margin-bottom: 20px;">
-        <table style="width: 100%; border-collapse: collapse; text-align: left;">
-          <thead>
-            <tr style="border-bottom: 1px solid #334155; color: #60a5fa;">
-              <th style="padding: 8px;">Servidor</th>
-              <th style="padding: 8px;">IP</th>
-              <th style="padding: 8px;">Tecnología</th>
-              <th style="padding: 8px;">Rol</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr style="border-bottom: 1px solid #1e293b;">
-              <td style="padding: 8px; color: #cbd5e1;">proxy</td>
-              <td style="padding: 8px; color: #4ade80;">192.168.150.10</td>
-              <td style="padding: 8px; color: #cbd5e1;">LXC + Nginx</td>
-              <td style="padding: 8px; color: #cbd5e1;">Proxy inverso</td>
-            </tr>
-            <tr style="border-bottom: 1px solid #1e293b;">
-              <td style="padding: 8px; color: #cbd5e1;">servidor-web</td>
-              <td style="padding: 8px; color: #4ade80;">192.168.150.20</td>
-              <td style="padding: 8px; color: #cbd5e1;">VM + Nginx + Docker</td>
-              <td style="padding: 8px; color: #cbd5e1;">Servidor web principal</td>
-            </tr>
-            <tr style="border-bottom: 1px solid #1e293b;">
-              <td style="padding: 8px; color: #cbd5e1;">balanceador</td>
-              <td style="padding: 8px; color: #4ade80;">192.168.150.30</td>
-              <td style="padding: 8px; color: #cbd5e1;">LXC + HAProxy 3.0</td>
-              <td style="padding: 8px; color: #cbd5e1;">Balanceador de carga</td>
-            </tr>
-            <tr style="border-bottom: 1px solid #1e293b;">
-              <td style="padding: 8px; color: #cbd5e1;">backend1</td>
-              <td style="padding: 8px; color: #4ade80;">192.168.150.40</td>
-              <td style="padding: 8px; color: #cbd5e1;">LXC + Nginx + PHP 8.4</td>
-              <td style="padding: 8px; color: #cbd5e1;">Servidor backend 1</td>
-            </tr>
-            <tr>
-              <td style="padding: 8px; color: #cbd5e1;">backend2</td>
-              <td style="padding: 8px; color: #4ade80;">192.168.150.50</td>
-              <td style="padding: 8px; color: #cbd5e1;">LXC + Nginx + PHP 8.4</td>
-              <td style="padding: 8px; color: #cbd5e1;">Servidor backend 2</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <h3>Despliegue en Apache2</h3>
+      <p>El servidor web local se sustenta sobre Apache2 interactuando con Python a través de <code>libapache2-mod-wsgi-py3</code>. En el archivo <code>settings.py</code>, se habilita <code>DEBUG = True</code> y se definen las rutas de los archivos estáticos mediante <code>STATIC_URL = '/static/'</code> y <code>STATIC_ROOT</code>, los cuales se agrupan ejecutando <code>python3 manage.py collectstatic</code>.</p>
 
-      <h2>3. Despliegue de Aplicaciones (Docker)</h2>
-      <p>En el <code>servidor-web</code> se han desplegado dos aplicaciones contenedorizadas utilizando Docker:</p>
-<pre style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 6px; border: 1px solid #334155; overflow-x: auto;"><code style="color: #e2e8f0; font-family: var(--mono); font-size: 0.9em;"># Despliegue de JuiceShop (Puerto 3000)
-sudo docker run -d --name juice-shop --restart always -p 3000:3000 bkimminich/juice-shop
+<pre style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 6px; border: 1px solid #334155; overflow-x: auto;"><code style="color: #e2e8f0; font-family: var(--mono); font-size: 0.9em;"># Configuración WSGI en /etc/apache2/sites-available/django_tutorial.conf
+&lt;VirtualHost *:80&gt;
+    ServerAdmin webmaster@localhost
+    ServerName localhost
+    DocumentRoot /home/pedro/django_tutorial
+    WSGIDaemonProcess django_tutorial python-path=/home/pedro/django_tutorial:/home/pedro/venv/lib/python3.13/site-packages
+    WSGIScriptAlias / /home/pedro/django_tutorial/django_tutorial/wsgi.py process-group=django_tutorial
+    Alias /static/ /home/pedro/django_tutorial/static/
+&lt;/VirtualHost&gt;</code></pre>
 
-# Despliegue del Juego 2048 (Puerto 8080)
-sudo docker run -d --name juego-2048 --restart always -p 8080:80 josedom24/2048:v1</code></pre>
+      <p>El sitio web se habilita mediante <code>sudo a2ensite django_tutorial.conf</code> y <code>sudo a2enmod wsgi</code>. Antes de realizar la migración a producción, se extraen todos los datos almacenados en formato JSON ejecutando <code>python3 manage.py dumpdata > datos_backup.json</code>.</p>
 
-      <h2>4. Balanceo de Carga con HAProxy</h2>
-      <p>Se ha configurado HAProxy para distribuir el tráfico HTTP mediante el algoritmo <strong>roundrobin</strong> hacia los dos backends que sirven una aplicación PHP personalizada. Las comprobaciones de estado (health checks) garantizan la alta disponibilidad.</p>
-<pre style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 6px; border: 1px solid #334155; overflow-x: auto;"><code style="color: #e2e8f0; font-family: var(--mono); font-size: 0.9em;"># Verificación del balanceo de carga mediante múltiples peticiones
-for i in {1..10}; do curl -s http://app.pedro.org | grep "Servidor:"; done</code></pre>
+      <h2 style="color: #4ade80; margin-top: 40px;">PARTE 2: Entorno de Producción (VPS)</h2>
+      <p>El despliegue en producción se lleva a cabo en un servidor VPS bajo el hostname <code>perico</code>, con la dirección IP <code>217.154.180.52</code> y resolviendo al dominio <code>django.oliverpozo.es</code>.</p>
 
-      <h2>5. Gestión de Dominios y Proxy Inverso</h2>
-      <p>El nodo Proxy Inverso (Nginx) expone los servicios unificando el acceso mediante dominios locales:</p>
+      <h3>Migración a MariaDB</h3>
       <ul>
-        <li><code>nas.pedro.org</code>: Redirige a <code>/documentos</code> (Área protegida por htpasswd).</li>
-        <li><code>www.pedro.org</code>: Aloja la web estática principal y rutea <code>/shop/</code> y <code>/game/</code> hacia los contenedores Docker.</li>
-        <li><code>app.pedro.org</code>: Envía el tráfico al balanceador HAProxy para servir la aplicación PHP en alta disponibilidad.</li>
+        <li>Se instalan los paquetes <code>mysqlclient</code> y el servidor <code>mariadb-server</code>, aplicando medidas de seguridad iniciales con <code>mysql_secure_installation</code>.</li>
+        <li>Se genera la base de datos <code>djangoproyect</code> bajo codificación <code>utf8mb4</code> y se le otorgan privilegios al usuario <code>djangopedro</code>.</li>
+        <li>En la configuración de Django (<code>settings.py</code>), se altera el motor de base de datos a <code>django.db.backends.mysql</code>, se desactiva el modo depuración (<code>DEBUG = False</code>) y se añaden la IP y el dominio a los <code>ALLOWED_HOSTS</code>.</li>
+        <li>Los datos respaldados en desarrollo se inyectan en MySQL mediante <code>python3 manage.py loaddata datos_backup.json</code> tras aplicar las migraciones.</li>
       </ul>
 
-      <h2>6. Conclusiones</h2>
-      <p>La infraestructura cumple con todos los objetivos planteados: desde la resolución de dominios en un entorno aislado hasta la coexistencia de servicios estáticos, dinámicos (PHP-FPM) y contenedorizados, todo orquestado detrás de proxies inversos y balanceadores de carga.</p>
+      <h3>Servidor uWSGI</h3>
+      <p>Para servir la aplicación Python, se configura uWSGI mediante el archivo <code>uwsgi.ini</code> para escuchar las peticiones HTTP en <code>127.0.0.1:8081</code>, reservando así el puerto 8080 que se encuentra ocupado por Docker. El proceso se demoniza creando un servicio en <code>/etc/systemd/system/django_tutorial.service</code> para garantizar su ejecución persistente (<code>Active: active (running)</code>).</p>
+
+      <h3>Proxy Inverso Nginx y Certificados SSL</h3>
+      <p>Nginx se coloca al frente de la arquitectura capturando el tráfico del puerto 80 y reenviándolo a uWSGI a través de la directiva <code>proxy_pass http://127.0.0.1:8081</code>, sirviendo al mismo tiempo los archivos del directorio <code>/static/</code> mediante un <code>alias</code> directo.</p>
+
+<pre style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 6px; border: 1px solid #334155; overflow-x: auto;"><code style="color: #e2e8f0; font-family: var(--mono); font-size: 0.9em;"># Generación de certificados y configuración HTTPS
+sudo apt install certbot python3-certbot-nginx
+sudo certbot --nginx -d django.oliverpozo.es</code></pre>
+
+      <p>La herramienta Certbot interactúa con Nginx de manera automática, solicitando el certificado a Let's Encrypt y modificando el VirtualHost para forzar la redirección del tráfico HTTP entrante hacia el puerto seguro HTTPS (443).</p>
     `
   }
-]; 
+
+];
 
 /**
  * ============================================================
